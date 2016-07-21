@@ -12,7 +12,7 @@
     "test:watch": "npm run test -- --watch"
   },
   "author": "Francesco Zanini, Patrick Predella, Omar Mahili <support@zanini.me>",
-  "license": "ISC",
+  "license": "GPL-3.0",
   "dependencies": {
     "classnames": "^2.2.5",
     "font-awesome": "^4.6.3",
