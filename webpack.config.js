@@ -40,6 +40,8 @@ var config = getConfig({
   }
 });
 
+config.resolve.extensions.push(".desktop.js", ".coffee");
+
 // ENV variables
 const dotEnvVars = dotenv.config();
 const environmentEnv = dotenv.config({
@@ -109,8 +111,10 @@ config.postcss = [].concat([
 config.resolve.root = [src, modules];
 config.resolve.alias = {
   css: join(src, 'styles'),
-  containers: join(src, 'containers'),
   components: join(src, 'components'),
+  containers: join(src, 'containers'),
+  math: join(src, 'math'),
+  protocol: join(src, 'protocol'),
   utils: join(src, 'utils'),
   styles: join(src, 'styles')
 };

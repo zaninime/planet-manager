@@ -15,6 +15,8 @@
   "license": "GPL-3.0",
   "dependencies": {
     "classnames": "^2.2.5",
+    "coffee-loader": "^0.7.2",
+    "coffee-script": "^1.10.0",
     "font-awesome": "^4.6.3",
     "react": "^15.2.1",
     "react-dom": "^15.2.1",
