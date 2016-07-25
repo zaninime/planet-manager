@@ -1,0 +1,33 @@
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 300;
+  src: local("Roboto Light"),
+    local("Roboto-Light"),
+    url("styles/google-fonts/roboto-27c056b9c70dcfd55c43e954a898eb5bf706f730.woff") format("woff"),
+    url("styles/google-fonts/roboto-f23a0413fdd70117752cf73679d2c5867095eaac.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  /* IE6-8 compat */
+  src: url("styles/google-fonts/roboto-bcd5990bb2551892cddff247dff2db1f2fc66ce6.eot");
+  src: local("Roboto"),
+    local("Roboto-Regular"),
+    url("styles/google-fonts/roboto-940b859e4f02bd3e7cf7b6ce245c197b5470302a.woff") format("woff"),
+    url("styles/google-fonts/roboto-148fe3b2ffcb825efff40a8378f22125ccf88cb0.svg#Roboto") format("svg"),
+    url("styles/google-fonts/roboto-bcd5990bb2551892cddff247dff2db1f2fc66ce6.eot") format("embedded-opentype"),
+    url("styles/google-fonts/roboto-89e7bf27190d62c7b508dc92c7012c1180458f4e.ttf") format("truetype");
+}
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 500;
+  src: local("Roboto Medium"),
+    local("Roboto-Medium"),
+    url("styles/google-fonts/roboto-c5e19cdc9c784c0362e7d2b7b5be26418b07fd89.woff") format("woff"),
+    url("styles/google-fonts/roboto-620481374c705f0e6e387d281e66a2b250611445.ttf") format("truetype");
+}

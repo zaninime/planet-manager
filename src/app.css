@@ -1,4 +1,5 @@
 @import url("styles/colors.css");
+@import url("styles/google-fonts/fonts.css");
 
 *,
 *:after,
@@ -8,14 +9,14 @@
     -moz-osx-font-smoothing: grayscale;
     font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
-
     font-size: 16px;
 }
 
 body {
   color: var(--dark);
   font-weight: lighter;
-  font: 400 15px/22px 'Open Sans', 'Helvetica Neue', Sans-serif;
+  /*font: 400 15px/22px 'Open Sans', 'Helvetica Neue', Sans-serif;*/
+  font-family: 'Roboto', sans-serif;
   font-smoothing: antialiased;
   padding: 0;
   margin: 0;
