@@ -43,7 +43,8 @@ export default class ChannelColor extends React.Component {
       backgroundColor={backgroundColor}
       hoverColor={hoverColor}
       labelStyle={{color: textColor}}
-      style={this.props.style}/>
+      style={this.props.style}
+      onClick={this.props.onClick}/>
     );
   }
 }
@@ -54,5 +55,6 @@ ChannelColor.propTypes = {
       return new Error(`Invalid prop 'color' supplied to ${component}. Must be one of {red, green, blue, white, off}`);
     }
   },
-  style: T.object
+  style: T.object,
+  onClick: T.function
 }
