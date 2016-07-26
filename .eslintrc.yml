@@ -17,3 +17,4 @@
     - react
   rules:
     strict: 0
+    semi: 1
