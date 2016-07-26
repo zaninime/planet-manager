@@ -24,19 +24,33 @@ const src = join(root, 'src');
 const modules = join(root, 'node_modules');
 const dest = join(root, 'dist');
 const css = join(src, 'styles');
+const fs = require('fs');
+
+// load files for Chrome app
+const files = {};
+
+fs.readFile(join(root, 'chrome', 'prod', 'background.js'), 'utf8', function(err, contents) {
+  if (err !== null) throw err;
+  files['background.js'] = contents;
+});
+
+fs.readFile(join(root, 'chrome', 'prod', 'manifest.json'), 'utf8', function(err, contents) {
+  if (err !== null) throw err;
+  files['manifest.json'] = contents;
+});
 
 var config = getConfig({
   isDev: isDev,
   in: join(src, 'app.js'),
   out: dest,
   html: function (context) {
-    return {
+    return Object.assign({}, {
       'index.html': context.defaultTemplate({
         title: 'planet-manager',
         publicPath,
         meta: {}
       })
-    };
+    }, files);
   }
 });
 
