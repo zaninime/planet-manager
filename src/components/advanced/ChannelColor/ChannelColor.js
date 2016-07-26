@@ -32,21 +32,19 @@ const labels = {
   off: 'off'
 }
 
-export default class ChannelColor extends React.Component {
-  render() {
-    const backgroundColor = colors[this.props.color + 'Background'];
-    const hoverColor = colors[this.props.color + 'Hover'];
-    const textColor = colors[this.props.color + 'Text'];
-    const label = labels[this.props.color]
-    return (
-      <FlatButton label={label}
-      backgroundColor={backgroundColor}
-      hoverColor={hoverColor}
-      labelStyle={{color: textColor}}
-      style={this.props.style}
-      onClick={this.props.onClick}/>
-    );
-  }
+export default function ChannelColor(props) {
+  const backgroundColor = colors[props.color + 'Background'];
+  const hoverColor = colors[props.color + 'Hover'];
+  const textColor = colors[props.color + 'Text'];
+  const label = labels[props.color];
+  return (
+    <FlatButton label={label}
+    backgroundColor={backgroundColor}
+    hoverColor={hoverColor}
+    labelStyle={{color: textColor}}
+    style={props.style}
+    onClick={props.onClick}/>
+  );
 }
 
 ChannelColor.propTypes = {
@@ -56,5 +54,5 @@ ChannelColor.propTypes = {
     }
   },
   style: T.object,
-  onClick: T.function
+  onClick: T.func
 }
