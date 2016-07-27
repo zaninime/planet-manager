@@ -1,12 +1,12 @@
 import { connect } from 'react-redux';
 import ChannelColor from 'components/advanced/ChannelColor/ChannelColor';
 
-const getCurrentColor(state, stripNumber) {
+const getCurrentColor = (state, stripNumber) => {
   const COLORS = {
-    1: 'white'
-    2: 'red'
-    3: 'green'
-    4: 'blue'
+    1: 'white',
+    2: 'red',
+    3: 'green',
+    4: 'blue',
     5: 'off'
   };
   return COLORS[state[stripNumber]];
