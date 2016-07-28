@@ -125,6 +125,7 @@ config.postcss = [].concat([
 config.resolve.root = [src, modules];
 config.resolve.alias = {
   actions: join(src, 'actions'),
+  reducers: join(src, 'reducers'),
   css: join(src, 'styles'),
   components: join(src, 'components'),
   containers: join(src, 'containers'),

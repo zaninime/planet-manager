@@ -1,27 +1,29 @@
 import React, { PropTypes as T } from 'react';
+import Radium from 'radium';
 import FlatButton from 'material-ui/FlatButton';
-import {red100, red500, green100, green500, blue100, blue500, blueGrey50, blueGrey100} from 'material-ui/styles/colors';
+import Checkbox from 'material-ui/Checkbox';
+import {red400, red500, green400, green500, blue400, blue500, blueGrey200, blueGrey300} from 'material-ui/styles/colors';
 
 const colors = {
-  redBackground: red100,
+  redBackground: red400,
   redHover: red500,
   redText: 'white',
 
-  greenBackground: green100,
+  greenBackground: green400,
   greenHover: green500,
   greenText: 'white',
 
-  blueBackground: blue100,
+  blueBackground: blue400,
   blueHover: blue500,
   blueText: 'white',
 
-  whiteBackground: blueGrey50,
-  whiteHover: blueGrey100,
+  whiteBackground: blueGrey200,
+  whiteHover: blueGrey300,
   whiteText: 'white',
 
   offBackground: undefined,
   offHover: undefined,
-  offText: undefined,
+  offText: undefined
 };
 
 const labels = {
@@ -32,27 +34,105 @@ const labels = {
   off: 'off'
 };
 
-export default function ChannelColor(props) {
-  const backgroundColor = colors[props.color + 'Background'];
-  const hoverColor = colors[props.color + 'Hover'];
-  const textColor = colors[props.color + 'Text'];
-  const label = labels[props.color];
-  return (
-    <FlatButton label={label}
-    backgroundColor={backgroundColor}
-    hoverColor={hoverColor}
-    labelStyle={{color: textColor}}
-    style={props.style}
-    onClick={props.onClick}/>
-  );
+const styles = {
+  container: {
+    display: 'flex',
+    alignItems: 'center',
+    width: '100%',
+    margin: '1em'
+  },
+  stripNumber: {
+    width: '10%',
+    margin: 'auto'
+  },
+  toggle: {
+    width: '30%',
+    margin: 'auto'
+  },
+  colorButton: {
+    width: '60%',
+    margin: 'auto',
+    textAlign: 'center'
+  },
+  innerColorButton: {}
+};
+
+class ChannelColor extends React.Component {
+  constructor(props) {
+    super(props);
+    this.handleToggleEnable = this.handleToggleEnable.bind(this);
+    this.handleButtonClick = this.handleButtonClick.bind(this);
+  }
+
+  handleToggleEnable(_, e) {
+    const {stripNumber} = this.props;
+    if (e) this.props.enableStrip(stripNumber);
+    else this.props.disableStrip(stripNumber);
+  }
+
+  handleButtonClick() {
+    const {stripNumber} = this.props;
+    this.props.nextStripColor(stripNumber);
+  }
+
+  render() {
+    let {color} = this.props;
+    const {enabled, reverse, stripNumber} = this.props;
+    if (!enabled) {
+      color = 'off';
+    }
+    const backgroundColor = colors[color + 'Background'];
+    const hoverColor = colors[color + 'Hover'];
+    const textColor = colors[color + 'Text'];
+    const label = labels[color];
+
+    const colorButton = (
+      <FlatButton label={label}
+        backgroundColor={backgroundColor}
+        hoverColor={hoverColor}
+        labelStyle={{color: textColor}}
+        disabled={!enabled}
+        style={styles.innerColorButton}
+        onClick={this.handleButtonClick}/>
+    );
+
+    const toggle = (
+      <Checkbox checked={enabled} onCheck={this.handleToggleEnable} iconStyle={{margin: '0 auto 0 auto'}}/>
+    );
+
+    if (reverse) {
+      return (
+        <div style={styles.container}>
+          <div style={[styles.stripNumber, {textAlign: 'right'}]}>{stripNumber}</div>
+          <div style={styles.toggle}>{toggle}</div>
+          <div style={styles.colorButton}>{colorButton}</div>
+        </div>
+      );
+    } else {
+      return (
+        <div style={styles.container}>
+          <div style={styles.colorButton}>{colorButton}</div>
+          <div style={styles.toggle}>{toggle}</div>
+          <div style={[styles.stripNumber, {textAlign: 'left'}]}>{stripNumber}</div>
+        </div>
+      );
+    }
+  }
+
+  static propTypes = {
+    color: (props, name, component) => {
+      if (props[name] === undefined) return;
+      if (!/^(?:red|green|blue|white)$/.test(props[name])) {
+        return new Error(`Invalid prop 'color' supplied to ${component}. Must be one of {red, green, blue, white}`);
+      }
+    },
+    enabled: T.bool,
+    reverse: T.bool,
+    stripNumber: T.number.isRequired,
+    enableStrip: T.func.isRequired,
+    disableStrip: T.func.isRequired,
+    nextStripColor: T.func.isRequired
+  };
 }
 
-ChannelColor.propTypes = {
-  color: (props, name, component) => {
-    if (!/^(?:red|green|blue|white|off)$/.test(props[name])) {
-      return new Error(`Invalid prop 'color' supplied to ${component}. Must be one of {red, green, blue, white, off}`);
-    }
-  },
-  style: T.object,
-  onClick: T.func
-};
+export default Radium(ChannelColor);

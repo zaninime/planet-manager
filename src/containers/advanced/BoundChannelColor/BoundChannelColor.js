@@ -1,23 +1,13 @@
 import { connect } from 'react-redux';
 import ChannelColor from 'components/advanced/ChannelColor/ChannelColor';
+import { getStripCurrentColor, getStripIsEnabled } from 'reducers';
+import { enableStrip, disableStrip, nextStripColor } from 'actions/lampConfig';
 
-const getCurrentColor = (state, stripNumber) => {
-  const COLORS = {
-    1: 'white',
-    2: 'red',
-    3: 'green',
-    4: 'blue',
-    5: 'off'
-  };
-  return COLORS[state[stripNumber]];
-};
-
-const mapStateToProps = (state, ownProps) => ({
-  color: getCurrentColor(state.lampConfig.channelMapping, ownProps.number)
+const mapStateToProps = (state, { stripNumber }) => ({
+  color: getStripCurrentColor(state, stripNumber),
+  enabled: getStripIsEnabled(state, stripNumber)
 });
 
-const mapDispatchToProps = (dispatch) => ({
-  onClick: dispatch(/* toggleColor */)
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(ChannelColor);
+export default connect(mapStateToProps, {
+  enableStrip, disableStrip, nextStripColor
+})(ChannelColor);

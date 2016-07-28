@@ -19,6 +19,7 @@
     "coffee-script": "^1.10.0",
     "font-awesome": "^4.6.3",
     "material-ui": "^0.15.2",
+    "radium": "^0.18.1",
     "react": "^15.2.1",
     "react-dom": "^15.2.1",
     "react-redux": "^4.4.5",
