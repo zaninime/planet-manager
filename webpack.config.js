@@ -23,7 +23,7 @@ const root = resolve(__dirname);
 const src = join(root, 'src');
 const modules = join(root, 'node_modules');
 const dest = join(root, 'dist');
-const css = join(src, 'styles');
+//const css = join(src, 'styles');
 const fs = require('fs');
 
 // load files for Chrome app
@@ -124,6 +124,7 @@ config.postcss = [].concat([
 // Roots
 config.resolve.root = [src, modules];
 config.resolve.alias = {
+  actions: join(src, 'actions'),
   css: join(src, 'styles'),
   components: join(src, 'components'),
   containers: join(src, 'containers'),
