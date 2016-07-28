@@ -1,3 +1,4 @@
+/* globals __DEBUG__ */
 import React, { PropTypes as T } from 'react';
 import { Router } from 'react-router';
 import { Provider } from 'react-redux';
@@ -19,11 +20,11 @@ class App extends React.Component {
     let newProps = {
       actions,
       ...this.props
-    }
+    };
 
     const createElement = (Component, props) => {
-      return <Component {...newProps} {...props} />
-    }
+      return <Component {...newProps} {...props} />;
+    };
 
     return (
       <Provider store={store}>
@@ -33,14 +34,14 @@ class App extends React.Component {
           createElement={createElement}
           history={history} />
       </Provider>
-    )
+    );
   }
 
   get devTools () {
     if (__DEBUG__) {
       if (!window.devToolsExtension) {
-        const DevTools = require('containers/DevTools/DevTools').default
-        return <DevTools />
+        const DevTools = require('containers/DevTools/DevTools').default;
+        return <DevTools />;
       }
     }
   }
@@ -53,8 +54,12 @@ class App extends React.Component {
            {this.devTools}
          </div>
         </Provider>
-     )
+     );
    }
 }
+
+App.propTypes = {
+  store: T.object.isRequired
+};
 
 export default App;

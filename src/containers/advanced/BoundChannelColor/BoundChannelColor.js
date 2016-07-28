@@ -10,7 +10,7 @@ const getCurrentColor = (state, stripNumber) => {
     5: 'off'
   };
   return COLORS[state[stripNumber]];
-}
+};
 
 const mapStateToProps = (state, ownProps) => ({
   color: getCurrentColor(state.lampConfig.channelMapping, ownProps.number)

@@ -1,4 +1,4 @@
-import React, { PropTypes as T } from 'react';
+import React from 'react';
 import {Link} from 'react-router';
 
 import styles from './styles.module.css';
@@ -15,7 +15,7 @@ export class IndexPage extends React.Component {
           <Link to="about">About</Link>
         </p>
       </div>
-    )
+    );
   }
 }
 

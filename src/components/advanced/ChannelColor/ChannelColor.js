@@ -22,7 +22,7 @@ const colors = {
   offBackground: undefined,
   offHover: undefined,
   offText: undefined,
-}
+};
 
 const labels = {
   red: 'red',
@@ -30,7 +30,7 @@ const labels = {
   blue: 'blue',
   white: 'white',
   off: 'off'
-}
+};
 
 export default function ChannelColor(props) {
   const backgroundColor = colors[props.color + 'Background'];
@@ -55,4 +55,4 @@ ChannelColor.propTypes = {
   },
   style: T.object,
   onClick: T.func
-}
+};
