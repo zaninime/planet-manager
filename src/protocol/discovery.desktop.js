@@ -1,39 +1,29 @@
-/*global requireNode*/
-const dgram = requireNode('dgram');
+/* globals chrome */
+import { EventEmitter } from 'events';
+import { createIOError } from './errors';
+import { ab2str } from './arraybuffer';
 
-
-class Discovery {
-	constructor() {
-		this._inited = false;
-	}
-
-	initialize(settings) {
-		if (this._inited) return false;
-		const sock = dgram.createSocket({type: 'udp4', reuseAddr: true});
-		this._sock = sock;
-		sock.on('message', (msg, rinfo) => {
-			settings.success({
-				address: rinfo.address,
-				port: rinfo.port,
-				content: msg.toString('ascii')
+export const createDiscoveryListener = () => (new Promise((resolve, reject) => {
+	const {udp} = chrome.sockets;
+	udp.create({}, ({socketId}) => {
+		udp.bind(socketId, '0.0.0.0', 55555, (bindRes) => {
+			if (bindRes < 0) reject(createIOError('BIND', bindRes));
+			udp.setBroadcast(socketId, true, (broadcastRes) => {
+				if (broadcastRes < 0) {
+					reject(createIOError('BCAST'));
+				}
+				resolve((listener) => {
+					onReceiveEmitter.on(socketId, listener);
+				});
 			});
 		});
-		sock.on('error', (error) => {
-			settings.error(error);
-		});
-		sock.bind(55555);
-		this._inited = true;
-	}
+	});
+}));
 
-	finish() {
-		if (!this._inited) return false;
-		this._sock.close();
-		this._inited = false;
-	}
-}
+const onReceiveEmitter = new EventEmitter();
 
-const discovery = new Discovery();
-
-export {
-	discovery as default
+export const init = () => {
+  chrome.sockets.udp.onReceive.addListener(({socketId, remoteAddress, remotePort, data}) => {
+    onReceiveEmitter.emit(socketId, remoteAddress, remotePort, ab2str(data));
+  });
 };

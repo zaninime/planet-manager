@@ -1,174 +1,122 @@
-/*global requireNode*/
-import data from './data.coffee';
+/* globals chrome */
+import { decode } from 'utils/lampId';
+import { EventEmitter } from 'events';
+import { str2ab, ab2str } from './arraybuffer';
+import { createIOError, createProtocolError } from './errors';
+import * as ofClock from './data/clock';
+import * as ofStatus from './data/status';
+import * as ofConfig from './data/config';
 
-const net = requireNode('net');
+export const fetchWifiConfig = (lampId) => fetchGenericLampId(lampId, '\x02WiFishGETLAN\x03'); // TODO
+export const saveWifiConfig = 1;      // TODO
 
-function unpackCounter(str) {
-	let match, re;
-	re = /^PLANETCOUNTER([0-9A-F]{5})/;
-	match = str.match(re);
-	if (match === null) {
-		return {
-			status: 'error',
-			message: 'Response doesn\'t match the required format'
-		};
-	}
-	return {
-		status: 'success',
-		value: parseInt(match[1], 16)
-	};
-}
+export const fetchConfig = (lampId) => fetchGenericLampId(lampId, ofConfig.buildRequest()).then(ofConfig.parseResponse);
+export const saveConfig = (lampId, config) => saveGenericLampId(lampId, ofConfig.buildUpdate(config));
 
-function packCounter(counter) {
-	counter = parseInt(counter);
-	counter = counter % 86400;
-	if (counter < 0) {
-		counter += 86400;
-	}
-	counter = counter.toString(16).toUpperCase();
-	for (let i = counter.length; i < 5; i++) {
-		counter = `0${counter}`;
-	}
-	return counter;
-}
+export const fetchStatus = (lampId) => fetchGenericLampId(lampId, ofStatus.buildRequest()).then(ofStatus.parseResponse);
+export const applyTempColor = (lampId, {white, red, green, blue}) => saveGenericLampId(lampId, ofStatus.buildUpdate(white, red, green, blue));
 
-export default class WiFi {
-	constructor(address, port) {
-		this._address = address;
-		this._port = port;
-	}
+export const fetchClock = (lampId) => fetchGenericLampId(lampId, ofClock.buildRequest()).then(ofClock.parseResponse);
+export const saveClock = (lampId, clock) => (saveGenericLampId(lampId, ofClock.buildUpdate(clock)));
 
-	_getGeneric(baseStr, settings) {
-		const reqString = `\x02${ baseStr }\x03`;
-		const sock = net.createConnection({
-			host: this._address,
-			port: this._port
-		});
-		sock.setNoDelay();
-		sock.setEncoding('ASCII');
-		sock.setTimeout(5000);
-		let state = 0;
-		sock.on('data', (data) => {
-			if (state === 0) {
-				if (data !== '*HELLO*') {
-					settings.error({type: 'ProtocolError', message: 'Unable to complete handshake', action: 'Handshaking'});
-					return;
-				}
-				state = 1;
-				sock.write(reqString);
-				return;
-			}
-			if (state === 1) {
-				state = 2;
-				sock.destroy();
-				settings.success(data);
-			}
-		});
-		sock.on('error', (error) => {
-			sock.destroy();
-			settings.error({name: error.code, message: error.message});
-		});
-		sock.on('timeout', () => {
-			sock.destroy();
-			settings.error({name: 'ETIMEOUT', message: 'Connection timed out'});
-		});
-	}
+const sendCatch = (socketId, sendInfo, reject) => {
+  if (sendInfo < 0) {
+    onReceiveEmitter.removeAllListeners(socketId);
+    chrome.sockets.tcp.close(socketId);
+    reject(createIOError('SEND', sendInfo));
+  }
+};
 
-	_setGeneric(baseStr, settings, data) {
-		const reqString = `\x02${ baseStr }${ data }\x03`;
-		const sock = net.createConnection({
-			host: this._address,
-			port: this._port
-		});
-		sock.setNoDelay();
-		sock.setEncoding('ASCII');
-		sock.setTimeout(5000);
-		let state = 0;
-		sock.on('data', (data) => {
-			if (state === 0) {
-				if (data !== '*HELLO*') {
-					settings.error({type: 'ProtocolError', message: 'Unable to complete handshake', action: 'Handshaking'});
-					return;
-				}
-				state = 1;
-				sock.write(reqString);
-				sock.destroy();
-				if (typeof settings.success == 'function') {
-					settings.success();
-				}
-				return;
-			}
-		});
-		sock.on('error', (error) => {
-			sock.destroy();
-			settings.error({name: error.code, message: error.message});
-		});
-		sock.on('timeout', () => {
-			sock.destroy();
-			settings.error({name: 'ETIMEOUT', message: 'Connection timed out'});
-		});
-	}
+const fetchGenericLampId = (lampId, query) => {
+  const {address, port} = decode(lampId);
+  return fetchGeneric(address, port, query);
+};
 
-getParam(settings) {
-	if (settings.success === undefined) return;
-	this._getGeneric('PLANETGETPARAM01', {
-		success: (resp) => {
-			settings.success({
-				raw: resp,
-				decoded: data.Config.parseString(resp)
-			});
-		},
-		error: settings.error
-	});
-}
-setParam(settings) {
-	this._setGeneric('PLANETSETPARAM01', settings, settings.config.socketify());
-}
+const fetchGeneric = (address, port, query) => (new Promise((resolve, reject) => {
+  const receiver = (query, resolve, reject) => (socketId) => {
+    let state = 0;
+    return (data) => {
+      switch (state) {
+        case 0:
+          if (/\*HELLO\*/.test(data)) {
+            chrome.sockets.tcp.send(socketId, str2ab(query), (sendInfo) => {
+              state = 1;
+              sendCatch(socketId, sendInfo, reject);
+            });
+          } else {
+            reject(createProtocolError('Invalid handshake received'));
+          }
+          break;
+        case 1:
+          state = 2;
+          onReceiveEmitter.removeAllListeners(socketId);
+          chrome.sockets.tcp.close(socketId, () => resolve(data));
+          break;
+      }
+    };
+  };
+  initSocket(address, port, receiver(query, resolve, reject))
+    .catch((err) => {reject(err);});    // TODO: implement errors
+}));
 
-getStatus(settings) {
-	if (settings.success === undefined) return;
-	this._getGeneric('PLANETGETSTATUS01', {
-		success: (resp) => {
-			settings.success({
-				raw: resp,
-				decoded: data.StatusResponse.parseString(resp)
-			});
-		},
-		error: settings.error
-	});
-}
-setStatus(settings) {
-	this._setGeneric('PLANETSETSTATUS01', settings, settings.status.socketify());
-}
+const saveGenericLampId = (lampId, query) => {
+  const {address, port} = decode(lampId);
+  return saveGeneric(address, port, query);
+};
 
-getCounter(settings) {
-	if (settings.success === undefined) return;
-	this._getGeneric('GETCOUNTER', {
-		success: (resp) => {
-			settings.success({
-				raw: resp,
-				decoded: unpackCounter(resp)
-			});
-		},
-		error: settings.error
-	});
-}
-setCounter(settings) {
-	this._setGeneric('SETCOUNTER', settings, packCounter(settings.counter));
-}
+const saveGeneric = (address, port, query) => (new Promise((resolve, reject) => {
+  const receiver = (query, resolve, reject) => (socketId) => {
+    let state = 0;
+    return (data) => {
+      switch (state) {
+        case 0:
+          if (/\*HELLO\*/.test(data)) {
+            chrome.sockets.tcp.send(socketId, str2ab(query), (sendInfo) => {
+              state = 1;
+              sendCatch(socketId, sendInfo, reject);
+              onReceiveEmitter.removeAllListeners(socketId);
+              chrome.sockets.tcp.close(socketId, () => resolve());
+            });
+          } else {
+            reject(createProtocolError('Invalid handshake received'));
+          }
+          break;
+      }
+    };
+  };
+  initSocket(address, port, receiver(query, resolve, reject))
+    .catch((err) => {reject(err);});    // TODO: implement errors
+}));
 
-getWLAN(settings) {
-	if (settings.success === undefined) return;
-	this._getGeneric('WiFishGETLAN', {
-		success: (resp) => {
-			settings.success({
-				raw: resp,
-				decoded: data.WiFiConfig.parseString(resp)
-			});
-		}
-	});
-}
-setWLAN(settings) {
-	this._setGeneric('WiFishSETLAN', settings, settings.config.socketify());
-}
-}
+const initSocket = (address, port, receiverCreator) => (new Promise((resolve, reject) => {
+  let socketId;
+  let receiver;
+  const onConnectedCallback = (res) => {
+    if (res < 0) {
+      reject(createIOError('CONNECT', res));
+    } else {
+      chrome.sockets.tcp.setNoDelay(socketId, true, function() {});
+      resolve({socketId, receiver});
+    }
+  };
+  chrome.sockets.tcp.create({}, (createInfo) => {
+    socketId = createInfo.socketId;
+    receiver = receiverCreator(socketId);
+    onReceiveEmitter.on(socketId, receiver);
+    chrome.sockets.tcp.connect(createInfo.socketId, address, port, onConnectedCallback);
+  });
+}));
+
+/*const closeSocket = (socketId, receiver) => (new Promise((resolve) => {
+  onReceiveEmitter.removeListener(socketId, receiver);
+  chrome.sockets.tcp.close(socketId, resolve);
+}));*/
+
+const onReceiveEmitter = new EventEmitter();
+
+export const init = () => {
+  chrome.sockets.tcp.onReceive.addListener((info) => {
+    const {socketId, data} = info;
+    onReceiveEmitter.emit(socketId, ab2str(data));
+  });
+};

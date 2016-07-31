@@ -21,6 +21,7 @@ module.exports = function (config) {
     },
 
     plugins: [
+      'karma-coverage',
       'karma-mocha',
       'karma-chai',
       'karma-webpack',
@@ -29,7 +30,21 @@ module.exports = function (config) {
       'karma-sourcemap-loader'
     ],
 
-    reporters: ['spec'],
+    reporters: ['spec', 'progress', 'coverage'],
+
+    coverageReporter: {
+      instrumenterOptions: {
+        istanbul: { noCompact: true}
+      },
+      reporters: [
+        // reporters not supporting the `file` property
+        { type: 'html', subdir: 'report-html' },
+        // reporters supporting the `file` property, use `subdir` to directly
+        // output them in the `dir` directory
+        { type: 'cobertura', subdir: '.', file: 'cobertura.txt' }
+      ]
+    },
+
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,

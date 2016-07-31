@@ -1,10 +1,12 @@
 import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
-import lampConfig, * as fromLampConfig from './lampConfig.js';
+import lampConfig, * as fromLampConfig from './lampConfig';
+import discovery from './discovery';
 
 const rootReducer = combineReducers({
   routing: routerReducer,
-  lampConfig
+  lampConfig,
+  discovery
 });
 
 export default rootReducer;
