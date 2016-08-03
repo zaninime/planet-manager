@@ -1,12 +1,16 @@
 @import url("../../styles/base.css");
 @import url("../../styles/queries.css");
 
+body {
+  background-color: #EFEFEF;
+}
+
 .wrapper {
-  overflow-y: scroll;
+  /*overflow-y: scroll;*/
   display: flex;
   margin: 0;
 
-  height: 100vh;
+  height: 100%;
   -webkit-box-orient: horizontal;
   -o-box-orient: horizontal;
 
@@ -15,12 +19,13 @@
   @media (--screen-phone-lg) {
     flex-direction: row;
   }
-
 }
 
 .content {
-  position: relative;
-  top: var(--topbar-height);
+  /*position: relative;*/
+  height: 100%;
+  /*top: var(--topbar-height);*/
+  top: 0;
   left: 0;
 
   flex: 1;
