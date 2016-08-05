@@ -1,15 +1,33 @@
 import React from 'react';
 import { Card, CardHeader } from 'material-ui/Card';
+import Radium from 'radium';
 import Avatar from 'material-ui/Avatar';
+import DiscoveryList from 'containers/connect/DiscoveryList/DiscoveryList';
+import Divider from 'material-ui/Divider';
+import List from 'material-ui/List';
+import ManualConnectionItem from '../ManualConnectionItem/ManualConnectionItem';
 
-import styles from './styles.module.css';
+var styles = {
+  connectCard: {
+    marginBottom: '20px',
+    overflow: 'hidden'
+  }
+};
 
 const ConnectCard = () => {
   return (
-    <Card className={styles.connectCard}>
-			<CardHeader title="Discovered lamps" subtitle="Scanning local network..." avatar={<Avatar>D</Avatar>}/>
-		</Card>
+      <Card style={styles.connectCard}>
+        <CardHeader
+          title="Discovered lamps"
+          subtitle="Scanning local network..."
+          avatar={<Avatar>D</Avatar>} />
+        <List>
+          <DiscoveryList />
+          <Divider inset={true} />
+          <ManualConnectionItem />
+        </List>
+      </Card>
   );
 };
 
-export default ConnectCard;
+export default Radium(ConnectCard);
