@@ -30,3 +30,5 @@ const ids = (state = [], action) => {
 };
 
 export default combineReducers({byId, ids});
+
+export const receiveBeacon = (address, port) => ({type: 'DISCOVERY_BEACON_RECEIVED', address, port, time: new Date()});

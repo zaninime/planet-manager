@@ -1,5 +1,5 @@
 import { createDiscoveryListener } from 'protocol/discovery';
-import { receiveBeacon } from 'actions/discovery';
+import { receiveBeacon } from 'reducers/discovery';
 
 const discoveryListenerCreator = store => (address, port) => {
   store.dispatch(receiveBeacon(address, port));

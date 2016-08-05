@@ -1,4 +1,5 @@
 import { decode } from 'utils/lampId';
+import { ab2str } from './arraybuffer';
 import nativeRequire from 'require';
 import { createIOError, createProtocolError } from './errors';
 import * as ofClock from './data/clock';
@@ -31,9 +32,10 @@ export const fetchGeneric = (address, port, query) => (new Promise((resolve, rej
     state = 1;
   });
   sock.on('data', (data) => {
+    data = ab2str(data);
     switch (state) {  
     case 1:
-      if (/\*HELLO\*/.test(data)) {
+      if (!/\*HELLO\*/.test(data)) {
         reject(createProtocolError('Invalid handshake received'));
       }
       state = 2;
@@ -81,7 +83,7 @@ export const saveGeneric = (address, port, query) => (new Promise((resolve, reje
   sock.on('data', (data) => {
     switch (state) {  
     case 1:
-      if (/\*HELLO\*/.test(data)) {
+      if (!/\*HELLO\*/.test(data)) {
         reject(createProtocolError('Invalid handshake received'));
       }
       state = 2;

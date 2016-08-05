@@ -1,3 +1,5 @@
+import { LOAD_COMPLETED } from './lampConfig';
+
 const colors = ['white', 'red', 'green', 'blue'];
 
 const channel = (state = {color: 'white', enabled: true}, action) => {
@@ -13,11 +15,10 @@ const channel = (state = {color: 'white', enabled: true}, action) => {
   }
 };
 
-const channelMapping = (state = [{color: 'white', enabled: true}, {color: 'white', enabled: true}], action) => {
+const channels = (state = [], action) => {
   switch (action.type) {
-  case 'CONFIG_LOAD':
-      // TODO
-    return [{color: 'green', enabled: false}];
+  case LOAD_COMPLETED:
+    return action.data.channels;
   case 'CONFIG_NEXT_STRIP_COLOR':
   case 'CONFIG_TOGGLE_STRIP_ENABLE':
   case 'CONFIG_TOGGLE_STRIP_DISABLE':
@@ -27,7 +28,7 @@ const channelMapping = (state = [{color: 'white', enabled: true}, {color: 'white
   }
 };
 
-export default channelMapping;
+export default channels;
 
 // selectors
 export const getStripCurrentColor = (state, stripNumber) => (state[stripNumber-1].color);
