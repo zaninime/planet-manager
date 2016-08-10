@@ -1,6 +1,5 @@
 import React from 'react';
-import Card from 'material-ui/card/Card';
-import CardHeader from 'material-ui/card/CardHeader';
+import { Card, CardHeader } from 'material-ui/Card';
 import Avatar from 'material-ui/Avatar';
 
 import styles from './styles.module.css';

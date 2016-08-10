@@ -1,5 +1,5 @@
 import React from 'react';
-import Card from 'material-ui/card/Card';
+import { Card } from 'material-ui/Card';
 import Logo from './res/logo-elos.png';
 import styles from './styles.module.css';
 
