@@ -14,7 +14,9 @@
   "author": "Francesco Zanini, Patrick Predella, Omar Mahili <support@zanini.me>",
   "license": "GPL-3.0",
   "nyc": {
-    "exclude": ["**/*.spec.js"],
+    "exclude": [
+      "**/*.spec.js"
+    ],
     "sourceMap": false,
     "instrument": false
   },
@@ -25,8 +27,9 @@
     "font-awesome": "^4.6.3",
     "material-ui": "^0.15.2",
     "radium": "^0.18.1",
-    "react": "^15.2.1",
-    "react-dom": "^15.2.1",
+    "react": "^15.3.0",
+    "react-addons-test-utils": "^15.3.0",
+    "react-dom": "^15.3.0",
     "react-redux": "^4.4.5",
     "react-router": "^2.6.0",
     "react-router-redux": "^4.0.5",
