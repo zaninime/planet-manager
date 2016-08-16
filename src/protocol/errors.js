@@ -12,6 +12,8 @@ export const createIOError = (cause, ...args) => {
       return new IOError(`Couldn't send data to remote host, error: ${args[0]}`);
     case 'BIND':
       return new IOError(`Couldn't bind socket, error: ${args[0]}`);
+    case 'NATIVE':
+      return new IOError(args[0]);
     default:
       throw 'Invalid cause';
   }

@@ -13,48 +13,37 @@ const isDev = NODE_ENV === 'development';
 const isTest = NODE_ENV === 'test';
 
 // devServer config
-const devHost   = process.env.HOST || 'localhost';
+const devHost   = process.env.HOST || '0.0.0.0';
 const devPort   = process.env.PORT || 3000;
 
 const setPublicPath = process.env.SET_PUBLIC_PATH !== 'false';
-const publicPath  = (isDev && setPublicPath) ? `//${devHost}:${devPort}/` : '';
+//const publicPath  = (isDev && setPublicPath) ? `//${devHost}:${devPort}/` : '';
+const publicPath = '';
 
 const root = resolve(__dirname);
 const src = join(root, 'src');
 const modules = join(root, 'node_modules');
-const dest = join(root, 'dist', 'chrome');
+const dest = join(root, 'dist', 'android');
 //const css = join(src, 'styles');
-const fs = require('fs');
-
-// load files for Chrome app
-const files = {};
-
-fs.readFile(join(root, 'chrome', 'prod', 'background.js'), 'utf8', function(err, contents) {
-  if (err !== null) throw err;
-  files['background.js'] = contents;
-});
-
-fs.readFile(join(root, 'chrome', 'prod', 'manifest.json'), 'utf8', function(err, contents) {
-  if (err !== null) throw err;
-  files['manifest.json'] = contents;
-});
 
 var config = getConfig({
   isDev: isDev,
   in: join(src, 'app.js'),
   out: dest,
   html: function (context) {
-    return Object.assign({}, {
+    return {
       'index.html': context.defaultTemplate({
         title: 'planet-manager',
         publicPath,
         meta: {}
       })
-    }, files);
+    };
   }
 });
 
-config.resolve.extensions.push(".desktop.js", ".coffee");
+config.output.publicPath = '';
+
+config.resolve.extensions.push(".android.js", ".coffee");
 
 // ENV variables
 const dotEnvVars = dotenv.config();
