@@ -9,9 +9,9 @@ const styles = {
   }
 };
 
-const LoadingDialog = () => {
+const LoadingDialog = (props) => {
   return (
-    <Dialog title="Talking with your lamp..." open={this.props.dialogOpen}>
+    <Dialog title="Talking with your lamp..." open={props.dialogOpen}>
       <div style={styles.progressbarContainer}>
         <LinearProgress mode="indeterminate" />
       </div>

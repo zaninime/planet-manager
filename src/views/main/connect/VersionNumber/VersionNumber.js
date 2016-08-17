@@ -1,6 +1,6 @@
 import React from 'react';
 import Radium from 'radium';
-import { version } from 'version.js';
+import { version } from '../../../../../version.json';
 
 const styles = {
   version: {
