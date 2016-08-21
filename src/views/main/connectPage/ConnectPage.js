@@ -5,8 +5,10 @@ import ConnectCard from '../connect/ConnectCard/ConnectCard';
 // import NfcCard from '../connect/NfcCard/NfcCard';
 import VersionNumber from '../connect/VersionNumber/VersionNumber';
 
+import {Link} from 'react-router';
+
 var styles = {
-  connectCard: {
+  cards: {
     maxWidth: '700px',
     margin: '20px auto 20px auto',
 
@@ -22,11 +24,12 @@ const ConnectView = () => {
   return (
     <div>
       <Header />
-      <StyleRoot style={styles.connectCard}>
+      <StyleRoot style={styles.cards}>
         <ConnectCard />
         {/* <NfcCard /> */}
       </StyleRoot>
       <VersionNumber />
+      <Link to="config">Test Config</Link>
     </div>
   );
 };

@@ -2,6 +2,23 @@
 import React, { PropTypes as T } from 'react';
 import { Router } from 'react-router';
 import { Provider } from 'react-redux';
+import Radium, { Style } from 'radium';
+
+const styles = {
+  'body': {
+    fontWeight: 'lighter',
+    fontFamily: 'Roboto, sans-serif',
+    fontSmoothing: 'antialiased',
+    padding: '0',
+    margin: '0',
+    color: '#404040',
+    backgroundColor: '#EFEFEF',
+    WebkitFontSmoothing: 'antialiased',
+    MozOsxFontSmoothing: 'grayscale',
+    FontSmoothing: 'antialiased',
+    TextRendering: 'optimizeLegibility'
+  }
+};
 
 class App extends React.Component {
   static contextTypes = {
@@ -49,11 +66,12 @@ class App extends React.Component {
   render () {
     return (
        <Provider store={this.props.store}>
-         <div style={{ height: '100%' }}>
+         <div>
+           <Style rules={{ body:  styles.body }} />
            {this.content}
            {this.devTools}
          </div>
-        </Provider>
+       </Provider>
      );
   }
 }
@@ -62,4 +80,4 @@ App.propTypes = {
   store: T.object.isRequired
 };
 
-export default App;
+export default Radium(App);
