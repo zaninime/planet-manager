@@ -2,7 +2,7 @@ import React from 'react';
 import Radium, { StyleRoot } from 'radium';
 import Header from '../connect/Header/Header';
 import ConnectCard from '../connect/ConnectCard/ConnectCard';
-import NfcCard from '../connect/NfcCard/NfcCard';
+// import NfcCard from '../connect/NfcCard/NfcCard';
 import VersionNumber from '../connect/VersionNumber/VersionNumber';
 
 var styles = {
@@ -24,7 +24,7 @@ const ConnectView = () => {
       <Header />
       <StyleRoot style={styles.connectCard}>
         <ConnectCard />
-        <NfcCard />
+        {/* <NfcCard /> */}
       </StyleRoot>
       <VersionNumber />
     </div>

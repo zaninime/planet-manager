@@ -12,6 +12,7 @@ import {hashHistory} from 'react-router';
 //import makeRoutes from './routes';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
 // Needed for onTouchTap
@@ -25,13 +26,23 @@ const {store, history} = configureStore({initialState, historyType: hashHistory}
 import platformInit from './init';
 platformInit(store);
 
+import { blue500, blue800, orangeA400 } from 'material-ui/styles/colors';
+
+const muiTheme = getMuiTheme({
+  palette: {
+    primary1Color: blue500,
+    primary2Color: blue800,
+    accent1Color: orangeA400,
+  },
+});
+
 let render = (routerKey = null) => {
   const makeRoutes = require('./routes').default;
   const routes = makeRoutes(store);
 
   const mountNode = document.querySelector('#root');
   ReactDOM.render(
-    <MuiThemeProvider>
+    <MuiThemeProvider muiTheme={muiTheme}>
       <App history={history}
             store={store}
             routes={routes}
