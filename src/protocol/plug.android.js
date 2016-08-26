@@ -30,10 +30,10 @@ export const fetchGeneric = (address, port, query) => (new Promise((resolve, rej
     }
     const err = info.error;
     switch (err.name) {
-      case 'eu.elos.planetmgr.app.wifi.socket.InvalidHandshakeException':
-        return reject(createProtocolError('Invalid handshake received'));
-      default:
-        return reject(createIOError('NATIVE', err.message));
+    case 'eu.elos.planetmgr.app.wifi.socket.InvalidHandshakeException':
+      return reject(createProtocolError('Invalid handshake received'));
+    default:
+      return reject(createIOError('NATIVE', err.message));
     }
   })));
   if (res.result !== 'ok') {
@@ -53,10 +53,10 @@ export const saveGeneric = (address, port, query) => (new Promise((resolve, reje
     }
     const err = info.error;
     switch (err.name) {
-      case 'eu.elos.planetmgr.app.wifi.socket.InvalidHandshakeException':
-        return reject(createProtocolError('Invalid handshake received'));
-      default:
-        return reject(createIOError('NATIVE', err.message));
+    case 'eu.elos.planetmgr.app.wifi.socket.InvalidHandshakeException':
+      return reject(createProtocolError('Invalid handshake received'));
+    default:
+      return reject(createIOError('NATIVE', err.message));
     }
   })));
   if (res.result !== 'ok') {

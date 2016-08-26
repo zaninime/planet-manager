@@ -68,26 +68,26 @@ const tcp = {
     cb(0, data.length);
     data = ab2str(data).slice(1, -1);
     switch (false) {
-      case !/^PLANETSETPARAM01/.test(data):
-      case !/^PLANETSETSTATUS01/.test(data):
-      case !/^SETCOUNTER/.test(data):
+    case !/^PLANETSETPARAM01/.test(data):
+    case !/^PLANETSETSTATUS01/.test(data):
+    case !/^SETCOUNTER/.test(data):
         // set commands, do not respond
-        break;
-      case !/^PLANETGETPARAM01$/.test(data):
-        tcp.onReceive.emit({socketId, data: str2ab('00200830000000001000100850000000002000200830000000001000000915000000003011442332441103002003008008040150800800500000\r\n')});
-        break;
-      case !/^PLANETGETSTATUS01$/.test(data):
-        tcp.onReceive.emit({socketId, data: str2ab('01600000000001500023710000000114\r\n')});
-        break;
-      case !/^GETCOUNTER$/.test(data): {
-        const date = new Date();
-        date.setSeconds(Math.random() * 240 - 120);
-        const update = ofClock.buildUpdate(date).slice(4, -1);
-        tcp.onReceive.emit({socketId, data: str2ab(`PLANET${update}\r\n`)});
-        break;
-      }
-      default:
-        throw `Watch your ass baby! You just sent out an unrecognized command: '${data}'`;
+      break;
+    case !/^PLANETGETPARAM01$/.test(data):
+      tcp.onReceive.emit({socketId, data: str2ab('00200830000000001000100850000000002000200830000000001000000915000000003011442332441103002003008008040150800800500000\r\n')});
+      break;
+    case !/^PLANETGETSTATUS01$/.test(data):
+      tcp.onReceive.emit({socketId, data: str2ab('01600000000001500023710000000114\r\n')});
+      break;
+    case !/^GETCOUNTER$/.test(data): {
+      const date = new Date();
+      date.setSeconds(Math.random() * 240 - 120);
+      const update = ofClock.buildUpdate(date).slice(4, -1);
+      tcp.onReceive.emit({socketId, data: str2ab(`PLANET${update}\r\n`)});
+      break;
+    }
+    default:
+      throw `Watch your ass baby! You just sent out an unrecognized command: '${data}'`;
     }
   },
 

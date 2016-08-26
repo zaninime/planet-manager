@@ -10,7 +10,7 @@ const mapStateToProps = ({discovery}) => {
       const lamp = byId[id];
       const twentySeconds = 20 * 1000; // ms
 
-      if(lamp !== undefined && (new Date() - lamp.lastSeen) < twentySeconds)
+      if (lamp !== undefined && (new Date() - lamp.lastSeen) < twentySeconds)
         return lamp;
     })
   };

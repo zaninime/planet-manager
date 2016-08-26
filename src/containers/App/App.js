@@ -47,7 +47,7 @@ class App extends React.Component {
   }
 
   render () {
-     return (
+    return (
        <Provider store={this.props.store}>
          <div style={{ height: '100%' }}>
            {this.content}
@@ -55,7 +55,7 @@ class App extends React.Component {
          </div>
         </Provider>
      );
-   }
+  }
 }
 
 App.propTypes = {

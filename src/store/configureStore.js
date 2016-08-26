@@ -12,47 +12,47 @@ const configureStore = ({
   historyType = browserHistory,
   userInitialState = {}}) => {
 
-    let middleware = [
+  let middleware = [
       // createApiMiddleware({
       //   baseUrl: __ROOT_URL__,
       //   headers: {
       //     'X-Requested-By': 'planet-manager client'
       //   }
       // }),
-      thunk,
-      routerMiddleware(historyType)
-    ];
+    thunk,
+    routerMiddleware(historyType)
+  ];
 
-    let tools = [];
-    if (__DEBUG__) {
-      const DevTools = require('containers/DevTools/DevTools').default;
-      let devTools = window.devToolsExtension ? window.devToolsExtension : DevTools.instrument;
-      if (typeof devTools === 'function') {
-        tools.push(devTools());
-      }
+  let tools = [];
+  if (__DEBUG__) {
+    const DevTools = require('containers/DevTools/DevTools').default;
+    let devTools = window.devToolsExtension ? window.devToolsExtension : DevTools.instrument;
+    if (typeof devTools === 'function') {
+      tools.push(devTools());
     }
+  }
 
-    let finalCreateStore;
-    finalCreateStore = compose(
+  let finalCreateStore;
+  finalCreateStore = compose(
       applyMiddleware(...middleware),
       ...tools
     )(createStore);
 
-    const store = finalCreateStore(rootReducer, {...userInitialState});
+  const store = finalCreateStore(rootReducer, {...userInitialState});
 
-    const history = syncHistoryWithStore(historyType, store, {
-      adjustUrlOnReplay: true
+  const history = syncHistoryWithStore(historyType, store, {
+    adjustUrlOnReplay: true
+  });
+
+  if (module.hot) {
+    module.hot.accept('../reducers', () => {
+      const rootReducer = require('../reducers');
+      store.replaceReducer(rootReducer);
     });
-
-    if (module.hot) {
-      module.hot.accept('../reducers', () => {
-        const rootReducer = require('../reducers');
-        store.replaceReducer(rootReducer);
-      });
-    }
+  }
 
     //const boundActions = bindActionCreatorsToStore(actions, store);
-    return {store, history};
+  return {store, history};
 };
 
 export default configureStore;

@@ -39,19 +39,19 @@ const parseDayColor = (color, timingStr, intensityStr) => {
 };
 
 const parseChannels = (str) => str.split('').map((e) => {
-  switch(e) {
-    case '0':
-      return 'off';
-    case '1':
-      return 'white';
-    case '2':
-      return 'red';
-    case '3':
-      return 'green';
-    case '4':
-      return 'blue';
-    default:
-      throw createProtocolError('Invalid channel mapping configuration');
+  switch (e) {
+  case '0':
+    return 'off';
+  case '1':
+    return 'white';
+  case '2':
+    return 'red';
+  case '3':
+    return 'green';
+  case '4':
+    return 'blue';
+  default:
+    throw createProtocolError('Invalid channel mapping configuration');
   }
 });
 
@@ -82,21 +82,21 @@ const parseNight = (str) => {
   if (m === null) throw createProtocolError('Invalid night configuration format');
   let color;
   switch (m[1]) {
-    case '0':
-    case '4':
-      color = 'blue';
-      break;
-    case '1':
-      color = 'white';
-      break;
-    case '2':
-      color = 'red';
-      break;
-    case '3':
-      color = 'green';
-      break;
-    default:
-      throw createProtocolError('Invalid night color');
+  case '0':
+  case '4':
+    color = 'blue';
+    break;
+  case '1':
+    color = 'white';
+    break;
+  case '2':
+    color = 'red';
+    break;
+  case '3':
+    color = 'green';
+    break;
+  default:
+    throw createProtocolError('Invalid night color');
   }
   return {
     color,
@@ -106,12 +106,12 @@ const parseNight = (str) => {
 
 const parseMode = (str) => {
   switch (str) {
-    case '0':
-      return 'slave';
-    case '1':
-      return 'master';
-    default:
-      throw createProtocolError('Invalid mode configuration format');
+  case '0':
+    return 'slave';
+  case '1':
+    return 'master';
+  default:
+    throw createProtocolError('Invalid mode configuration format');
   }
 };
 

@@ -6,14 +6,14 @@ const modulo = (a, b) => { return (+a % (b = +b) + b) % b; };
 export class AddressFormatError extends EError {
   constructor(type, ...args) {
     switch (type) {
-      case 0:
-        super(`Invalid IPv4 address: ${args[0]}`);
-        break;
-      case 1:
-        super(`Invalid TCP port number: ${args[0]}`);
-        break;
-      default:
-        super('No cause given');
+    case 0:
+      super(`Invalid IPv4 address: ${args[0]}`);
+      break;
+    case 1:
+      super(`Invalid TCP port number: ${args[0]}`);
+      break;
+    default:
+      super('No cause given');
     }
   }
 }

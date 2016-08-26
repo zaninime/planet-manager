@@ -37,21 +37,21 @@ const fetchGeneric = (address, port, query) => (new Promise((resolve, reject) =>
     let state = 0;
     return (data) => {
       switch (state) {
-        case 0:
-          if (/\*HELLO\*/.test(data)) {
-            chrome.sockets.tcp.send(socketId, str2ab(query), (sendInfo) => {
-              state = 1;
-              sendCatch(socketId, sendInfo, reject);
-            });
-          } else {
-            reject(createProtocolError('Invalid handshake received'));
-          }
-          break;
-        case 1:
-          state = 2;
-          onReceiveEmitter.removeAllListeners(socketId);
-          chrome.sockets.tcp.close(socketId, () => resolve(data));
-          break;
+      case 0:
+        if (/\*HELLO\*/.test(data)) {
+          chrome.sockets.tcp.send(socketId, str2ab(query), (sendInfo) => {
+            state = 1;
+            sendCatch(socketId, sendInfo, reject);
+          });
+        } else {
+          reject(createProtocolError('Invalid handshake received'));
+        }
+        break;
+      case 1:
+        state = 2;
+        onReceiveEmitter.removeAllListeners(socketId);
+        chrome.sockets.tcp.close(socketId, () => resolve(data));
+        break;
       }
     };
   };
@@ -69,18 +69,18 @@ const saveGeneric = (address, port, query) => (new Promise((resolve, reject) => 
     let state = 0;
     return (data) => {
       switch (state) {
-        case 0:
-          if (/\*HELLO\*/.test(data)) {
-            chrome.sockets.tcp.send(socketId, str2ab(query), (sendInfo) => {
-              state = 1;
-              sendCatch(socketId, sendInfo, reject);
-              onReceiveEmitter.removeAllListeners(socketId);
-              chrome.sockets.tcp.close(socketId, () => resolve());
-            });
-          } else {
-            reject(createProtocolError('Invalid handshake received'));
-          }
-          break;
+      case 0:
+        if (/\*HELLO\*/.test(data)) {
+          chrome.sockets.tcp.send(socketId, str2ab(query), (sendInfo) => {
+            state = 1;
+            sendCatch(socketId, sendInfo, reject);
+            onReceiveEmitter.removeAllListeners(socketId);
+            chrome.sockets.tcp.close(socketId, () => resolve());
+          });
+        } else {
+          reject(createProtocolError('Invalid handshake received'));
+        }
+        break;
       }
     };
   };

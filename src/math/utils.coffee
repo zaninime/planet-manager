@@ -30,12 +30,12 @@ rgb2hsv = (r, g, b) ->
       else if v is r
         (g - b) / x
       else if v is g
-      	(b - r) / x + 2
+        (b - r) / x + 2
       else
-      	(r - g) / x + 4
+        (r - g) / x + 4
     ) %% 6 / 3 * Math.PI
     if v is 0
-    	0
+      0
     else
        x / v
     v
@@ -45,9 +45,9 @@ rgb2hsv = (r, g, b) ->
 isInt = (value) -> not isNaN(value) and ((x) -> (x | 0) == x;)(parseFloat(value))
 
 pad = (n, width, z) ->
-	z = z || '0'
-	n = n + ''
-	if n.length >= width then n else new Array(width - n.length + 1).join(z) + n;
+  z = z || '0'
+  n = n + ''
+  if n.length >= width then n else new Array(width - n.length + 1).join(z) + n;
 
 
 getMsSinceMidnight = (d) ->
@@ -56,9 +56,9 @@ getMsSinceMidnight = (d) ->
 
 
 module.exports = {
-	hsv2rgb
-	rgb2hsv
-	isInt
-	pad
+  hsv2rgb
+  rgb2hsv
+  isInt
+  pad
   getMsSinceMidnight
 }

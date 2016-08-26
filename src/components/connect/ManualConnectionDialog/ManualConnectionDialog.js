@@ -57,10 +57,10 @@ class ManualConnectionDialog extends Component {
     let hostErrorText = this.state.hostErrorText;
     let portErrorText = this.state.portErrorText;
 
-    if(this.state.hostValue === '')
+    if (this.state.hostValue === '')
       hostErrorText = 'Cannot be empty';
 
-    if(this.state.portValue === '')
+    if (this.state.portValue === '')
       portErrorText = 'Cannot be empty';
 
     this.setState({ hostErrorText, portErrorText });
@@ -75,7 +75,7 @@ class ManualConnectionDialog extends Component {
     const value = e.target.value;
     let errorText = '';
 
-    if(value !== ''){
+    if (value !== ''){
       if (isNaN(value))
         errorText = 'Must be a number';
       else if (value < 1 || value > 65535)
