@@ -13,7 +13,7 @@ const isDev = NODE_ENV === 'development';
 const isTest = NODE_ENV === 'test';
 
 // devServer config
-const devHost   = process.env.HOST || 'localhost';
+const devHost   = process.env.HOST || '0.0.0.0';
 const devPort   = process.env.PORT || 3000;
 
 const setPublicPath = process.env.SET_PUBLIC_PATH !== 'false';

@@ -13,7 +13,7 @@ import { setMessage } from './connectError';
 // import EError from 'utils/error';
 // import { IncompatibleConfigError } from 'protocol/photon/collector';
 import { collect } from 'protocol/photon/collector';
-import { fetchConfig, fetchStatus } from 'protocol/plug';
+import { fetchConfig, fetchStatus } from 'protocol/api';
 
 export const LOAD_COMPLETED = 'lampConfig/LOAD_COMPLETED';
 export const LOAD_START = 'lampConfig/LOAD_START';

@@ -1,0 +1,10 @@
+Control your ELOS Planet lamp. Choose your preferred daily theme and customize the sunset and night colors. With the brand-new interface you can access all the function in a more organized and simplified way.
+
+The app is compatible with all the lamps from the series "ELOS Planet". Be sure to connect your ELOS WiFish first, as the connections take place over Wi-Fi!
+
+Supported models:
+ - PlanetPRO
+ - PlanetCompact
+ - PlanetStella
+
+Note: some old firmwares loaded on pre-2016 lamps contain a bug related to the timings setup. The app automatically tries to mitigate it, but unfortunately the process isn't reliable on every old model.

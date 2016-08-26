@@ -1,0 +1,1 @@
+elos,planet,manager,planet manager,aquaria,aquarium,led,lamp,light,control,manage,controller,wifish

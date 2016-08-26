@@ -14,16 +14,16 @@ const isTest = NODE_ENV === 'test';
 
 // devServer config
 const devHost   = process.env.HOST || '0.0.0.0';
-const devPort   = process.env.PORT || 3001;
+const devPort   = process.env.PORT || 3002;
 
-//const setPublicPath = process.env.SET_PUBLIC_PATH !== 'false';
+const setPublicPath = process.env.SET_PUBLIC_PATH !== 'false';
 //const publicPath  = (isDev && setPublicPath) ? `//${devHost}:${devPort}/` : '';
 const publicPath = '';
 
 const root = resolve(__dirname);
 const src = join(root, 'src');
 const modules = join(root, 'node_modules');
-const dest = join(root, 'dist', 'android');
+const dest = join(root, 'dist', 'ios');
 //const css = join(src, 'styles');
 
 var config = getConfig({
@@ -43,7 +43,7 @@ var config = getConfig({
 
 config.output.publicPath = '';
 
-config.resolve.extensions.push(".android.js", ".coffee");
+config.resolve.extensions.push(".ios.js", ".coffee");
 
 // ENV variables
 const environmentEnv = dotenv.config({

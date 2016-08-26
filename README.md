@@ -14,7 +14,7 @@ Development is done using [Electron](http://electron.atom.io/) directly. Please 
 To run the development version, spawn two terminals and in the first type:
 
 ```
-$ npm run start
+$ gulp electron:dev
 ```
 
 while in the second:
@@ -41,15 +41,26 @@ Recompile:
 $ gradle assembleDebug
 ```
 
-Install to your emulator or device and start the Webpack dev. server:
+Install to your emulator or device and start the Webpack development server:
 
 ```
-$ npm run start-android
+$ gulp android:dev
 ```
 
+### Development for iOS
+You need to be on a Mac with Xcode 7. Instructions of what to edit in order to use the dev server are coming soon.
 
-## Technologies involved
-TODO
+Recompile (you need [Fastlane Tools](https://fastlane.tools/)):
+```
+$ gym
+```
+
+Install to your emulator or device and start the Webpack development server:
+
+```
+$ gulp ios:dev
+```
+
 
 ## Interface with the lamp
 The lamp speaks a proprietary, inefficient and badly designed protocol that requires a TCP connection. Furthermore, there's an unofficial and unadvertised discovery protocol using UDP broadcast messages. The sockets are created differently based on the target class, mobile or Chrome.

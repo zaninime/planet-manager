@@ -1,0 +1,7 @@
+app_identifier "eu.elos.planetmgr.app" # The bundle identifier of your app
+apple_id "elos.development@gmail.com" # Your Apple email address
+
+team_id "TJ6PBKF28P"  # Developer Portal Team ID
+
+# you can even provide different app identifiers, Apple IDs and team names per lane:
+# More information: https://github.com/fastlane/fastlane/blob/master/fastlane/docs/Appfile.md

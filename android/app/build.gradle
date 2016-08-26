@@ -4,7 +4,7 @@ import groovy.json.JsonSlurper
 
 def version() {
     def jsonSlurper = new JsonSlurper()
-    return jsonSlurper.parse(new File('../version.json'))
+    return jsonSlurper.parse(new File('../package.json'))
 }
 
 android {
