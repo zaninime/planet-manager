@@ -29,7 +29,7 @@ const styles = {
 };
 
 class ManualConnectionDialog extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.handleRequestClose = this.handleRequestClose.bind(this);
     this.handleConnectTouchTap = this.handleConnectTouchTap.bind(this);
@@ -39,7 +39,7 @@ class ManualConnectionDialog extends Component {
     this.state = this.getEmptyInputsState();
   }
 
-  getEmptyInputsState(){
+  getEmptyInputsState() {
     return {
       portValue: '',
       portErrorText: '',
@@ -48,12 +48,12 @@ class ManualConnectionDialog extends Component {
     };
   }
 
-  handleRequestClose(){
+  handleRequestClose() {
     this.props.onRequestClose();
     this.setState(this.getEmptyInputsState);
   }
 
-  handleConnectTouchTap(){
+  handleConnectTouchTap() {
     let hostErrorText = this.state.hostErrorText;
     let portErrorText = this.state.portErrorText;
 
@@ -66,7 +66,7 @@ class ManualConnectionDialog extends Component {
     this.setState({ hostErrorText, portErrorText });
   }
 
-  handleHostChange(e){
+  handleHostChange(e) {
     // set value
     this.setState({ hostValue: e.target.value, hostErrorText: '' });
   }
@@ -75,7 +75,7 @@ class ManualConnectionDialog extends Component {
     const value = e.target.value;
     let errorText = '';
 
-    if (value !== ''){
+    if (value !== '') {
       if (isNaN(value))
         errorText = 'Must be a number';
       else if (value < 1 || value > 65535)

@@ -52,12 +52,12 @@ class DaySlider extends Component {
     styles.intensitySlider.borderRadius = this.intensityRadius;
   }
 
-  handleColorChange(value){
+  handleColorChange(value) {
     const color = this.gr.getColor(value * 100);
     this.setState({ secondColor: 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')' });
   }
 
-  handleIntensityChange(){ }
+  handleIntensityChange() { }
 
   render() {
     return (

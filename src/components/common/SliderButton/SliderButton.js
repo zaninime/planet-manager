@@ -47,7 +47,7 @@ class SliderButton extends Component {
     this.styles.sliderButton.borderRadius = this.buttonRadius;
   }
 
-  componentWillMount(){
+  componentWillMount() {
     this.setValue(this.value);
   }
 
@@ -57,7 +57,7 @@ class SliderButton extends Component {
     if (this.bb === null && e.target.id === "sliderButtonContainer")
       this.bb = e.target.getBoundingClientRect();
 
-    if (this.bb !== null){
+    if (this.bb !== null) {
       const position = {
         x: Math.max(0, e.center.x - this.bb.left),
         y: Math.max(0, e.center.y - this.bb.top),
@@ -70,7 +70,7 @@ class SliderButton extends Component {
     }
   }
 
-  setValue(value){
+  setValue(value) {
     let v = value * 270 + 225;
     if (value <= 0.5)
       v = value * 270 - 135;
@@ -78,13 +78,13 @@ class SliderButton extends Component {
     this.setDegrees(v);
   }
 
-  setDegrees(deg){
+  setDegrees(deg) {
     if (deg < 225 && deg > 225 - this.buttonRadius)
       deg = 225;
     else if (deg > 135 && deg <= 180 - this.buttonRadius)
       deg = 135;
 
-    if (deg >= 225 || deg <= 135){
+    if (deg >= 225 || deg <= 135) {
       const X = Math.round((this.radius - this.buttonRadius) * Math.sin(deg * Math.PI / 180));
       const Y = Math.round((this.radius - this.buttonRadius) * -Math.cos(deg * Math.PI / 180));
 
@@ -99,7 +99,7 @@ class SliderButton extends Component {
 
       value = (value / 270).toFixed(2);
 
-      if (value != this.state.value){
+      if (value != this.state.value) {
         this.setState({ 'value': value, 'sliderButtonPosition': sliderButtonPosition });
 
         if (this.props.onChange !== undefined)

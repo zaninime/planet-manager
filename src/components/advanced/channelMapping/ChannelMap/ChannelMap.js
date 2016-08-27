@@ -20,8 +20,8 @@ const styles = {
 const ChannelMap = ({channels}) => {
   const leftStrips = [], rightStrips = [];
 
-  for (let i = 1; i <= channels; i++){
-    if (i%2 !== 0){
+  for (let i = 1; i <= channels; i++) {
+    if (i%2 !== 0) {
       leftStrips.push(
         <BoundChannelColor key={i} stripNumber={i} reverse={true}/>
       );

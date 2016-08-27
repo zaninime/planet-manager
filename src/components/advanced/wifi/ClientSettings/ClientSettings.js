@@ -18,7 +18,7 @@ const styles = {
 };
 
 class ClientSettings extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.handleModeChange = this.handleModeChange.bind(this);
     this.handleFieldChange = this.handleFieldChange.bind(this);
@@ -35,11 +35,11 @@ class ClientSettings extends Component {
     };
   }
 
-  handleModeChange(e, value){
+  handleModeChange(e, value) {
     this.setState({ selectedMode: value });
   }
 
-  handleFieldChange(e, field){
+  handleFieldChange(e, field) {
     const value = e.target.value;
 
     let newState = { };
@@ -56,7 +56,7 @@ class ClientSettings extends Component {
     const value = e.target.value;
     let errorText = '';
 
-    if (value !== ''){
+    if (value !== '') {
       if (isNaN(value))
         errorText = 'Must be a number';
       else if (value < 1 || value > 65535)
@@ -69,7 +69,7 @@ class ClientSettings extends Component {
   render() {
     let passwordPortContainer = null;
 
-    if (this.state.selectedMode === 'client'){
+    if (this.state.selectedMode === 'client') {
       passwordPortContainer = (
         <div>
           <p>Password</p>

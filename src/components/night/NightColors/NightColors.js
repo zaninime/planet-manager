@@ -22,16 +22,16 @@ const styles = {
 };
 
 class NightColors extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.handleOnClick = this.handleOnClick.bind(this);
 
     this.state = { selected: 'white', ...this.enableButton('white')};
   }
 
-  enableButton(color){
+  enableButton(color) {
     let newState = { };
-    for (var i = 0; i < colors.length; i++){
+    for (var i = 0; i < colors.length; i++) {
       let property = colors[i] === color ? 'Background' : 'Disabled';
       newState[`${colors[i]}Background`] = colorProperties[colors[i] + property];
     }
@@ -39,13 +39,13 @@ class NightColors extends Component {
     return newState;
   }
 
-  handleOnClick(e, color){
+  handleOnClick(e, color) {
     e.stopPropagation();
 
     this.setState({ selected: color, ...this.enableButton(color) });
   }
 
-  render(){
+  render() {
     const buttons = colors.map( color => {
       const labelColor = colorProperties[color + 'LabelColor'];
 

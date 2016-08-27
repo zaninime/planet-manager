@@ -19,7 +19,7 @@ const styles = {
 };
 
 class DhcpSettings extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.handleOnToggle = this.handleOnToggle.bind(this);
     this.handleFieldChange = this.handleFieldChange.bind(this);
@@ -36,23 +36,23 @@ class DhcpSettings extends Component {
     };
   }
 
-  handleOnToggle(){
+  handleOnToggle() {
     this.setState({ toggled: !this.state.toggled });
   }
 
-  handleFieldChange(e, field){
+  handleFieldChange(e, field) {
     let newState = { };
     newState[`${field}Value`] = e.target.value;
     this.setState(newState);
   }
 
-  handleFieldBlur(field){
+  handleFieldBlur(field) {
     const addressValue = this.state.addressValue;
     const netmaskValue = this.state.netmaskValue;
     const gatewayValue = this.state.gatewayValue;
 
     let valid = true;
-    if (this.state[`${field}Value`] !== ''){
+    if (this.state[`${field}Value`] !== '') {
       if (field === 'address')
         valid = this.validateAddress(addressValue);
       else if (field === 'netmask')
@@ -121,10 +121,10 @@ class DhcpSettings extends Component {
     return match != null && result.contains(gatewayValue);
   }
 
-  render(){
+  render() {
     let fieldsContainer = null;
 
-    if (!this.state.toggled){
+    if (!this.state.toggled) {
       fieldsContainer = (
         <div style={styles.fieldsContainer}>
           <p>Address</p>

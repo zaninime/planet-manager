@@ -3,8 +3,8 @@ import { ListItem } from 'material-ui/List';
 import Avatar from 'material-ui/Avatar';
 import ManualConnectionDialog from 'components/connect/ManualConnectionDialog/ManualConnectionDialog';
 
-class ManualConnectionItem extends Component{
-  constructor(props){
+class ManualConnectionItem extends Component {
+  constructor(props) {
     super(props);
     this.handleOnClick = this.handleOnClick.bind(this);
     this.handleRequestClose = this.handleRequestClose.bind(this);
@@ -12,7 +12,7 @@ class ManualConnectionItem extends Component{
     this.state = { dialogOpen: false };
   }
 
-  handleOnClick(){
+  handleOnClick() {
     this.setState({ dialogOpen: true });
   }
 

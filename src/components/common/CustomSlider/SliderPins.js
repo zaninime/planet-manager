@@ -36,7 +36,7 @@ const SliderPins = ({style, min = 0, max = 100, interval = 10, unit = ''}) => {
   styles.pinContainer.width =  100 / (max - min) + '%';
   const pins = [];
 
-  for (let n = min; n <= max; n++){
+  for (let n = min; n <= max; n++) {
     let containerStyle = styles.pinContainer;
     let pinStyle = styles.largePin;
     let child = (
@@ -45,7 +45,7 @@ const SliderPins = ({style, min = 0, max = 100, interval = 10, unit = ''}) => {
       </div>
     );
 
-    if (n === max){
+    if (n === max) {
       containerStyle = styles.lastPinContainer;
     }
     else if (n % interval !== 0) {

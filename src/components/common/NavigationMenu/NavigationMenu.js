@@ -40,13 +40,13 @@ const styles = {
 };
 
 class NavigationMenu extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
 
     this.state = { selectedIndex: 0 };
   }
 
-  select(index){
+  select(index) {
     this.setState({ selectedIndex: index });
   }
 

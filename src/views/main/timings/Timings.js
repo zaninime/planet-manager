@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Timer from 'components/timings/Timer/Timer';
 
 class Timers extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.handleSunriseChange = this.handleSunriseChange.bind(this);
     this.handleSunsetChange = this.handleSunsetChange.bind(this);
@@ -20,8 +20,8 @@ class Timers extends Component {
     this.checkValues(this.state.sunriseValue, value);
   }
 
-  checkValues(sunriseValue, sunsetValue){
-    if (sunsetValue !== null && sunriseValue !== null){
+  checkValues(sunriseValue, sunsetValue) {
+    if (sunsetValue !== null && sunriseValue !== null) {
       const sunriseMin = sunriseValue.getHours() * 60 + sunriseValue.getMinutes();
       const sunsetMin = sunsetValue.getHours() * 60 + sunsetValue.getMinutes();
 

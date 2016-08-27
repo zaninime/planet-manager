@@ -77,7 +77,7 @@ class TwilightSlider extends Component {
     styles.slider.borderRadius = this.radius;
   }
 
-  setIconsOpacity(value){
+  setIconsOpacity(value) {
     let newState = { };
 
     if (value <= 0.33)
@@ -90,7 +90,7 @@ class TwilightSlider extends Component {
     this.setState({ ...newState, sunOpacity: Math.max(value, 0.25) });
   }
 
-  handleOnChange(value){
+  handleOnChange(value) {
     this.setIconsOpacity(value);
   }
 

@@ -3,11 +3,11 @@ import Section from 'views/main/common/Section/Section';
 import TwilightSlider from 'components/twilight/TwilightSlider/TwilightSlider';
 
 class TwilightPage extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
   }
 
-  render(){
+  render() {
     return (
       <Section title="Twilight">
         <TwilightSlider/>

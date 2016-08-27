@@ -4,11 +4,11 @@ import DaySlider from 'components/day/DaySlider/DaySlider';
 import Timers from 'views/main/timings/Timings';
 
 class DayPage extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
   }
 
-  render(){
+  render() {
     return (
       <div>
         <Section title="Day">

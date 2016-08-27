@@ -11,18 +11,18 @@ var styles = {
 };
 
 class DiscoveryList extends Component {
-  constructor(props){
+  constructor(props) {
     super(props);
     this.handleOnClick = this.handleOnClick.bind(this);
 
     this.state = { dialogOpen: false };
   }
 
-  handleOnClick(){
+  handleOnClick() {
     this.setState({ dialogOpen: true });
   }
 
-  render(){
+  render() {
     const { lamps } = this.props;
     const self = this;
 

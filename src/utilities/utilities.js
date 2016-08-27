@@ -1,5 +1,5 @@
 export class GradientReader {
-  constructor(colorStops){
+  constructor(colorStops) {
     const canvas = document.createElement('canvas');
     this.context = canvas.getContext('2d');
     const gr = this.context.createLinearGradient(0, 0, 101, 0);
@@ -7,7 +7,7 @@ export class GradientReader {
     canvas.width = 101;
     canvas.height = 1;
 
-    for (let i = 0; i < colorStops.length; i++){
+    for (let i = 0; i < colorStops.length; i++) {
       const cs = colorStops[i];
       gr.addColorStop(cs.stop, cs.color);
     }

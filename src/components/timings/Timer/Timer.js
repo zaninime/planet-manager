@@ -53,7 +53,7 @@ const Timer = ({type, value, onChange, errorText = ''}) => {
   styles.imageContainer.order = '1';
   styles.timepickerContainer.order = '2';
 
-  if (type === 'sunset'){
+  if (type === 'sunset') {
     img = sunsetImg;
     subtitle = 'off';
     styles.imageContainer.order = '2';
@@ -62,7 +62,7 @@ const Timer = ({type, value, onChange, errorText = ''}) => {
 
   let errorContainer = null;
 
-  if (type === 'sunset'){
+  if (type === 'sunset') {
     errorContainer = (
       <div style={styles.errorContainer}>
         {errorText}
