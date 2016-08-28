@@ -88,5 +88,3 @@ const createGlobalCallbackAuto = cb => {
   };
   return id;
 };
-
-export const init = () => {};

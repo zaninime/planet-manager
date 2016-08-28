@@ -1,5 +1,4 @@
-import {init as plugInit} from 'protocol/plug';
-import {init as discoveryInit, createDiscoveryListener} from 'protocol/discovery';
+import { createDiscoveryListener } from 'protocol/discovery';
 import { receiveBeacon } from 'actions/discovery';
 
 const discoveryListenerCreator = store => (address, port) => {
@@ -7,9 +6,6 @@ const discoveryListenerCreator = store => (address, port) => {
 };
 
 const init = store => {
-  plugInit();
-  discoveryInit();
-
   createDiscoveryListener().then(
     binder => binder(discoveryListenerCreator(store)),
     error => {

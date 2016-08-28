@@ -4,10 +4,49 @@ This repo contains the unified code for the ELOS app. All the UI code is shared 
 
 * Android
 * iOS
-* Chrome (built as an app)
+* Desktop (using Electron)
 
 ## Getting started
-TODO
+
+### Development for Desktop
+Development is done using [Electron](http://electron.atom.io/) directly. Please follow [their docs](http://electron.atom.io/docs/) to setup Electron on your platform.
+
+To run the development version, spawn two terminals and in the first type:
+
+```
+$ npm run start
+```
+
+while in the second:
+
+```
+$ electron electron/dev.js
+```
+
+### Development for Android
+Android SDK is required. You need to compile the app changing a variable in `MainActivity.java`, in order to load the remote bundle served by Webpack.
+
+First change the following line (please don't commit it):
+```java
+public class MainActivity extends AppCompatActivity {
+    static final String PAGE = "file:///android_asset/web/index.html";
+    //                          ^ http://YOUR_IP:3000/index.html
+
+    // ...
+}
+```
+
+Recompile:
+```
+$ gradle assembleDebug
+```
+
+Install to your emulator or device and start the Webpack dev. server:
+
+```
+$ npm run start-android
+```
+
 
 ## Technologies involved
 TODO
@@ -15,5 +54,5 @@ TODO
 ## Interface with the lamp
 The lamp speaks a proprietary, inefficient and badly designed protocol that requires a TCP connection. Furthermore, there's an unofficial and unadvertised discovery protocol using UDP broadcast messages. The sockets are created differently based on the target class, mobile or Chrome.
 
-* Mobile apps use a Cordova plugin that use native calls in Java and Objective-C
-* Chrome app use the [*Network Communications*](https://developer.chrome.com/apps/app_network) module
+* Mobile apps use native classes bridged into the WebView using the native API exposed by Android and iOS
+* Desktop app takes advantage of the `dgram` and `net` modules natively compiled into Electron
