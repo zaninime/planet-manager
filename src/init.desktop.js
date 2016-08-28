@@ -16,7 +16,4 @@ const init = store => {
   );
 };
 
-import * as plug from 'protocol/plug';
-window.plug = plug;
-
 export default init;
