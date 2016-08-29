@@ -29,7 +29,7 @@ const ConnectView = () => {
         {/* <NfcCard /> */}
       </StyleRoot>
       <VersionNumber />
-      <Link to="config">Test Config</Link>
+      <Link to="/mylamp/day/">Test Config</Link>
     </div>
   );
 };

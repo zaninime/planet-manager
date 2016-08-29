@@ -16,7 +16,7 @@ var styles = {
   }
 };
 
-export class ConfigPage extends React.Component {
+export class Container extends React.Component {
   renderChildren() {
     const childProps = {
       ...this.props
@@ -32,18 +32,21 @@ export class ConfigPage extends React.Component {
         <div style={styles.content}>
           {this.renderChildren()}
         </div>
-        <BoundNavigationMenu />
+        <BoundNavigationMenu lampId={this.props.params.lampId}/>
       </div>
     );
   }
 }
 
-ConfigPage.contextTypes = {
+Container.contextTypes = {
   router: T.object
 };
 
-ConfigPage.propTypes = {
-  children: T.node
+Container.propTypes = {
+  children: T.node,
+  params: T.shape({
+    lampId: T.string.isRequired
+  })
 };
 
-export default Radium(ConfigPage);
+export default Radium(Container);

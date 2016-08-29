@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes as T } from 'react';
 import Radium from 'radium';
 import { BottomNavigation, BottomNavigationItem } from 'material-ui/BottomNavigation';
 import Paper from 'material-ui/Paper';
@@ -43,6 +43,13 @@ class NavigationMenu extends Component {
   constructor(props) {
     super(props);
 
+    const { lampId, redirect } = this.props;
+    const paths = ['day', 'twilight', 'night', 'advanced'].map(e => (`/${lampId}/${e}/`));
+    this.onTouchTaps = paths.map((e, i) => () => {
+      this.select(i);
+      redirect(e);
+    });
+
     this.state = { selectedIndex: 0 };
   }
 
@@ -75,31 +82,19 @@ class NavigationMenu extends Component {
             <BottomNavigationItem
               label="Day"
               icon={<DayIcon style={styles.centered}/>}
-              onTouchTap={() => {
-                this.select(0);
-                redirect('/day');
-              }} />
+              onTouchTap={this.onTouchTaps[0]} />
             <BottomNavigationItem
               label="Twilight"
               icon={<TwilightIcon style={styles.centered}/>}
-              onTouchTap={() => {
-                this.select(1);
-                redirect('/twilight');
-              }} />
+              onTouchTap={this.onTouchTaps[1]} />
             <BottomNavigationItem
               label="Night"
               icon={<NightIcon style={styles.centered}/>}
-              onTouchTap={() => {
-                this.select(2);
-                redirect('/night');
-              }} />
+              onTouchTap={this.onTouchTaps[2]} />
             <BottomNavigationItem
               label="Advanced"
               icon={<SettingsIcon style={styles.centered}/>}
-              onTouchTap={() => {
-                this.select(3);
-                redirect('/advanced');
-              }} />
+              onTouchTap={this.onTouchTaps[3]} />
           </BottomNavigation>
         </Paper>
       </div>
@@ -108,7 +103,8 @@ class NavigationMenu extends Component {
 }
 
 NavigationMenu.propTypes = {
-  redirect: React.PropTypes.func.isRequired
+  redirect: React.PropTypes.func.isRequired,
+  lampId: T.string.isRequired
 };
 
 export default Radium(NavigationMenu);

@@ -1,14 +1,42 @@
 import React from 'react';
-import {Route} from 'react-router';
+import { Route, IndexRoute } from 'react-router';
+import ConnectPage from 'views/main/connectPage/ConnectPage';
 
-import makeMainRoutes from 'views/main/routes';
-
-export const makeRoutes = (store) => {
-  const mainRoutes = makeMainRoutes(store);
-
+export const makeRoutes = () => {
   return (
-    <Route path=''>
-      {mainRoutes}
+    <Route path='/'>
+      <IndexRoute component={ConnectPage} />
+      <Route path=':lampId/' getComponent={(location, cb) => {
+        require.ensure([], (require) => {
+          const mod = require('views/main/Container');
+          cb(null, mod.default);
+        });
+      }}>
+        <Route path="day/" getComponent={(location, cb) => {
+          require.ensure([], (require) => {
+            const mod = require('views/main/dayPage/DayPage');
+            cb(null, mod.default);
+          });
+        }} />
+        <Route path="night/" getComponent={(location, cb) => {
+          require.ensure([], (require) => {
+            const mod = require('views/main/nightPage/NightPage');
+            cb(null, mod.default);
+          });
+        }} />
+        <Route path="twilight/" getComponent={(location, cb) => {
+          require.ensure([], (require) => {
+            const mod = require('views/main/twilightPage/TwilightPage');
+            cb(null, mod.default);
+          });
+        }} />
+        <Route path="advanced/" getComponent={(location, cb) => {
+          require.ensure([], (require) => {
+            const mod = require('views/main/advancedPage/AdvancedPage');
+            cb(null, mod.default);
+          });
+        }} />
+      </Route>
     </Route>
   );
 };
