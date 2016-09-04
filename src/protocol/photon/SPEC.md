@@ -16,7 +16,7 @@ They all feature NFC "connectivity", while Wi-Fi is optional on the *PlanetPRO* 
 This lamp is the longest one. With over 120 W of LED lighting, it will definitely burn all of your fishes and corals. Be prepared.
 
 Features common to all versions:
-* Channel mapping of 12 strips (`CHANNEL_MAPPING`, not sure if this is actually a feature, though)
+* Manual channel mapping of 12 strips (`CHANNEL_MAPPING`, not sure if this is actually a feature, though)
 * Fan parameters (`FAN_CONFIG`)
 * Temperature parameters (`TEMPERATURE_CONFIG`)
 
@@ -25,7 +25,7 @@ Versions:
 * Version 2: hardware master/slave switch, *TODO: firmware versions not yet documented*.
 
 ### PlanetCompact
-This lamp is identical to the PRO v1 model besides the reduced number of strips, 6.
+This lamp is identical to the PRO v1 model besides the reduced number of strips, 6. `CHANNEL_MAPPING` plus `CHANNEL_MAPPING_COMPACT`.
 
 *TODO: check if a version 2 actually exists.*
 
