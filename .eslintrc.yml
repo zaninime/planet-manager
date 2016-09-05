@@ -21,3 +21,4 @@
     indent: [1, 2]
     keyword-spacing: 1
     space-before-blocks: 1
+    prefer-const: 1
