@@ -31,4 +31,23 @@ const ids = (state = [], action) => {
 
 export default combineReducers({byId, ids});
 
+// action creators
 export const receiveBeacon = (address, port) => ({type: 'DISCOVERY_BEACON_RECEIVED', address, port, time: new Date()});
+
+// selectors
+export const getRecentLamps = (state) => {
+  const ids = state.ids;
+  const byId = state.byId;
+
+  return (
+    ids.map(id => {
+      const lamp = byId[id];
+      lamp.id = id;
+
+      const twentySeconds = 20 * 1000; // ms
+
+      if (lamp !== undefined && (new Date() - lamp.lastSeen) < twentySeconds)
+        return lamp;
+    })
+  );
+};

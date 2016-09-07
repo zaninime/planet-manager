@@ -9,7 +9,16 @@ export class AddressFormatError extends EError {
     case 0:
       super(`Invalid IPv4 address: ${args[0]}`);
       break;
-    case 1:
+    default:
+      super('No cause given');
+    }
+  }
+}
+
+export class PortFormatError extends EError {
+  constructor(type, ...args) {
+    switch (type) {
+    case 0:
       super(`Invalid TCP port number: ${args[0]}`);
       break;
     default:
@@ -32,10 +41,10 @@ export const encode = (address, port) => {
     return pre & valid;
   }, true);
   if (!valid) throw new AddressFormatError(0, address);
-  if (typeof port !== 'number') throw new AddressFormatError(1, port);
+  if (typeof port !== 'number') throw new PortFormatError(0, port);
   const intPort = parseInt(port);
-  if (isNaN(intPort)) throw new AddressFormatError(1, port);
-  if (!((0 < intPort) && (intPort < 65536))) throw new AddressFormatError(1, port);
+  if (isNaN(intPort)) throw new PortFormatError(0, port);
+  if (!((0 < intPort) && (intPort < 65536))) throw new PortFormatError(0, port);
 
   let out = match.slice(1).reduce((pre, cur) => {
     let hex = parseInt(cur).toString(16);

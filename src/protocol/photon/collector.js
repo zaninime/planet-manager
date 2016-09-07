@@ -24,8 +24,8 @@ const night = (config) => {
 
 const timings = (config, status) => {
   return {
-    dawnBeginsAt: 12345,
-    duskEndsAt: 12345
+    dawnBeginsAt: 123,
+    duskEndsAt: 123
   };
 };
 

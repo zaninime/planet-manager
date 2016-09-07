@@ -1,11 +1,12 @@
 import { combineReducers } from 'redux';
+import { push } from 'react-router-redux';
+import daylight, * as fromDaylight from './daylight';
+import timings, * as fromTimings from './timings';
+import twilight, * as fromTwilight from './twilight';
+import night, * as fromNight from './night';
+import temperature, * as fromTemperature from './temperature';
+import fan, * as fromFan from './fan';
 import channels, * as fromChannels from './channels';
-import daylight from './daylight';
-import night from './night';
-import timings from './timings';
-import twilight from './twilight';
-import temperature from './temperature';
-import fan from './fan';
 import master from './master';
 
 import { collect } from 'protocol/photon/collector';
@@ -23,7 +24,6 @@ const caps = (state = {}, action) => {
   }
 };
 
-
 const singleConfig = combineReducers({
   daylight,
   night,
@@ -39,7 +39,19 @@ const singleConfig = combineReducers({
 const configs = (state = {}, action) => {
   switch (action.type) {
   case LOAD_COMPLETED:
-    return {...state, [action.lampId]: singleConfig(state.lampId, action)};
+  case fromDaylight.SET_COLOR:
+  case fromDaylight.SET_INTENSITY:
+  case fromTimings.SET_TIMER_START:
+  case fromTimings.SET_TIMER_END:
+  case fromTwilight.SET_RED_LEVEL:
+  case fromNight.SET_COLOR:
+  case fromNight.SET_INTENSITY:
+  case fromTemperature.SET_START_TEMPERATURE:
+  case fromFan.SET_MAX_SPEED:
+  case fromChannels.NEXT_COLOR:
+  case fromChannels.TOGGLE_ENABLE:
+  case fromChannels.TOGGLE_DISABLE:
+    return {...state, [action.lampId]: singleConfig(state[action.lampId], action)};
   default:
     return state;
   }
@@ -57,11 +69,34 @@ export const loadConfig = (lampId) => (dispatch) => {
   })(lampId, dispatch).then(({config, status}) => {
     config = collect(config, status);
     dispatch({type: LOAD_COMPLETED, lampId, data: config});
+    dispatch(push(`/${lampId}/day/`));
   });
 };
 
 // selectors
 
 // channels
-export const getStripCurrentColor = (state, lampId, stripNumber) => fromChannels.getStripCurrentColor(state[lampId].channels, stripNumber);
-export const getStripIsEnabled = (state, lampId, stripNumber) => fromChannels.getStripIsEnabled(state[lampId].channels, stripNumber);
+export const getStripCurrentColor = (state, stripNumber) => fromChannels.getStripCurrentColor(state.channels, stripNumber);
+export const getStripIsEnabled = (state, stripNumber) => fromChannels.getStripIsEnabled(state.channels, stripNumber);
+export const getChannelsCount = (state) => fromChannels.getChannelsCount(state.channels);
+
+// daylight
+export const getDayColor = (state) => fromDaylight.getDayColor(state.daylight);
+export const getDayColorIntensity = (state) => fromDaylight.getDayColorIntensity(state.daylight);
+
+// timings
+export const getSunriseTime = (state) => fromTimings.getSunriseTime(state.timings);
+export const getSunsetTime = (state) => fromTimings.getSunsetTime(state.timings);
+
+// twilight
+export const getTwilightValue = (state) => fromTwilight.getTwilightValue(state.twilight);
+
+// night
+export const getNightColor = (state) => fromNight.getNightColor(state.night);
+export const getNightColorIntensity = (state) => fromNight.getNightColorIntensity(state.night);
+
+// temperature
+export const getFanStartTemperature = (state) => fromTemperature.getFanStartTemperature(state.temperature);
+
+// fan
+export const getFanMaxSpeed = (state) => fromFan.getFanMaxSpeed(state.fan);

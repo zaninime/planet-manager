@@ -1,38 +1,38 @@
 import React from 'react';
 import { Route, IndexRoute } from 'react-router';
-import ConnectPage from 'views/main/connectPage/ConnectPage';
+import ConnectPage from 'views/connect';
 
 export const makeRoutes = () => {
   return (
     <Route path='/'>
       <IndexRoute component={ConnectPage} />
-      <Route path=':lampId/' getComponent={(location, cb) => {
+      <Route path='(:lampId)/' getComponent={(location, cb) => {
         require.ensure([], (require) => {
-          const mod = require('views/main/Container');
+          const mod = require('views/Container');
           cb(null, mod.default);
         });
       }}>
-        <Route path="day/" getComponent={(location, cb) => {
+        <Route path='day/' getComponent={(location, cb) => {
           require.ensure([], (require) => {
-            const mod = require('views/main/dayPage/DayPage');
+            const mod = require('views/day');
             cb(null, mod.default);
           });
         }} />
-        <Route path="night/" getComponent={(location, cb) => {
+        <Route path='night/' getComponent={(location, cb) => {
           require.ensure([], (require) => {
-            const mod = require('views/main/nightPage/NightPage');
+            const mod = require('views/night');
             cb(null, mod.default);
           });
         }} />
-        <Route path="twilight/" getComponent={(location, cb) => {
+        <Route path='twilight/' getComponent={(location, cb) => {
           require.ensure([], (require) => {
-            const mod = require('views/main/twilightPage/TwilightPage');
+            const mod = require('views/twilight');
             cb(null, mod.default);
           });
         }} />
-        <Route path="advanced/" getComponent={(location, cb) => {
+        <Route path='advanced/' getComponent={(location, cb) => {
           require.ensure([], (require) => {
-            const mod = require('views/main/advancedPage/AdvancedPage');
+            const mod = require('views/advanced');
             cb(null, mod.default);
           });
         }} />
