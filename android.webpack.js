@@ -46,13 +46,12 @@ config.output.publicPath = '';
 config.resolve.extensions.push(".android.js", ".coffee");
 
 // ENV variables
-const dotEnvVars = dotenv.config();
 const environmentEnv = dotenv.config({
   path: join(root, 'config', `${NODE_ENV}.config.js`),
   silent: true
 });
 const envVariables =
-    Object.assign({}, dotEnvVars, environmentEnv);
+    Object.assign({}, environmentEnv);
 
 const defines =
   Object.keys(envVariables)
