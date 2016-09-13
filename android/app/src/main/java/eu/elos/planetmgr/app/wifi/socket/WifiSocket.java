@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -71,8 +72,8 @@ public class WifiSocket {
                 outputStream.write(request.getBytes());
                 byte[] buffer = new byte[1024];
                 int read = inputStream.read(buffer);
-                buffer[read] = '\0';
-                response = new String(buffer);
+                byte[] buffer2 = Arrays.copyOfRange(buffer, 0, read);
+                response = new String(buffer2);
             } catch (Exception e) {
                 try {
                     if (socket != null) {
