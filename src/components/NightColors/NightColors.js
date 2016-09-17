@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Radium from 'radium';
 import FlatButton from 'material-ui/FlatButton';
 import { blueGrey100, blueGrey400, blue100, blue400 } from 'material-ui/styles/colors';
+import shallowCompare from 'react-addons-shallow-compare';
 
 const colors = [ 'white', 'blue' ];
 
@@ -26,8 +27,22 @@ class NightColors extends Component {
     super(props);
     this.handleOnClick = this.handleOnClick.bind(this);
 
-    const { color } = this.props;
-    this.state = { selected: color, ...this.enableButton(color)};
+    this.state = this.initState(props);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState(this.initState(nextProps));
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState);
+  }
+
+  initState(props) {
+    return {
+      selected: props.color,
+      ...this.enableButton(props.color)
+    };
   }
 
   enableButton(color) {

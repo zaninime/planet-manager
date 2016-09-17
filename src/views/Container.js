@@ -3,8 +3,9 @@ import Radium, { Style } from 'radium';
 import NavigationMenu from 'containers/NavigationMenu/NavigationMenu';
 
 var styles = {
-  'body':{
-    backgroundColor: 'white'
+  body: {
+    backgroundColor: 'white',
+    userSelect: 'none'
   },
   wrapper : { },
   content: {
@@ -28,7 +29,7 @@ export class Container extends React.Component {
   render() {
     return (
       <div style={styles.wrapper}>
-        <Style rules={{ body:  styles.body }} />
+        <Style rules={{ body: styles.body }} />
         <div style={styles.content}>
           {this.renderChildren()}
         </div>

@@ -2,11 +2,14 @@ import React from 'react';
 import Radium, { StyleRoot } from 'radium';
 import Header from 'views/Header/Header';
 import ConnectCard from 'views/ConnectCard/ConnectCard';
-import ErrorDialog from 'containers/ErrorDialog/ErrorDialog';
+import ConnectErrorDialog from 'containers/ConnectErrorDialog/ConnectErrorDialog';
 // import NfcCard from 'views/NfcCard/NfcCard';
 import VersionNumber from 'views/VersionNumber/VersionNumber';
 
 var styles = {
+  container: {
+    userSelect: 'none'
+  },
   cards: {
     maxWidth: '700px',
     margin: '20px auto 20px auto',
@@ -19,18 +22,18 @@ var styles = {
   }
 };
 
-const ConnectView = () => {
+const ConnectPage = () => {
   return (
-    <div>
+    <div style={styles.container}>
       <Header />
       <StyleRoot style={styles.cards}>
         <ConnectCard />
         {/* <NfcCard /> */}
       </StyleRoot>
-      <ErrorDialog />
+      <ConnectErrorDialog />
       <VersionNumber />
     </div>
   );
 };
 
-export default Radium(ConnectView);
+export default Radium(ConnectPage);

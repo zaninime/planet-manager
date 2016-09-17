@@ -4,8 +4,8 @@ import Avatar from 'material-ui/Avatar';
 import ManualConnectionDialog from 'containers/ManualConnectionDialog/ManualConnectionDialog';
 
 class ManualConnectionItem extends Component {
-  constructor(props) {
-    super(props);
+  constructor() {
+    super();
     this.handleOnClick = this.handleOnClick.bind(this);
     this.handleRequestClose = this.handleRequestClose.bind(this);
 

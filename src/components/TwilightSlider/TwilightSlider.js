@@ -4,6 +4,7 @@ import CircleGradientIcon from 'components/CircleGradientIcon/CircleGradientIcon
 import SliderButton from 'components/SliderButton/SliderButton';
 import SunIcon from './res/SunIcon';
 import CloudIcon from './res/CloudIcon';
+import shallowCompare from 'react-addons-shallow-compare';
 
 const styles = {
   container: {
@@ -59,13 +60,7 @@ class TwilightSlider extends Component {
     super(props);
     this.handleOnChange = this.handleOnChange.bind(this);
 
-    this.state = {
-      value: this.props.twilightValue,
-      sunOpacity: 0,
-      cloudOpacity1: 1,
-      cloudOpacity2: 1,
-      cloudOpacity3: 1
-    };
+    this.state = this.initState(props);
 
     this.radius = 140;
     this.buttonRadius = 20;
@@ -75,6 +70,21 @@ class TwilightSlider extends Component {
     styles.slider.width = this.radius * 2;
     styles.slider.height = this.radius * 2;
     styles.slider.borderRadius = this.radius;
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState(this.initState(nextProps));
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState);
+  }
+
+  initState(props) {
+    return {
+      value: props.twilightValue,
+      ...this.setIconsOpacity(props.twilightValue)
+    };
   }
 
   setIconsOpacity(value) {
@@ -87,11 +97,11 @@ class TwilightSlider extends Component {
     else if (value <= 1.00)
       newState = { cloudOpacity1: 1 - (value - 0.66) / 0.34, cloudOpacity2: 0, cloudOpacity3: 0 };
 
-    this.setState({ ...newState, sunOpacity: Math.max(value, 0.25) });
+    return { ...newState, sunOpacity: Math.max(value, 0.25) };
   }
 
   handleOnChange(value) {
-    this.setIconsOpacity(value);
+    this.setState(this.setIconsOpacity(value));
     this.props.setValue(value);
   }
 

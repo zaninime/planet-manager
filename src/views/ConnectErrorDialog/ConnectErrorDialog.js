@@ -1,22 +1,30 @@
 import React, { Component } from 'react';
+import Radium from 'radium';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 
-class ErrorDialog extends Component {
+const styles = {
+  unselectableDialog: {
+    userSelect: 'none'
+  }
+};
+
+class ConnectErrorDialog extends Component {
   constructor(props) {
     super(props);
     this.handleRequestClose = this.handleRequestClose.bind(this);
     this.handleTouchTap = this.handleTouchTap.bind(this);
 
-    this.state = { open: this.props.errorEncountered };
+    this.state = { open: this.props.isThrown };
   }
 
   componentWillReceiveProps(nextProps) {
-    this.setState({ open: nextProps.errorEncountered });
+    this.setState({ open: nextProps.isThrown });
   }
 
   handleRequestClose() {
     this.setState({ open: false });
+    this.props.toggleError();
   }
 
   handleTouchTap() {
@@ -34,20 +42,21 @@ class ErrorDialog extends Component {
 
     return (
       <Dialog
-        title="Error!"
+        title="ERROR!"
         actions={actions}
         open={this.state.open}
-        onRequestClose={this.handleRequestClose}>
+        onRequestClose={this.handleRequestClose}
+        style={styles.unselectableDialog}>
         {this.props.message}
       </Dialog>
     );
   }
 }
 
-ErrorDialog.propTypes = {
-  errorEncountered: React.PropTypes.bool.isRequired,
+ConnectErrorDialog.propTypes = {
+  isThrown: React.PropTypes.bool.isRequired,
   message: React.PropTypes.string.isRequired,
   toggleError: React.PropTypes.func.isRequired
 };
 
-export default ErrorDialog;
+export default Radium(ConnectErrorDialog);

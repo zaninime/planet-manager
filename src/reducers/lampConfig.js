@@ -9,23 +9,20 @@ import fan, * as fromFan from './fan';
 import channels, * as fromChannels from './channels';
 import master from './master';
 import { setMessage } from './connectError';
+import wifi, * as fromWifi from './wifi';
+import caps, * as fromCaps from './caps';
+import * as fromManaged from './managed';
+import * as fromAddressing from './addressing';
+import configSaved, * as fromConfigSaved from './configSaved';
+import fieldError, * as fromFieldError from 'reducers/fieldError';
 
 // import EError from 'utils/error';
 // import { IncompatibleConfigError } from 'protocol/photon/collector';
 import { collect } from 'protocol/photon/collector';
 import { fetchConfig, fetchStatus } from 'protocol/api';
 
-export const LOAD_COMPLETED = 'lampConfig/LOAD_COMPLETED';
 export const LOAD_START = 'lampConfig/LOAD_START';
-
-const caps = (state = {}, action) => {
-  switch (action.type) {
-  case LOAD_COMPLETED:
-    return {bugs: action.data.bugs, features: action.data.features};
-  default:
-    return state;
-  }
-};
+export const LOAD_COMPLETED = 'lampConfig/LOAD_COMPLETED';
 
 const singleConfig = combineReducers({
   daylight,
@@ -36,11 +33,15 @@ const singleConfig = combineReducers({
   temperature,
   fan,
   master,
-  caps
+  caps,
+  wifi,
+  configSaved,
+  fieldError
 });
 
 const configs = (state = {}, action) => {
   switch (action.type) {
+  // yeah, just a few...
   case LOAD_COMPLETED:
   case fromDaylight.SET_COLOR:
   case fromDaylight.SET_INTENSITY:
@@ -54,7 +55,16 @@ const configs = (state = {}, action) => {
   case fromChannels.NEXT_COLOR:
   case fromChannels.TOGGLE_ENABLE:
   case fromChannels.TOGGLE_DISABLE:
-    return {...state, [action.lampId]: singleConfig(state[action.lampId], action)};
+  case fromWifi.SET_MODE:
+  case fromWifi.SET_SSID:
+  case fromManaged.SET_PASSWORD:
+  case fromManaged.TOGGLE_DHCP:
+  case fromAddressing.SET_IP:
+  case fromAddressing.SET_NETMASK:
+  case fromAddressing.SET_GATEWAY:
+  case fromConfigSaved.SET_SAVED:
+  case fromFieldError.SET_ERROR:
+    return { ...state, [action.lampId]: singleConfig(state[action.lampId], action) };
   default:
     return state;
   }
@@ -83,7 +93,7 @@ export const loadConfig = (lampId) => (dispatch) => {
     }
 
     return { status, config, error };
-  })(lampId, dispatch).then(({config, status, error}) => {
+  })(lampId, dispatch).then(({ config, status, error }) => {
     if (!error) {
       config = collect(config, status);
       dispatch({type: LOAD_COMPLETED, lampId, data: config});
@@ -91,6 +101,11 @@ export const loadConfig = (lampId) => (dispatch) => {
     }
   });
 };
+
+// TODO:
+// export const saveConfig = (lampId) => (dispatch) => {
+//
+// };
 
 // selectors
 
@@ -119,3 +134,24 @@ export const getFanStartTemperature = (state) => fromTemperature.getFanStartTemp
 
 // fan
 export const getFanMaxSpeed = (state) => fromFan.getFanMaxSpeed(state.fan);
+
+// caps
+export const isChannelMappingAvailable = (state) => fromCaps.isChannelMappingAvailable(state.caps);
+export const isFanConfigAvailable = (state) => fromCaps.isFanConfigAvailable(state.caps);
+export const isTemperatureConfigAvailable = (state) => fromCaps.isTemperatureConfigAvailable(state.caps);
+
+// wifi
+export const getMode = (state) => fromWifi.getMode(state.wifi);
+export const getSsid = (state) => fromWifi.getSsid(state.wifi);
+export const getPassword = (state) => fromWifi.getPassword(state.wifi);
+export const isDhcpEnabled = (state) => fromWifi.isDhcpEnabled(state.wifi);
+export const getIp = (state) => fromWifi.getIp(state.wifi);
+export const getNetmask = (state) => fromWifi.getNetmask(state.wifi);
+export const getGateway = (state) => fromWifi.getGateway(state.wifi);
+
+// configSaved
+export const isConfigSaved = (state) => fromConfigSaved.isConfigSaved(state.configSaved);
+export const isWifiConfigSaved = (state) => fromConfigSaved.isWifiConfigSaved(state.configSaved);
+
+// fieldError
+export const getFieldError = (state) => fromFieldError.getFieldError(state.fieldError);

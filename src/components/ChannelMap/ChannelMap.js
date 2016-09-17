@@ -1,5 +1,6 @@
 import React from 'react';
 import Radium from 'radium';
+import Section from 'views/Section/Section';
 import ChannelColor from 'containers/ChannelColor/ChannelColor';
 
 const styles = {
@@ -17,7 +18,10 @@ const styles = {
   }
 };
 
-const ChannelMap = ({ channels, lampId }) => {
+const ChannelMap = ({ channelMappingAvailable, channels, lampId }) => {
+  if (!channelMappingAvailable)
+    return null;
+
   const leftStrips = [], rightStrips = [];
 
   for (let i = 1; i <= channels; i++) {
@@ -41,18 +45,21 @@ const ChannelMap = ({ channels, lampId }) => {
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.leftStrips}>
-        {leftStrips}
+    <Section title="Channel Mapping">
+      <div style={styles.container}>
+        <div style={styles.leftStrips}>
+          {leftStrips}
+        </div>
+        <div style={styles.rightStrips}>
+          {rightStrips}
+        </div>
       </div>
-      <div style={styles.rightStrips}>
-        {rightStrips}
-      </div>
-    </div>
+    </Section>
   );
 };
 
 ChannelMap.propTypes = {
+  channelMappingAvailable: React.PropTypes.bool.isRequired,
   channels: React.PropTypes.number.isRequired,
   lampId: React.PropTypes.string.isRequired
 };

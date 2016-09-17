@@ -3,8 +3,12 @@ import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import TextField from 'material-ui/TextField';
 import { encode, AddressFormatError, PortFormatError } from 'utils/lampId';
+import shallowCompare from 'react-addons-shallow-compare';
 
 const styles = {
+  unselectableDialog: {
+    userSelect: 'none'
+  },
   dialogContent:{
     textAlign: 'center',
     marginTop: '3em',
@@ -37,7 +41,35 @@ class ManualConnectionDialog extends Component {
     this.handleHostChange = this.handleHostChange.bind(this);
     this.handlePortChange = this.handlePortChange.bind(this);
 
-    this.state = this.getEmptyInputsState();
+    this.state = {
+      ...this.getEmptyInputsState(),
+      open: this.props.dialogOpen,
+      buttonsDisabled: false
+    };
+
+    this.wasOpen = this.props.dialogOpen;
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.isThrown && nextProps.dialogOpen) {
+      this.wasOpen = true;
+      this.setState({ open: false });
+    }
+    else if (!nextProps.isThrown && this.wasOpen) {
+      this.wasOpen = false;
+      this.setState({
+        // the dialog is opened or
+        // an error was previously thrown and it was open
+        open: true,
+        buttonsDisabled: false
+      });
+    }
+    else if (nextProps.dialogOpen)
+      this.setState({ open: true, buttonsDisabled: false });
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState);
   }
 
   getEmptyInputsState() {
@@ -50,28 +82,36 @@ class ManualConnectionDialog extends Component {
   }
 
   handleRequestClose() {
+    this.setState({
+      ...this.getEmptyInputsState(),
+      open: false
+    });
+
     this.props.onRequestClose();
-    this.setState(this.getEmptyInputsState);
   }
 
   handleConnectTouchTap() {
     let { hostErrorText, portErrorText } = this.state;
 
     if (this.state.hostValue === '')
-      hostErrorText = 'Cannot be empty';
+      hostErrorText = 'Empty fields are not allowed';
 
     if (this.state.portValue === '')
-      portErrorText = 'Cannot be empty';
+      portErrorText = 'Empty fields are not allowed';
+
+    if (hostErrorText === '' && portErrorText === '')
+      this.setState({ buttonsDisabled: true });
 
     const { hostValue, portValue } = this.state;
 
     if (hostErrorText === '' || portErrorText === '') {
       try {
         const encoded = encode(hostValue, parseInt(portValue));
-        // TODO: handle timeout
         this.props.load(encoded);
       }
       catch (ex) {
+        this.setState({ buttonsDisabled: false });
+
         if (ex instanceof AddressFormatError && hostErrorText === '')
           hostErrorText = 'Not valid';
         else if (ex instanceof PortFormatError && portErrorText === '')
@@ -106,14 +146,14 @@ class ManualConnectionDialog extends Component {
       <FlatButton
         label="Cancel"
         primary={true}
+        disabled={this.state.buttonsDisabled}
         onTouchTap={this.handleRequestClose}
         />,
       <FlatButton
         label="Connect"
         primary={true}
-        keyboardFocused={true}
+        disabled={this.state.buttonsDisabled}
         onTouchTap={this.handleConnectTouchTap}
-        ref="submit"
         />,
     ];
 
@@ -121,8 +161,9 @@ class ManualConnectionDialog extends Component {
       <Dialog
         title="Connect manually"
         actions={manualActions}
-        open={this.props.dialogOpen}
-        onRequestClose={this.handleRequestClose}>
+        open={this.state.open}
+        onRequestClose={this.handleRequestClose}
+        style={styles.unselectableDialog}>
         <div style={styles.dialogContent}>
           <div style={styles.flex}>
             <div style={styles.labelContainer}>
@@ -159,6 +200,7 @@ class ManualConnectionDialog extends Component {
 
 ManualConnectionDialog.propTypes = {
   dialogOpen: React.PropTypes.bool.isRequired,
+  isThrown: React.PropTypes.bool.isRequired,
   onRequestClose: React.PropTypes.func.isRequired,
   load: React.PropTypes.func.isRequired
 };

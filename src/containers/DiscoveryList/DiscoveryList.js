@@ -3,8 +3,8 @@ import DiscoveryList from 'components/DiscoveryList/DiscoveryList';
 import { loadConfig } from 'reducers/lampConfig';
 import { getRecentLamps } from 'reducers';
 
-const mapStateToProps = (state) => ({
-  lamps: getRecentLamps(state)
+const mapStateToProps = (state, { now }) => ({
+  lamps: getRecentLamps(state, now)
 });
 
 export default connect(mapStateToProps, { load: loadConfig })(DiscoveryList);

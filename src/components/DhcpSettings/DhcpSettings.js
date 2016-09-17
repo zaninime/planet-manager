@@ -3,8 +3,12 @@ import Radium from 'radium';
 import TextField from 'material-ui/TextField';
 import Toggle from 'material-ui/Toggle';
 import ip from 'ip';
+import shallowCompare from 'react-addons-shallow-compare';
 
 const styles = {
+  content: {
+    marginTop: '40px'
+  },
   toggle: {
     textAlign: 'left',
     marginBottom: '40px'
@@ -23,56 +27,111 @@ class DhcpSettings extends Component {
     super(props);
     this.handleOnToggle = this.handleOnToggle.bind(this);
     this.handleFieldChange = this.handleFieldChange.bind(this);
+    this.handleGatewayFieldBlur = this.handleGatewayFieldBlur.bind(this);
     this.handleFieldBlur = this.handleFieldBlur.bind(this);
 
-    this.state = {
-      toggled: true,
-      addressValue: '',
+    this.state = this.initState(props);
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (shallowCompare(this, nextProps, this.state))
+      this.setState(this.initState(nextProps));
+  }
+
+  initState({ dhcpEnabled, ip, netmask, gateway }) {
+    return {
+      toggled: dhcpEnabled,
+      addressValue: ip,
       addressErrorText: '',
-      netmaskValue: '',
+      netmaskValue: netmask,
       netmaskErrorText: '',
-      gatewayValue: '',
-      gatewayErrorText: ''
+      gatewayValue: gateway,
+      gatewayErrorText: '',
+      fieldError: false
     };
   }
 
   handleOnToggle() {
-    this.setState({ toggled: !this.state.toggled });
+    const { toggled } = this.state;
+
+    if (toggled)
+      this.props.onFieldErrorChange(false);
+
+    this.setState({ toggled: !toggled });
+    this.props.toggleDhcp();
   }
 
   handleFieldChange(e, field) {
+    const { value } = e.target;
+
     const newState = { };
-    newState[`${field}Value`] = e.target.value;
+    newState[`${field}Value`] = value;
     this.setState(newState);
   }
 
   handleFieldBlur(field) {
-    const addressValue = this.state.addressValue;
-    const netmaskValue = this.state.netmaskValue;
-    const gatewayValue = this.state.gatewayValue;
-
-    let valid = true;
-    if (this.state[`${field}Value`] !== '') {
-      if (field === 'address')
-        valid = this.validateAddress(addressValue);
-      else if (field === 'netmask')
-        valid = this.validateNetmask(netmaskValue);
-      else if (field === 'gateway' && addressValue != '' && netmaskValue != '')
-        valid = this.validateGateway(gatewayValue, netmaskValue, addressValue);
-
-      // if the address or netmask field changes
-      // then re-validate the gateway
-      if (field !== 'gateway' && gatewayValue != '')
-        this.handleFieldBlur('gateway');
-    }
-
     const newState = { };
     newState[`${field}ErrorText`] = '';
 
-    if (!valid)
-      newState[`${field}ErrorText`] = 'Not valid';
+    const value = this.state[`${field}Value`];
+
+    let valid = false;
+    if (value !== '') {
+      valid = this.validate(field, this.state[`${field}Value`]);
+
+      if (!valid)
+        newState[`${field}ErrorText`] = 'Not valid';
+    }
+    else
+      newState[`${field}ErrorText`] = 'Empty fields are not allowed';
 
     this.setState(newState);
+
+    // if the address or netmask field change
+    // and they're both valid, revalidate the gateway
+    this.handleGatewayFieldBlur(null, { ...this.state, ...newState });
+  }
+
+  handleGatewayFieldBlur(e, state = this.state) {
+    const {
+      addressValue,
+      netmaskValue,
+      gatewayValue,
+      addressErrorText,
+      netmaskErrorText
+    } = state;
+
+    let errorText = '';
+    if (gatewayValue === '')
+      errorText = 'Empty fields are not allowed';
+    else if (addressErrorText === '' &&
+            netmaskErrorText === '' &&
+            !this.validateGateway(gatewayValue, netmaskValue, addressValue))
+      errorText = 'Not valid';
+
+    let fieldError = state.fieldError;
+    if (!fieldError && (errorText !== '' || addressErrorText !== '' || netmaskErrorText !== ''))
+      fieldError = true;
+    else if (fieldError && errorText === '' && addressErrorText === '' && netmaskErrorText === '')
+      fieldError = false;
+
+    this.props.onFieldErrorChange(fieldError);
+    this.setState({ gatewayErrorText: errorText, fieldError });
+
+    if (errorText === '' && netmaskErrorText === '' && addressErrorText === '')
+      this.setFields(state);
+  }
+
+  setFields({ addressValue, netmaskValue, gatewayValue }) {
+    const { setIp, setNetmask, setGateway } = this.props;
+
+    setIp(addressValue);
+    setNetmask(netmaskValue);
+    setGateway(gatewayValue);
   }
 
   validateNetmask(value) {
@@ -121,10 +180,17 @@ class DhcpSettings extends Component {
     return match != null && result.contains(gatewayValue);
   }
 
+  validate(field, value) {
+    if (field === 'address')
+      return this.validateAddress(value);
+    else if (field === 'netmask')
+      return this.validateNetmask(value);
+  }
+
   render() {
     let fieldsContainer = null;
 
-    if (!this.state.toggled) {
+    if (this.state.toggled) {
       fieldsContainer = (
         <div style={styles.fieldsContainer}>
           <p>Address</p>
@@ -152,13 +218,13 @@ class DhcpSettings extends Component {
             value={this.state.gatewayValue}
             errorText={this.state.gatewayErrorText}
             onChange={e => this.handleFieldChange(e, 'gateway')}
-            onBlur={() => this.handleFieldBlur('gateway')}/>
+            onBlur={this.handleGatewayFieldBlur}/>
         </div>
       );
     }
 
     return (
-      <div>
+      <div style={styles.content}>
         <Toggle
           style={styles.toggle}
           label="DHCP"
@@ -170,5 +236,17 @@ class DhcpSettings extends Component {
     );
   }
 }
+
+DhcpSettings.propTypes = {
+  dhcpEnabled: React.PropTypes.bool.isRequired,
+  ip: React.PropTypes.string.isRequired,
+  netmask: React.PropTypes.string.isRequired,
+  gateway: React.PropTypes.string.isRequired,
+  toggleDhcp: React.PropTypes.func.isRequired,
+  setIp: React.PropTypes.func.isRequired,
+  setNetmask: React.PropTypes.func.isRequired,
+  setGateway: React.PropTypes.func.isRequired,
+  onFieldErrorChange: React.PropTypes.func.isRequired
+};
 
 export default Radium(DhcpSettings);

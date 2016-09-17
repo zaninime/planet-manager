@@ -1,14 +1,20 @@
 import React, { Component } from 'react';
 import Radium from 'radium';
 import DiscoveryItem from '../DiscoveryItem/DiscoveryItem';
-import LoadingDialog from 'views/LoadingDialog/LoadingDialog';
+import LoadingDialog from 'containers/LoadingDialog/LoadingDialog';
+import shallowCompare from 'react-addons-shallow-compare';
 
 class DiscoveryList extends Component {
   constructor(props) {
     super(props);
     this.handleOnClick = this.handleOnClick.bind(this);
+    this.handleOnClose = this.handleOnClose.bind(this);
 
     this.state = { dialogOpen: false };
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    return shallowCompare(this, nextProps, nextState);
   }
 
   handleOnClick(id) {
@@ -16,6 +22,10 @@ class DiscoveryList extends Component {
 
     const { load } = this.props;
     load(id);
+  }
+
+  handleOnClose() {
+    this.setState({ dialogOpen: false });
   }
 
   render() {
@@ -37,7 +47,9 @@ class DiscoveryList extends Component {
     return (
       <div>
         {items}
-        <LoadingDialog dialogOpen={this.state.dialogOpen}/>
+        <LoadingDialog
+          dialogOpen={this.state.dialogOpen}
+          onRequestClose={this.handleOnClose} />
       </div>
     );
   }

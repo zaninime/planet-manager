@@ -16,7 +16,7 @@ export default rootReducer;
 // selectors
 
 // discovery
-export const getRecentLamps = (state) => fromDiscovery.getRecentLamps(state.discovery);
+export const getRecentLamps = (state, now) => fromDiscovery.getRecentLamps(state.discovery, now);
 
 // channels
 export const getStripCurrentColor = (state, stripNumber, lampId) => fromLampConfig.getStripCurrentColor(state.lampConfig[lampId], stripNumber);
@@ -45,5 +45,26 @@ export const getFanStartTemperature = (state, lampId) => fromLampConfig.getFanSt
 export const getFanMaxSpeed = (state, lampId) => fromLampConfig.getFanMaxSpeed(state.lampConfig[lampId]);
 
 // connectError
-export const isErrorEncountered = (state) => fromConnectError.isErrorEncountered(state.connectError);
+export const isThrown = (state) => fromConnectError.isThrown(state.connectError);
 export const getMessage = (state) => fromConnectError.getMessage(state.connectError);
+
+// caps
+export const isChannelMappingAvailable = (state, lampId) => fromLampConfig.isChannelMappingAvailable(state.lampConfig[lampId]);
+export const isFanConfigAvailable = (state, lampId) => fromLampConfig.isFanConfigAvailable(state.lampConfig[lampId]);
+export const isTemperatureConfigAvailable = (state, lampId) => fromLampConfig.isTemperatureConfigAvailable(state.lampConfig[lampId]);
+
+// wifi
+export const getMode = (state, lampId) => fromLampConfig.getMode(state.lampConfig[lampId]);
+export const getSsid = (state, lampId) => fromLampConfig.getSsid(state.lampConfig[lampId]);
+export const getPassword = (state, lampId) => fromLampConfig.getPassword(state.lampConfig[lampId]);
+export const isDhcpEnabled = (state, lampId) => fromLampConfig.isDhcpEnabled(state.lampConfig[lampId]);
+export const getIp = (state, lampId) => fromLampConfig.getIp(state.lampConfig[lampId]);
+export const getNetmask = (state, lampId) => fromLampConfig.getNetmask(state.lampConfig[lampId]);
+export const getGateway = (state, lampId) => fromLampConfig.getGateway(state.lampConfig[lampId]);
+
+// configSaved
+export const isConfigSaved = (state, lampId) => fromLampConfig.isConfigSaved(state.lampConfig[lampId]);
+export const isWifiConfigSaved = (state, lampId) => fromLampConfig.isWifiConfigSaved(state.lampConfig[lampId]);
+
+// fieldError
+export const getFieldError = (state, lampId) => fromLampConfig.getFieldError(state.lampConfig[lampId]);

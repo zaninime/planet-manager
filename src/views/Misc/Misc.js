@@ -2,21 +2,18 @@ import React from 'react';
 import Radium from 'radium';
 import FanMaxSpeedSlider from 'containers/FanMaxSpeedSlider/FanMaxSpeedSlider';
 import FanStartTemperatureSlider from 'containers/FanStartTemperatureSlider/FanStartTemperatureSlider';
-import SyncClockButton from 'components/SyncClockButton/SyncClockButton';
 import Section from 'views/Section/Section';
 
 const styles = {
-  button: {
-    marginBottom: '20px'
-  },
   slider: {
-    marginBottom: '40px'
+    marginBottom: '20px'
   }
 };
 
-const Misc = ({ lampId }) => {
-  return (
-    <Section title="Misc">
+const Misc = ({ fanConfigAvailable, temperatureConfigAvailable, lampId }) => {
+  let fanMaxSpeedSlider;
+  if (fanConfigAvailable) {
+    fanMaxSpeedSlider = (
       <FanMaxSpeedSlider
         lampId={lampId}
         style={styles.slider}
@@ -25,6 +22,12 @@ const Misc = ({ lampId }) => {
         min={50}
         max={100}
         unit='%' />
+    );
+  }
+
+  let fanStartTemperatureSlider;
+  if (temperatureConfigAvailable) {
+    fanStartTemperatureSlider = (
       <FanStartTemperatureSlider
         lampId={lampId}
         style={styles.slider}
@@ -34,12 +37,25 @@ const Misc = ({ lampId }) => {
         max={40}
         interval={5}
         unit='°C' />
-      <SyncClockButton style={styles.button}/>
-    </Section>
-  );
+    );
+  }
+
+  let section = null;
+  if (fanConfigAvailable || temperatureConfigAvailable) {
+    section = (
+      <Section title="Misc">
+        {fanMaxSpeedSlider}
+        {fanStartTemperatureSlider}
+      </Section>
+    );
+  }
+
+  return section;
 };
 
 Misc.propTypes = {
+  fanConfigAvailable: React.PropTypes.bool.isRequired,
+  temperatureConfigAvailable: React.PropTypes.bool.isRequired,
   lampId: React.PropTypes.string.isRequired
 };
 
