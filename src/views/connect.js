@@ -2,6 +2,7 @@ import React from 'react';
 import Radium, { StyleRoot } from 'radium';
 import Header from 'views/Header/Header';
 import ConnectCard from 'views/ConnectCard/ConnectCard';
+import ErrorDialog from 'containers/ErrorDialog/ErrorDialog';
 // import NfcCard from 'views/NfcCard/NfcCard';
 import VersionNumber from 'views/VersionNumber/VersionNumber';
 
@@ -26,6 +27,7 @@ const ConnectView = () => {
         <ConnectCard />
         {/* <NfcCard /> */}
       </StyleRoot>
+      <ErrorDialog />
       <VersionNumber />
     </div>
   );

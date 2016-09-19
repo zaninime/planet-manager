@@ -8,7 +8,10 @@ import temperature, * as fromTemperature from './temperature';
 import fan, * as fromFan from './fan';
 import channels, * as fromChannels from './channels';
 import master from './master';
+import { setMessage } from './connectError';
 
+// import EError from 'utils/error';
+// import { IncompatibleConfigError } from 'protocol/photon/collector';
 import { collect } from 'protocol/photon/collector';
 import { fetchConfig, fetchStatus } from 'protocol/plug';
 
@@ -63,13 +66,27 @@ export default configs;
 export const loadConfig = (lampId) => (dispatch) => {
   dispatch({type: LOAD_START, lampId});
   (async function() {
-    const status = await fetchStatus(lampId);
-    const config = await fetchConfig(lampId);
-    return {status, config};
-  })(lampId, dispatch).then(({config, status}) => {
-    config = collect(config, status);
-    dispatch({type: LOAD_COMPLETED, lampId, data: config});
-    dispatch(push(`/${lampId}/day/`));
+    let status = {}, config = {}, error = false;
+
+    try {
+      status = await fetchStatus(lampId);
+      config = await fetchConfig(lampId);
+    }
+    catch (e) {
+      error = true;
+      if (e.message !== undefined)
+        dispatch(setMessage(e.message));
+      else
+        dispatch(setMessage("Unknown"));
+    }
+
+    return { status, config, error };
+  })(lampId, dispatch).then(({config, status, error}) => {
+    if (!error) {
+      config = collect(config, status);
+      dispatch({type: LOAD_COMPLETED, lampId, data: config});
+      dispatch(push(`/${lampId}/day/`));
+    }
   });
 };
 

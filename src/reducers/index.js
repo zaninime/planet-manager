@@ -2,11 +2,13 @@ import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
 import lampConfig, * as fromLampConfig from './lampConfig';
 import discovery, * as fromDiscovery from './discovery';
+import connectError, * as fromConnectError from './connectError';
 
 const rootReducer = combineReducers({
   routing: routerReducer,
   lampConfig,
-  discovery
+  discovery,
+  connectError
 });
 
 export default rootReducer;
@@ -41,3 +43,7 @@ export const getFanStartTemperature = (state, lampId) => fromLampConfig.getFanSt
 
 // fan
 export const getFanMaxSpeed = (state, lampId) => fromLampConfig.getFanMaxSpeed(state.lampConfig[lampId]);
+
+// connectError
+export const isErrorEncountered = (state) => fromConnectError.isErrorEncountered(state.connectError);
+export const getMessage = (state) => fromConnectError.getMessage(state.connectError);
