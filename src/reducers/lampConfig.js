@@ -64,12 +64,14 @@ export default configs;
 
 // action creators
 export const loadConfig = (lampId) => (dispatch) => {
+  const sleep = (t) => new Promise(resolve => setTimeout(resolve, t));
   dispatch({type: LOAD_START, lampId});
   (async function() {
     let status = {}, config = {}, error = false;
 
     try {
       status = await fetchStatus(lampId);
+      await sleep(1000);
       config = await fetchConfig(lampId);
     }
     catch (e) {
