@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import DaySlider from 'components/DaySlider/DaySlider';
-import { getDayColor, getDayColorIntensity } from 'reducers/index';
+import { getDayColor, getDayColorIntensity } from 'reducers';
 import { setColor, setIntensity } from 'reducers/daylight';
 
 const mapStateToProps = (state, { lampId }) => ({

@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import DiscoveryList from 'components/DiscoveryList/DiscoveryList';
 import { loadConfig } from 'reducers/lampConfig';
-import { getRecentLamps } from 'reducers/index';
+import { getRecentLamps } from 'reducers';
 
 const mapStateToProps = (state) => ({
   lamps: getRecentLamps(state)

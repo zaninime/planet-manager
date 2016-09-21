@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import Timings from 'views/Timings/Timings';
-import { getSunriseTime, getSunsetTime } from 'reducers/index';
+import { getSunriseTime, getSunsetTime } from 'reducers';
 import { setSunriseTime, setSunsetTime } from 'reducers/timings';
 
 const mapStateToProps = (state, { lampId }) => ({

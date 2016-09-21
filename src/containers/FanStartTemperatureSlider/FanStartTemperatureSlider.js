@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import CustomSlider from 'components/CustomSlider/CustomSlider';
-import { getFanStartTemperature } from 'reducers/index';
+import { getFanStartTemperature } from 'reducers';
 import { setStartTemperature } from 'reducers/temperature';
 
 const mapStateToProps = (state, { lampId }) => ({

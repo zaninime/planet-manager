@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import CustomSlider from 'components/CustomSlider/CustomSlider';
-import { getNightColorIntensity } from 'reducers/index';
+import { getNightColorIntensity } from 'reducers';
 import { setIntensity } from 'reducers/night';
 
 const mapStateToProps = (state, { lampId }) => ({

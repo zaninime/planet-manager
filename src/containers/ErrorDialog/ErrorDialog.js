@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import ErrorDialog from 'views/ErrorDialog/ErrorDialog';
-import { isErrorEncountered, getMessage } from 'reducers/index';
+import { isErrorEncountered, getMessage } from 'reducers';
 import { toggleError } from 'reducers/connectError';
 
 const mapStateToProps = (state) => ({

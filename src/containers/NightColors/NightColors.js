@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import NightColors from 'components/NightColors/NightColors';
-import { getNightColor } from 'reducers/index';
+import { getNightColor } from 'reducers';
 import { setColor } from 'reducers/night';
 
 const mapStateToProps = (state, { lampId }) => ({

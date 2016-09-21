@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import TwilightSlider from 'components/TwilightSlider/TwilightSlider';
-import { getTwilightValue } from 'reducers/index';
+import { getTwilightValue } from 'reducers';
 import { setValue } from 'reducers/twilight';
 
 const mapStateToProps = (state, { lampId }) => ({

@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import CustomSlider from 'components/CustomSlider/CustomSlider';
-import { getFanMaxSpeed } from 'reducers/index';
+import { getFanMaxSpeed } from 'reducers';
 import { setMaxSpeed } from 'reducers/fan';
 
 const mapStateToProps = (state, { lampId }) => ({
