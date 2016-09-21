@@ -22,3 +22,4 @@
     keyword-spacing: 1
     space-before-blocks: 1
     prefer-const: 1
+    no-import-index: 2
