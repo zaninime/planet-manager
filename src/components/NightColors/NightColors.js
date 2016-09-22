@@ -31,9 +31,9 @@ class NightColors extends Component {
   }
 
   enableButton(color) {
-    let newState = { };
+    const newState = { };
     for (var i = 0; i < colors.length; i++) {
-      let property = colors[i] === color ? 'Background' : 'Disabled';
+      const property = colors[i] === color ? 'Background' : 'Disabled';
       newState[`${colors[i]}Background`] = colorProperties[colors[i] + property];
     }
 

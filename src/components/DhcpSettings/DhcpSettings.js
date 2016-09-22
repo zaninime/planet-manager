@@ -41,7 +41,7 @@ class DhcpSettings extends Component {
   }
 
   handleFieldChange(e, field) {
-    let newState = { };
+    const newState = { };
     newState[`${field}Value`] = e.target.value;
     this.setState(newState);
   }

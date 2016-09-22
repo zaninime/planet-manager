@@ -12,7 +12,7 @@ const configureStore = ({
   historyType = browserHistory,
   userInitialState = {}}) => {
 
-  let middleware = [
+  const middleware = [
       // createApiMiddleware({
       //   baseUrl: __ROOT_URL__,
       //   headers: {
@@ -23,17 +23,16 @@ const configureStore = ({
     routerMiddleware(historyType)
   ];
 
-  let tools = [];
+  const tools = [];
   if (__DEBUG__) {
     const DevTools = require('containers/DevTools/DevTools').default;
-    let devTools = window.devToolsExtension ? window.devToolsExtension : DevTools.instrument;
+    const devTools = window.devToolsExtension ? window.devToolsExtension : DevTools.instrument;
     if (typeof devTools === 'function') {
       tools.push(devTools());
     }
   }
 
-  let finalCreateStore;
-  finalCreateStore = compose(
+  const finalCreateStore = compose(
       applyMiddleware(...middleware),
       ...tools
     )(createStore);

@@ -9,7 +9,7 @@ import App from './App';
 
 describe('<App />', () => {
   let wrapper;
-  let history = {};
+  const history = {};
   beforeEach(() => {
     wrapper =
       shallow(<App history={history}/>);

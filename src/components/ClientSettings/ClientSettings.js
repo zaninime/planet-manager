@@ -42,7 +42,7 @@ class ClientSettings extends Component {
   handleFieldChange(e, field) {
     const value = e.target.value;
 
-    let newState = { };
+    const newState = { };
     newState[`${field}Value`] = value;
 
     newState[`${field}ErrorText`] = '';

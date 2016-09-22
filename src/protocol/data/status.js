@@ -25,7 +25,7 @@ export const parseResponse = (str) => {
 };
 
 export const buildUpdate = (w, r, g, b) => {
-  for (let c of [w, r, g, b]) {
+  for (const c of [w, r, g, b]) {
     if (isNaN(c)) throw TypeError(`Expected a number, got a ${typeof c}`);
     if (!(0 <= c && c <= 100)) throw RangeError(`Channel intensity value out of range: ${c}`);
   }

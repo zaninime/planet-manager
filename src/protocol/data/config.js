@@ -117,7 +117,7 @@ const parseMode = (str) => {
 
 export const buildUpdate = (config) => {
   const parts = [];
-  for (let color of [config.daylight.white, config.daylight.red, config.daylight.green, config.daylight.blue]) {
+  for (const color of [config.daylight.white, config.daylight.red, config.daylight.green, config.daylight.blue]) {
     const delay = [Math.floor(color.delay/60), color.delay % 60];
     const duration = [Math.floor(color.duration/60), color.duration % 60];
     parts.push(pad2(delay[0]) + pad2(delay[1]) + pad2(duration[0]) + pad2(duration[1]) + '00000000' + pad2(color.slope));

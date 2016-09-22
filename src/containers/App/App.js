@@ -34,7 +34,7 @@ class App extends React.Component {
 
   get content() {
     const { history, routes, routerKey, store, actions } = this.props;
-    let newProps = {
+    const newProps = {
       actions,
       ...this.props
     };
