@@ -63,7 +63,7 @@ const lampConfig = {
   },
   night: {
     color: 'blue',
-    intensity: 0.1
+    intensity: 10
   },
   mode: 'master'
 };

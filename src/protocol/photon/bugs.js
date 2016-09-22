@@ -36,7 +36,7 @@ export const supportOnSave = (config, discoveredBugs) => {
   bugList.reverse();
   discoveredBugs = discoveredBugs.slice().reverse();
 
-  for (const bug in bugList) {
+  for (const bug in discoveredBugs) {
     [config, discoveredBugs] = bug(config, discoveredBugs);
   }
   return config;

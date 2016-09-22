@@ -12,12 +12,12 @@ const collectTarget = (target) => (config, status) => {
   }, {});
 };
 
-const daylight = (config, status) => {
+const daylight = (config) => {
   const r = config.daylight.red.intensity / 100;
   const b = config.daylight.blue.intensity / 100;
   const w = config.daylight.white.intensity / 100;
 
-  const intensity = Math.max(((r + w - floorIntensity) / (1 - floorIntensity)), ((b + w - floorIntensity) / (1 - floorIntensity)));
+  const intensity = +(Math.max(((r + w - 2*floorIntensity) / (1 - floorIntensity)), ((b + w - 2*floorIntensity) / (1 - floorIntensity)))).toFixed(2);
   let mainColor;
   if (b > r) {
     mainColor = (b - floorIntensity) / ((1 - floorIntensity) * intensity);
@@ -42,16 +42,16 @@ const night = (config) => {
   };
 };
 
-const timings = (config, status) => {
+const timings = (config) => {
   return {
-    dawnBeginsAt: config.daylight.white.delay,
-    duskEndsAt: (config.daylight.white.delay + config.daylight.white.duration + 2 * twilightDuration),
+    dawnBeginsAt: config.daylight.red.delay,
+    duskEndsAt: (config.daylight.red.delay + config.daylight.red.duration + 2 * twilightDuration),
   };
 };
 
-const twilight = (config, status) => {
+const twilight = (config) => {
   return {
-    redLevel: (config.daylight.white.delay - config.daylight.red.delay) / twilightDuration
+    redLevel: Math.min(1, Math.max(0,(config.daylight.white.delay - config.daylight.red.delay) / twilightDuration)),
   };
 };
 
