@@ -50,6 +50,7 @@ var config = getConfig({
 });
 
 config.output.publicPath = '';
+config.resolve.modulesDirectories = ['src', 'node_modules'];
 
 config.resolve.extensions.push(".desktop.js", ".coffee");
 
@@ -126,7 +127,7 @@ config.resolve.alias = {
   components: join(src, 'components'),
   containers: join(src, 'containers'),
   math: join(src, 'math'),
-  protocol: join(src, 'protocol'),
+  //protocol: join(src, 'protocol'),
   utils: join(src, 'utils'),
   styles: join(src, 'styles')
 };
