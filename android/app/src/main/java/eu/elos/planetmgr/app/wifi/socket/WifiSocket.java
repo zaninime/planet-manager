@@ -74,6 +74,7 @@ public class WifiSocket {
                 int read = inputStream.read(buffer);
                 byte[] buffer2 = Arrays.copyOfRange(buffer, 0, read);
                 response = new String(buffer2);
+                socket.close();
             } catch (Exception e) {
                 try {
                     if (socket != null) {
