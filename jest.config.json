@@ -1,3 +1,4 @@
 {
-    "modulePaths": "src"
+    "modulePaths": "src",
+    "modulePathIgnorePatterns": [".npm"]
 }
