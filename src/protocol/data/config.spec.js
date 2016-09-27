@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import * as ofConfig from './config';
 import { ProtocolError } from '../errors';
 
-describe('config:parseResponse', () => {
+describe('parseResponse', () => {
   it('parses a valid PlanetPRO Mk.I response without throwing errors', () => {
     const response = '00200830000000001000100850000000002000200830000000001000000915000000003011442332441103002003008008040150800800500000\r\n';
     expect(ofConfig.parseResponse.bind(undefined, response)).to.not.throw(Error);
@@ -15,7 +15,7 @@ describe('config:parseResponse', () => {
   });
 });
 
-describe('config:buildUpdate', () => {
+describe('buildUpdate', () => {
   it('creates a valid configuration string', () => {
     const config = JSON.parse(`
       {
@@ -35,7 +35,7 @@ describe('config:buildUpdate', () => {
   });
 });
 
-describe('config:buildRequest', () => {
+describe('buildRequest', () => {
   it('creates a valid request', () => {
     expect(ofConfig.buildRequest()).to.equal('\x02PLANETGETPARAM01\x03');
   });

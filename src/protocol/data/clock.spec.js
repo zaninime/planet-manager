@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import * as ofClock from './clock';
 import { ProtocolError } from '../errors';
 
-describe('clock:parseResponse', () => {
+describe('parseResponse', () => {
   it('parses a valid response without throwing errors', () => {
     const response = 'PLANETCOUNTER12FAB\r\n';
     expect(ofClock.parseResponse.bind(undefined, response)).to.not.throw(Error);
@@ -15,7 +15,7 @@ describe('clock:parseResponse', () => {
   });
 });
 
-describe('clock:buildUpdate', () => {
+describe('buildUpdate', () => {
   it('creates a valid update request', () => {
     const date = new Date();
     date.setHours(13);
@@ -29,7 +29,7 @@ describe('clock:buildUpdate', () => {
   });
 });
 
-describe('clock:buildRequest', () => {
+describe('buildRequest', () => {
   it('creates a valid request', () => {
     expect(ofClock.buildRequest()).to.equal('\x02GETCOUNTER\x03');
   });

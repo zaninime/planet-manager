@@ -49,7 +49,7 @@ const config = {
   mode: 'master'
 };
 
-describe('collector:daylight', () => {
+describe('daylight', () => {
   it('translates correctly color configurations', () => {
 /*
     const configRed = {
@@ -83,21 +83,21 @@ describe('collector:daylight', () => {
   });
 });
 
-describe('collector:night', () => {
+describe('night', () => {
   it('reads night color and intensity correctly', () => {
     expect(ofCollector.collect(config, status).night.color).to.equal('blue');
     expect(ofCollector.collect(config, status).night.intensity).to.equal(0.38);
   });
 });
 
-describe('collector:timings', () => {
+describe('timings', () => {
   it('finds out dawn and dusk timings correctly', () => {
     expect(ofCollector.collect(config, status).timings.dawnBeginsAt).to.equal(50);
     expect(ofCollector.collect(config, status).timings.duskEndsAt).to.equal(130);
   });
 });
 
-describe('collector:twilight', () => {
+describe('twilight', () => {
   it('gives an acceptable red level answer', () => {
     expect(ofCollector.collect(config, status).twilight.redLevel).to.be.within(0,1);
 

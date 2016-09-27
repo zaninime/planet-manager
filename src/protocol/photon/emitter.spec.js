@@ -2,7 +2,7 @@
 import { expect } from 'chai';
 import * as ofEmitter from './emitter';
 
-describe('emitter:daylight', () => {
+describe('daylight', () => {
   const caps = {
     bugs: [],
     features: {

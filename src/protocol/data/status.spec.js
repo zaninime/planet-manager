@@ -3,7 +3,7 @@ import * as ofStatus from './status';
 import { expect } from 'chai';
 import { ProtocolError } from '../errors';
 
-describe('status:parseResponse', () => {
+describe('parseResponse', () => {
   it('parses a valid response', () => {
     const response = '01600000000001500023710000000114\r\n';
     expect(ofStatus.parseResponse(response)).to.contain.all.keys(['productId', 'colors']);
@@ -15,7 +15,7 @@ describe('status:parseResponse', () => {
   });
 });
 
-describe('status:buildUpdate', () => {
+describe('buildUpdate', () => {
   it('creates a valid update', () => {
     expect(ofStatus.buildUpdate(100, 99, 10, 1)).to.equal('\x02PLANETSETSTATUS01100099010001\x03');
   });
@@ -29,7 +29,7 @@ describe('status:buildUpdate', () => {
   });
 });
 
-describe('status:buildRequest', () => {
+describe('buildRequest', () => {
   it('creates a valid request', () => {
     expect(ofStatus.buildRequest()).to.equal('\x02PLANETGETSTATUS01\x03');
   });
