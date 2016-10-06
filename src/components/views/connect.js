@@ -2,7 +2,7 @@ import React from 'react';
 import Radium, { StyleRoot } from 'radium';
 import Header from 'components/views/Header';
 import ConnectCard from 'components/views/ConnectCard';
-import ConnectErrorDialog from 'components/connected/ConnectErrorDialog';
+import ConnectErrorDialog from 'components/connected/ErrorDialog';
 // import NfcCard from 'views/NfcCard/NfcCard';
 import VersionNumber from 'components/views/VersionNumber';
 

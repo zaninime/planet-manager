@@ -1,9 +1,9 @@
 import { connect } from 'react-redux';
 import LoadingDialog from 'components/views/LoadingDialog';
-import { isThrown } from 'reducers';
+import { isLoadingDialogOpen } from 'reducers';
 
 const mapStateToProps = (state) => ({
-  isThrown: isThrown(state)
+  isLoadingDialogOpen: isLoadingDialogOpen(state)
 });
 
 export default connect(mapStateToProps)(LoadingDialog);

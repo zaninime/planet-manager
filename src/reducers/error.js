@@ -1,8 +1,8 @@
 // actions
-const SET_MESSAGE = 'connectError/SET_MESSAGE';
-const TOGGLE_ERROR = 'connectError/TOGGLE_ERROR';
+export const SET_MESSAGE = 'error/SET_MESSAGE';
+export const TOGGLE_ERROR = 'error/TOGGLE_ERROR';
 
-const connectError = (state = { error: false, message: "" }, action) => {
+const error = (state = { error: false, message: "" }, action) => {
   switch (action.type) {
   case TOGGLE_ERROR:
     return { ...state, error: !state.error };
@@ -13,7 +13,7 @@ const connectError = (state = { error: false, message: "" }, action) => {
   }
 };
 
-export default connectError;
+export default error;
 
 // action creators
 export const toggleError = (lampId) => ({ type: TOGGLE_ERROR, lampId });

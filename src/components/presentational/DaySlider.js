@@ -4,7 +4,7 @@ import DayGradientIcon from './DayGradientIcon';
 import CircleGradientIcon from 'components/presentational/CircleGradientIcon';
 import SliderButton from 'components/presentational/SliderButton';
 import RaisedButton from 'material-ui/RaisedButton';
-import { GradientReader } from 'utils/utils';
+import { GradientReader } from 'utils/gradient';
 import shallowCompare from 'react-addons-shallow-compare';
 
 const styles = {

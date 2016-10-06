@@ -1,7 +1,7 @@
 import React from 'react';
 import Radium from 'radium';
 import SvgIcon from 'material-ui/SvgIcon';
-import { describeArc } from 'utils/utils';
+import { describeArc } from 'utils/gradient';
 
 const DayGradientIcon = ({style, radius, borderWidth, firstColor, secondColor, thirdColor, fourthColor}) => {
   const halfBorder = borderWidth / 2;

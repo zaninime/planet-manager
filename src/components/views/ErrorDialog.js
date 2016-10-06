@@ -9,7 +9,7 @@ const styles = {
   }
 };
 
-class ConnectErrorDialog extends Component {
+class ErrorDialog extends Component {
   constructor(props) {
     super(props);
     this.handleRequestClose = this.handleRequestClose.bind(this);
@@ -53,10 +53,10 @@ class ConnectErrorDialog extends Component {
   }
 }
 
-ConnectErrorDialog.propTypes = {
+ErrorDialog.propTypes = {
   isThrown: React.PropTypes.bool.isRequired,
   message: React.PropTypes.string.isRequired,
   toggleError: React.PropTypes.func.isRequired
 };
 
-export default Radium(ConnectErrorDialog);
+export default Radium(ErrorDialog);

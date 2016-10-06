@@ -1,6 +1,6 @@
 import React from 'react';
 import SvgIcon from 'material-ui/SvgIcon';
-import { describeArc } from 'utils/utils';
+import { describeArc } from 'utils/gradient';
 
 const CircleGradientIcon = ({style, radius, borderWidth, firstColor, secondColor}) => {
   const halfBorder = borderWidth / 2;

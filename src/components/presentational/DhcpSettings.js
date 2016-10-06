@@ -2,8 +2,12 @@ import React, { Component } from 'react';
 import Radium from 'radium';
 import TextField from 'material-ui/TextField';
 import Toggle from 'material-ui/Toggle';
-import ip from 'ip';
 import shallowCompare from 'react-addons-shallow-compare';
+import {
+  validateAddress,
+  validateNetmask,
+  validateGateway
+} from 'utils/addressing';
 
 const styles = {
   content: {
@@ -110,7 +114,7 @@ class DhcpSettings extends Component {
       errorText = 'Empty fields are not allowed';
     else if (addressErrorText === '' &&
             netmaskErrorText === '' &&
-            !this.validateGateway(gatewayValue, netmaskValue, addressValue))
+            !validateGateway(gatewayValue, netmaskValue, addressValue))
       errorText = 'Not valid';
 
     let fieldError = state.fieldError;
@@ -134,57 +138,11 @@ class DhcpSettings extends Component {
     setGateway(gatewayValue);
   }
 
-  validateNetmask(value) {
-    value = value.trim();
-    const regex = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
-    const match = value.match(regex);
-
-    let valid = true;
-    if (match !== null) {
-      const netmaskBytes = [0, 128, 192, 224, 240, 248, 252, 254, 255];
-      let last = 0;
-
-      for (let i = 4; i > 0; i--) {
-        for (let j = netmaskBytes.length - 1; j >= last; j--) {
-          if (netmaskBytes[j] === parseInt(match[i])) {
-            last = j;
-            break;
-          }
-
-          if (j === last) {
-            valid = false;
-          }
-        }
-      }
-    }
-
-    return valid && match !== null;
-  }
-
-  validateAddress(value) {
-    return ip.isV4Format(value) || ip.isV6Format(value);
-  }
-
-  validateGateway(gatewayValue, netmaskValue, addressValue) {
-    if (!(this.validateNetmask(netmaskValue) && this.validateAddress(addressValue)))
-      return false;
-
-    gatewayValue = gatewayValue.trim();
-
-    const regex = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
-    const match = gatewayValue.match(regex);
-
-    // subnet information
-    const result = ip.subnet(addressValue, netmaskValue);
-
-    return match != null && result.contains(gatewayValue);
-  }
-
   validate(field, value) {
     if (field === 'address')
-      return this.validateAddress(value);
+      return validateAddress(value);
     else if (field === 'netmask')
-      return this.validateNetmask(value);
+      return validateNetmask(value);
   }
 
   render() {

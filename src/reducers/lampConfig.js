@@ -8,18 +8,25 @@ import temperature, * as fromTemperature from './temperature';
 import fan, * as fromFan from './fan';
 import channels, * as fromChannels from './channels';
 import master from './master';
-import { setMessage } from './connectError';
+import { setMessage } from './error';
 import wifi, * as fromWifi from './wifi';
 import caps, * as fromCaps from './caps';
 import * as fromManaged from './managed';
 import * as fromAddressing from './addressing';
 import configSaved, * as fromConfigSaved from './configSaved';
 import fieldError, * as fromFieldError from 'reducers/fieldError';
+import sleep from 'utils/sleep';
+import { wifiToProtocolFormat } from 'utils/addressing';
 
-// import EError from 'utils/error';
-// import { IncompatibleConfigError } from 'protocol/photon/collector';
 import { collect } from 'protocol/photon/collector';
-import { fetchConfig, fetchStatus } from 'protocol/api';
+import { emit } from 'protocol/photon/emitter';
+import {
+  fetchConfig,
+  fetchStatus,
+  saveConfig as apiSaveConfig,
+  saveClock,
+  saveWifiConfig
+} from 'protocol/api';
 
 export const LOAD_START = 'lampConfig/LOAD_START';
 export const LOAD_COMPLETED = 'lampConfig/LOAD_COMPLETED';
@@ -62,7 +69,8 @@ const configs = (state = {}, action) => {
   case fromAddressing.SET_IP:
   case fromAddressing.SET_NETMASK:
   case fromAddressing.SET_GATEWAY:
-  case fromConfigSaved.SET_SAVED:
+  case fromConfigSaved.SAVE_START:
+  case fromConfigSaved.SAVE_COMPLETED:
   case fromFieldError.SET_ERROR:
     return { ...state, [action.lampId]: singleConfig(state[action.lampId], action) };
   default:
@@ -74,9 +82,8 @@ export default configs;
 
 // action creators
 export const loadConfig = (lampId) => (dispatch) => {
-  const sleep = (t) => new Promise(resolve => setTimeout(resolve, t));
   dispatch({type: LOAD_START, lampId});
-  (async function() {
+  (async (lampId, dispatch) => {
     let status = {}, config = {}, error = false;
 
     try {
@@ -102,10 +109,45 @@ export const loadConfig = (lampId) => (dispatch) => {
   });
 };
 
-// TODO:
-// export const saveConfig = (lampId) => (dispatch) => {
-//
-// };
+export const saveConfig = (lampId, state) => (dispatch) => {
+  dispatch(fromConfigSaved.startSaving(lampId));
+  let configSaved = isLampConfigSaved(state);
+  const wifiConfigSaved = isWifiConfigSaved(state);
+  (async (lampId, state) => {
+    await saveClock(lampId, new Date());
+    await sleep(1000);
+    const config = await emit(state, state.caps);
+    await apiSaveConfig(lampId, config);
+    await sleep(1000);
+
+    configSaved = true;
+
+    if (!wifiConfigSaved) {
+      const wifiConfig = await wifiToProtocolFormat(state.wifi);
+      await saveWifiConfig(lampId, wifiConfig);
+    }
+  })(lampId, state).then(() => {
+    dispatch(fromConfigSaved.setConfigSaved(lampId));
+
+    // if wifi has changed then redirect
+    // done after saving otherwise loading
+    // dialog is reopened in home page
+    if (!wifiConfigSaved)
+      dispatch(push('/'));
+  }, err => {
+    if (err.message === undefined)
+      err.message = "Unknown";
+
+    if (!configSaved && !wifiConfigSaved)
+      err.message += ". Retry, lamp and wifi configurations haven't been saved!";
+    else if (!configSaved)
+      err.message += ". Retry, lamp configuration hasn't been saved!";
+    else if (!wifiConfigSaved)
+      err.message += ". Retry, wifi configuration hasn't been saved!";
+
+    dispatch(setMessage(err.message));
+  });
+};
 
 // selectors
 
@@ -151,6 +193,7 @@ export const getGateway = (state) => fromWifi.getGateway(state.wifi);
 
 // configSaved
 export const isConfigSaved = (state) => fromConfigSaved.isConfigSaved(state.configSaved);
+export const isLampConfigSaved = (state) => fromConfigSaved.isLampConfigSaved(state.configSaved);
 export const isWifiConfigSaved = (state) => fromConfigSaved.isWifiConfigSaved(state.configSaved);
 
 // fieldError

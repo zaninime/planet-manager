@@ -17,16 +17,11 @@ class LoadingDialog extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { open: this.props.dialogOpen };
+    this.state = { open: this.props.isLoadingDialogOpen };
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.isThrown) {
-      this.setState({ open: false });
-      this.props.onRequestClose();
-    }
-    else
-      this.setState({ open: nextProps.dialogOpen });
+    this.setState({ open: nextProps.isLoadingDialogOpen });
   }
 
   shouldComponentUpdate(nextProps, nextState) {
@@ -48,9 +43,7 @@ class LoadingDialog extends Component {
 }
 
 LoadingDialog.propTypes = {
-  dialogOpen: React.PropTypes.bool.isRequired,
-  isThrown: React.PropTypes.bool.isRequired,
-  onRequestClose: React.PropTypes.func.isRequired
+  isLoadingDialogOpen: React.PropTypes.bool.isRequired
 };
 
 export default LoadingDialog;

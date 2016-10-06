@@ -2,13 +2,15 @@ import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
 import lampConfig, * as fromLampConfig from './lampConfig';
 import discovery, * as fromDiscovery from './discovery';
-import connectError, * as fromConnectError from './connectError';
+import error, * as fromConnectError from './error';
+import loadingDialogOpen, * as fromLoadingDialogOpen from './loadingDialogOpen';
 
 const rootReducer = combineReducers({
   routing: routerReducer,
   lampConfig,
   discovery,
-  connectError
+  error,
+  loadingDialogOpen
 });
 
 export default rootReducer;
@@ -44,10 +46,6 @@ export const getFanStartTemperature = (state, lampId) => fromLampConfig.getFanSt
 // fan
 export const getFanMaxSpeed = (state, lampId) => fromLampConfig.getFanMaxSpeed(state.lampConfig[lampId]);
 
-// connectError
-export const isThrown = (state) => fromConnectError.isThrown(state.connectError);
-export const getMessage = (state) => fromConnectError.getMessage(state.connectError);
-
 // caps
 export const isChannelMappingAvailable = (state, lampId) => fromLampConfig.isChannelMappingAvailable(state.lampConfig[lampId]);
 export const isFanConfigAvailable = (state, lampId) => fromLampConfig.isFanConfigAvailable(state.lampConfig[lampId]);
@@ -68,3 +66,10 @@ export const isWifiConfigSaved = (state, lampId) => fromLampConfig.isWifiConfigS
 
 // fieldError
 export const getFieldError = (state, lampId) => fromLampConfig.getFieldError(state.lampConfig[lampId]);
+
+// error
+export const isThrown = (state) => fromConnectError.isThrown(state.error);
+export const getMessage = (state) => fromConnectError.getMessage(state.error);
+
+// loadingDialogOpen
+export const isLoadingDialogOpen = (state) => fromLoadingDialogOpen.isLoadingDialogOpen(state.loadingDialogOpen);

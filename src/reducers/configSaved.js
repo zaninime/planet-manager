@@ -10,9 +10,10 @@ import * as fromManaged from './managed';
 import * as fromAddressing from './addressing';
 
 // actions
-export const SET_SAVED = 'lampConfig/configSaved/SET_SAVED';
+export const SAVE_START = 'lampConfig/SAVE_START';
+export const SAVE_COMPLETED = 'lampConfig/SAVE_COMPLETED';
 
-const configSaved = (state = { overall: true, wifi: true }, action) => {
+const configSaved = (state = { lamp: true, wifi: true }, action) => {
   switch (action.type) {
   case fromDaylight.SET_COLOR:
   case fromDaylight.SET_INTENSITY:
@@ -26,7 +27,7 @@ const configSaved = (state = { overall: true, wifi: true }, action) => {
   case fromChannels.NEXT_COLOR:
   case fromChannels.TOGGLE_ENABLE:
   case fromChannels.TOGGLE_DISABLE:
-    return { ...state, overall: false };
+    return { ...state, lamp: false };
   case fromWifi.SET_MODE:
   case fromWifi.SET_SSID:
   case fromManaged.SET_PASSWORD:
@@ -34,9 +35,9 @@ const configSaved = (state = { overall: true, wifi: true }, action) => {
   case fromAddressing.SET_IP:
   case fromAddressing.SET_NETMASK:
   case fromAddressing.SET_GATEWAY:
-    return { overall: false, wifi: false };
-  case SET_SAVED:
-    return { overall: true, wifi: true };
+    return { ...state, wifi: false };
+  case SAVE_COMPLETED:
+    return { lamp: true, wifi: true };
   default:
     return state;
   }
@@ -45,8 +46,10 @@ const configSaved = (state = { overall: true, wifi: true }, action) => {
 export default configSaved;
 
 // action creators
-export const setConfiSaved = (lampId) => ({ type: SET_SAVED, lampId });
+export const startSaving = (lampId) => ({ type: SAVE_START, lampId });
+export const setConfigSaved = (lampId) => ({ type: SAVE_COMPLETED, lampId });
 
 // selectors
-export const isConfigSaved = (state) => state.overall;
+export const isConfigSaved = (state) => state.lamp && state.wifi;
+export const isLampConfigSaved = (state) => state.lamp;
 export const isWifiConfigSaved = (state) => state.wifi;
