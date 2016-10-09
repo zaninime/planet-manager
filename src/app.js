@@ -1,10 +1,11 @@
 /* global __DEBUG__ */
 require("babel-polyfill");
 
-import Raven from 'raven';
+import Raven from 'raven-js';
+import { id as releaseId } from '../release.json';
 
 if (!__DEBUG__) {
-  Raven.config('https://2ad77563f2b0445299ad43c51bcb04c8@sentry.io/104795').install();
+  Raven.config('https://2ad77563f2b0445299ad43c51bcb04c8@sentry.io/104795', { release: releaseId }).install();
 }
 
 import React from 'react';
