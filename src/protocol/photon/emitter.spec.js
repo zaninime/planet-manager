@@ -1,5 +1,4 @@
-/* globals describe it */
-import { expect } from 'chai';
+/* globals describe it expect */
 import * as ofEmitter from './emitter';
 
 describe('daylight', () => {
@@ -44,91 +43,91 @@ describe('daylight', () => {
   };
 
   it('generates correct white channel configurations', () => {
-    expect(ofEmitter.emit(config, caps).daylight.white.intensity).to.equal(15);
+    expect(ofEmitter.emit(config, caps).daylight.white.intensity).toEqual(15);
     config.daylight.mainColor = -0.5;
     config.daylight.intensity = 0.5;
-    expect(ofEmitter.emit(config, caps).daylight.white.intensity).to.be.closeTo(36,.5);
+    expect(ofEmitter.emit(config, caps).daylight.white.intensity).toBeCloseTo(36, 0);
     config.daylight.mainColor = 0.5;
     config.daylight.intensity = 0.5;
-    expect(ofEmitter.emit(config, caps).daylight.white.intensity).to.be.closeTo(36,.5);
+    expect(ofEmitter.emit(config, caps).daylight.white.intensity).toBeCloseTo(36, 0);
   });
 
   it('generates correct red channel configurations', () => {
     config.daylight.mainColor = 1;
     config.daylight.intensity = 1;
-    expect(ofEmitter.emit(config, caps).daylight.red.intensity).to.equal(15);
+    expect(ofEmitter.emit(config, caps).daylight.red.intensity).toEqual(15);
     config.daylight.mainColor = 0.5;
     config.daylight.intensity = 0.5;
-    expect(ofEmitter.emit(config, caps).daylight.red.intensity).to.equal(15);
+    expect(ofEmitter.emit(config, caps).daylight.red.intensity).toEqual(15);
     config.daylight.mainColor = -0.5;
     config.daylight.intensity = 0.5;
-    expect(ofEmitter.emit(config, caps).daylight.red.intensity).to.be.closeTo(36,.5);
+    expect(ofEmitter.emit(config, caps).daylight.red.intensity).toBeCloseTo(36, 0);
   });
   it('generates correct blue channel configurations', () => {
     config.daylight.mainColor = 1;
     config.daylight.intensity = 1;
-    expect(ofEmitter.emit(config, caps).daylight.blue.intensity).to.equal(100);
+    expect(ofEmitter.emit(config, caps).daylight.blue.intensity).toEqual(100);
     config.daylight.mainColor = -0.5;
     config.daylight.intensity = 0.5;
-    expect(ofEmitter.emit(config, caps).daylight.blue.intensity).to.equal(15);
+    expect(ofEmitter.emit(config, caps).daylight.blue.intensity).toEqual(15);
     config.daylight.mainColor = 0.5;
     config.daylight.intensity = 0.5;
-    expect(ofEmitter.emit(config, caps).daylight.blue.intensity).to.be.closeTo(36,.5);
+    expect(ofEmitter.emit(config, caps).daylight.blue.intensity).toBeCloseTo(36, 0);
   });
   it('generates correct green channel configurations', () => {
     config.daylight.mainColor = 1;
     config.daylight.intensity = 1;
-    expect(ofEmitter.emit(config, caps).daylight.green.intensity).to.equal(10);
+    expect(ofEmitter.emit(config, caps).daylight.green.intensity).toEqual(10);
     config.daylight.mainColor = -0.5;
     config.daylight.intensity = 0.5;
-    expect(ofEmitter.emit(config, caps).daylight.green.intensity).to.be.closeTo(24,.5);
+    expect(ofEmitter.emit(config, caps).daylight.green.intensity).toBeCloseTo(24, 0);
     config.daylight.mainColor = -0.49;
     config.daylight.intensity = 0.5;
-    expect(ofEmitter.emit(config, caps).daylight.green.intensity).to.be.closeTo(24,.5);
+    expect(ofEmitter.emit(config, caps).daylight.green.intensity).toBeCloseTo(24, 0);
   });
   it('generates correct duration values', () => {
-    expect(ofEmitter.emit(config, caps).daylight.green.duration).to.equal(140);
+    expect(ofEmitter.emit(config, caps).daylight.green.duration).toEqual(140);
     config.timings.dawnBeginsAt = 0;
     config.timings.duskEndsAt = 1000;
-    expect(ofEmitter.emit(config, caps).daylight.green.duration).to.equal(940);
+    expect(ofEmitter.emit(config, caps).daylight.green.duration).toEqual(940);
   });
 
   it('generates correct delay values', () => {
     config.timings.dawnBeginsAt = 300;
     config.timings.duskEndsAt = 500;
     config.twilight.redLevel = 0;
-    expect(ofEmitter.emit(config, caps).daylight.red.delay).to.equal(300);
-    expect(ofEmitter.emit(config, caps).daylight.green.delay).to.equal(300);
-    expect(ofEmitter.emit(config, caps).daylight.blue.delay).to.equal(300);
-    expect(ofEmitter.emit(config, caps).daylight.white.delay).to.equal(300);
+    expect(ofEmitter.emit(config, caps).daylight.red.delay).toEqual(300);
+    expect(ofEmitter.emit(config, caps).daylight.green.delay).toEqual(300);
+    expect(ofEmitter.emit(config, caps).daylight.blue.delay).toEqual(300);
+    expect(ofEmitter.emit(config, caps).daylight.white.delay).toEqual(300);
     config.timings.dawnBeginsAt = 0;
     config.timings.duskEndsAt = 1000;
     config.twilight.redLevel = 0.5;
-    expect(ofEmitter.emit(config, caps).daylight.red.delay).to.equal(0);
-    expect(ofEmitter.emit(config, caps).daylight.green.delay).to.equal(15);
-    expect(ofEmitter.emit(config, caps).daylight.blue.delay).to.equal(15);
-    expect(ofEmitter.emit(config, caps).daylight.white.delay).to.equal(15);
+    expect(ofEmitter.emit(config, caps).daylight.red.delay).toEqual(0);
+    expect(ofEmitter.emit(config, caps).daylight.green.delay).toEqual(15);
+    expect(ofEmitter.emit(config, caps).daylight.blue.delay).toEqual(15);
+    expect(ofEmitter.emit(config, caps).daylight.white.delay).toEqual(15);
     config.twilight.redLevel = 0.2;
-    expect(ofEmitter.emit(config, caps).daylight.red.delay).to.equal(0);
-    expect(ofEmitter.emit(config, caps).daylight.green.delay).to.equal(6);
-    expect(ofEmitter.emit(config, caps).daylight.blue.delay).to.equal(6);
-    expect(ofEmitter.emit(config, caps).daylight.white.delay).to.equal(6);
+    expect(ofEmitter.emit(config, caps).daylight.red.delay).toEqual(0);
+    expect(ofEmitter.emit(config, caps).daylight.green.delay).toEqual(6);
+    expect(ofEmitter.emit(config, caps).daylight.blue.delay).toEqual(6);
+    expect(ofEmitter.emit(config, caps).daylight.white.delay).toEqual(6);
   });
   it('generates correct slope values', () => {
     config.twilight.redLevel = 0;
-    expect(ofEmitter.emit(config, caps).daylight.red.slope).to.equal(30);
-    expect(ofEmitter.emit(config, caps).daylight.green.slope).to.equal(30);
-    expect(ofEmitter.emit(config, caps).daylight.blue.slope).to.equal(30);
-    expect(ofEmitter.emit(config, caps).daylight.white.slope).to.equal(30);
+    expect(ofEmitter.emit(config, caps).daylight.red.slope).toEqual(30);
+    expect(ofEmitter.emit(config, caps).daylight.green.slope).toEqual(30);
+    expect(ofEmitter.emit(config, caps).daylight.blue.slope).toEqual(30);
+    expect(ofEmitter.emit(config, caps).daylight.white.slope).toEqual(30);
     config.twilight.redLevel = 0.5;
-    expect(ofEmitter.emit(config, caps).daylight.red.slope).to.equal(30);
-    expect(ofEmitter.emit(config, caps).daylight.green.slope).to.equal(15);
-    expect(ofEmitter.emit(config, caps).daylight.blue.slope).to.equal(15);
-    expect(ofEmitter.emit(config, caps).daylight.white.slope).to.equal(15);
+    expect(ofEmitter.emit(config, caps).daylight.red.slope).toEqual(30);
+    expect(ofEmitter.emit(config, caps).daylight.green.slope).toEqual(15);
+    expect(ofEmitter.emit(config, caps).daylight.blue.slope).toEqual(15);
+    expect(ofEmitter.emit(config, caps).daylight.white.slope).toEqual(15);
     config.twilight.redLevel = 0.2;
-    expect(ofEmitter.emit(config, caps).daylight.red.slope).to.equal(30);
-    expect(ofEmitter.emit(config, caps).daylight.green.slope).to.equal(24);
-    expect(ofEmitter.emit(config, caps).daylight.blue.slope).to.equal(24);
-    expect(ofEmitter.emit(config, caps).daylight.white.slope).to.equal(24);
+    expect(ofEmitter.emit(config, caps).daylight.red.slope).toEqual(30);
+    expect(ofEmitter.emit(config, caps).daylight.green.slope).toEqual(24);
+    expect(ofEmitter.emit(config, caps).daylight.blue.slope).toEqual(24);
+    expect(ofEmitter.emit(config, caps).daylight.white.slope).toEqual(24);
   });
 });

@@ -1,17 +1,16 @@
-/* globals describe it */
-import { expect } from 'chai';
+/* globals describe it expect */
 import * as ofConfig from './config';
 import { ProtocolError } from '../errors';
 
 describe('parseResponse', () => {
   it('parses a valid PlanetPRO Mk.I response without throwing errors', () => {
     const response = '00200830000000001000100850000000002000200830000000001000000915000000003011442332441103002003008008040150800800500000\r\n';
-    expect(ofConfig.parseResponse.bind(undefined, response)).to.not.throw(Error);
+    expect(ofConfig.parseResponse.bind(undefined, response)).not.toThrow();
   });
 
   it('throws a ProtocolError for an invalid format', () => {
     const response = '002008A0000000001000100850000000002000200830000000001000000915000000003011442332441103002003008008040150800800500000\r\n';
-    expect(ofConfig.parseResponse.bind(undefined, response)).to.throw(ProtocolError);
+    expect(ofConfig.parseResponse.bind(undefined, response)).toThrow(ProtocolError);
   });
 });
 
@@ -31,12 +30,12 @@ describe('buildUpdate', () => {
         "night": {"color": "blue","intensity": 15},
         "mode": "slave"
       }`);
-    expect(ofConfig.buildUpdate(config)).to.equal('\x02PLANETSETPARAM0100200830000000001000100850000000002000200830000000001000000915000000003011442332441103002003008008040150800800500000\x03');
+    expect(ofConfig.buildUpdate(config)).toEqual('\x02PLANETSETPARAM0100200830000000001000100850000000002000200830000000001000000915000000003011442332441103002003008008040150800800500000\x03');
   });
 });
 
 describe('buildRequest', () => {
   it('creates a valid request', () => {
-    expect(ofConfig.buildRequest()).to.equal('\x02PLANETGETPARAM01\x03');
+    expect(ofConfig.buildRequest()).toEqual('\x02PLANETGETPARAM01\x03');
   });
 });
