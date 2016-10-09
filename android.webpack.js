@@ -19,7 +19,7 @@ const publicPath = '';
 
 const root = resolve(__dirname);
 const src = join(root, 'src');
-const dest = join(root, 'dist', 'ios');
+const dest = join(root, 'dist', 'android');
 //const css = join(src, 'styles');
 
 var config = getConfig({
