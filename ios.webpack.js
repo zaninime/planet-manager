@@ -37,10 +37,14 @@ var config = getConfig({
   }
 });
 
-config.output.publicPath = '';
-config.resolve.root = ['src'];
+if (!isDev) {
+  config.devtool = 'source-map';
+}
 
-config.resolve.extensions.push(".ios.js");
+config.output.publicPath = '';
+config.resolve.root = [src];
+
+config.resolve.extensions.push('.ios.js');
 
 const defines = {
   __NODE_ENV__: JSON.stringify(NODE_ENV),
@@ -51,7 +55,13 @@ config.plugins = [
   new webpack.DefinePlugin(defines)
 ].concat(config.plugins);
 
-config.resolve.root = [src];
+config.plugins = config.plugins.filter(
+  e => e.constructor.name !== 'UglifyJsPlugin'
+).concat(new webpack.optimize.UglifyJsPlugin({
+  compress: { warnings: false },
+  output: { comments: false },
+  sourceMap: true
+}));
 
 // Dev
 if (isDev) {

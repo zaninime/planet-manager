@@ -37,8 +37,12 @@ var config = getConfig({
   }
 });
 
+if (!isDev) {
+  config.devtool = 'source-map';
+}
+
 config.output.publicPath = '';
-config.resolve.root = ['src'];
+config.resolve.root = [src];
 
 config.resolve.extensions.push('.android.js');
 
@@ -51,7 +55,13 @@ config.plugins = [
   new webpack.DefinePlugin(defines)
 ].concat(config.plugins);
 
-config.resolve.root = [src];
+config.plugins = config.plugins.filter(
+  e => e.constructor.name !== 'UglifyJsPlugin'
+).concat(new webpack.optimize.UglifyJsPlugin({
+  compress: { warnings: false },
+  output: { comments: false },
+  sourceMap: true
+}));
 
 // Dev
 if (isDev) {

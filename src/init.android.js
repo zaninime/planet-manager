@@ -2,9 +2,11 @@
 import { createDiscoveryListener, init as discoveryInit } from 'protocol/discovery';
 import { receiveBeacon } from 'reducers/discovery';
 import Raven from 'raven-js';
+import ravenInit from 'raven-plugin';
 import { id as releaseId } from '../release.json';
 
 if (!__DEBUG__) {
+  ravenInit(Raven);
   Raven.config('https://2ad77563f2b0445299ad43c51bcb04c8@sentry.io/104795', { release: releaseId }).install();
 }
 
