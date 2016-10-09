@@ -1,9 +1,6 @@
-config/
 npm-debug.log
-#.env
-.awsDetails
-dist/
-coverage/
+/dist/
+/coverage/
 
 /ios/web/
 # Created by https://www.gitignore.io/api/swift,xcode,objective-c,osx
