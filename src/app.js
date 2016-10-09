@@ -6,7 +6,7 @@ import ReactDOM from 'react-dom';
 
 import 'font-awesome/css/font-awesome.css';
 
-import App from 'containers/App/App';
+import App from 'components/connected/App';
 
 import {hashHistory} from 'react-router';
 //import makeRoutes from './routes';
@@ -20,10 +20,10 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 injectTapEventPlugin();
 
 const initialState = {};
-import configureStore from './store/configureStore';
+import configureStore from 'store/configureStore';
 const {store, history} = configureStore({initialState, historyType: hashHistory});
 
-import platformInit from './init';
+import platformInit from 'init';
 platformInit(store);
 
 import { blue500, blue800, orangeA400 } from 'material-ui/styles/colors';
