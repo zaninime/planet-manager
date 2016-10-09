@@ -1,6 +1,6 @@
 {
   "name": "planet-manager",
-  "version": "4.0.0-dev",
+  "version": "4.0.0",
   "description": "",
   "scripts": {
     "start": "gulp",
