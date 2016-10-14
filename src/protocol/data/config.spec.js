@@ -2,20 +2,20 @@
 import * as ofConfig from './config';
 import { ProtocolError } from '../errors';
 
-describe('parseResponse', () => {
-  it('parses a valid PlanetPRO Mk.I response without throwing errors', () => {
+describe('parseResponse', function() {
+  it('parses a valid PlanetPRO Mk.I response without throwing errors', function() {
     const response = '00200830000000001000100850000000002000200830000000001000000915000000003011442332441103002003008008040150800800500000\r\n';
     expect(ofConfig.parseResponse.bind(undefined, response)).not.toThrow();
   });
 
-  it('throws a ProtocolError for an invalid format', () => {
+  it('throws a ProtocolError for an invalid format', function() {
     const response = '002008A0000000001000100850000000002000200830000000001000000915000000003011442332441103002003008008040150800800500000\r\n';
     expect(ofConfig.parseResponse.bind(undefined, response)).toThrow(ProtocolError);
   });
 });
 
-describe('buildUpdate', () => {
-  it('creates a valid configuration string', () => {
+describe('buildUpdate', function() {
+  it('creates a valid configuration string', function() {
     const config = JSON.parse(`
       {
         "daylight": {
@@ -34,8 +34,8 @@ describe('buildUpdate', () => {
   });
 });
 
-describe('buildRequest', () => {
-  it('creates a valid request', () => {
+describe('buildRequest', function() {
+  it('creates a valid request', function() {
     expect(ofConfig.buildRequest()).toEqual('\x02PLANETGETPARAM01\x03');
   });
 });
