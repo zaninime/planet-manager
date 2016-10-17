@@ -1,7 +1,7 @@
-import { LOAD_COMPLETED } from './lampConfig';
+import { LOAD_COMPLETED } from './config';
 
 // actions
-export const SET_START_TEMPERATURE = 'lampConfig/temperature/SET_START_TEMPERATURE';
+export const SET_START_TEMPERATURE = 'config/temperature/SET_START_TEMPERATURE';
 
 // TODO: state initial value
 const temperature = (state = { fanStart: 15 }, action) => {

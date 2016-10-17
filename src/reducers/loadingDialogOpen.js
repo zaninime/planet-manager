@@ -1,14 +1,14 @@
-import * as fromLampConfig from './lampConfig';
-import * as fromConfigSaved from './configSaved';
+import * as fromLampConfig from './config';
+import * as fromSaved from './saved';
 import * as fromConnectError from './error';
 
 const loadingDialogOpen = (state = false, action) => {
   switch (action.type) {
   case fromLampConfig.LOAD_START:
-  case fromConfigSaved.SAVE_START:
+  case fromSaved.SAVE_START:
     return true;
   case fromLampConfig.LOAD_COMPLETED:
-  case fromConfigSaved.SAVE_COMPLETED:
+  case fromSaved.SAVE_COMPLETED:
   case fromConnectError.SET_MESSAGE: // prevents the overlapping of dialogs
     return false;
   default:

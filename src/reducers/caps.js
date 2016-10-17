@@ -1,4 +1,4 @@
-import { LOAD_COMPLETED } from './lampConfig';
+import { LOAD_COMPLETED } from './config';
 
 const caps = (state = {}, action) => {
   switch (action.type) {

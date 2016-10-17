@@ -1,8 +1,8 @@
-import { LOAD_COMPLETED } from './lampConfig';
+import { LOAD_COMPLETED } from './config';
 
 // actions
-export const SET_TIMER_START = 'lampConfig/timings/SET_TIMER_START';
-export const SET_TIMER_END = 'lampConfig/timings/SET_TIMER_END';
+export const SET_TIMER_START = 'config/timings/SET_TIMER_START';
+export const SET_TIMER_END = 'config/timings/SET_TIMER_END';
 
 const timings = (state = {dawnBeginsAt: 8 * 60,  duskEndsAt: 18 * 60}, action) => {
   switch (action.type) {

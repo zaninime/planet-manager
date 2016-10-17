@@ -51,7 +51,7 @@ class ManualConnectionDialog extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.isThrown && nextProps.dialogOpen) {
+    if ((nextProps.isThrown || nextProps.isLoadingDialogOpen) && nextProps.dialogOpen) {
       this.wasOpen = true;
       this.setState({ open: false });
     }

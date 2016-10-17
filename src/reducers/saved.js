@@ -10,10 +10,10 @@ import * as fromManaged from './managed';
 import * as fromAddressing from './addressing';
 
 // actions
-export const SAVE_START = 'lampConfig/SAVE_START';
-export const SAVE_COMPLETED = 'lampConfig/SAVE_COMPLETED';
+export const SAVE_START = 'config/SAVE_START';
+export const SAVE_COMPLETED = 'config/SAVE_COMPLETED';
 
-const configSaved = (state = { lamp: true, wifi: true }, action) => {
+const saved = (state = { lamp: true, wifi: true }, action) => {
   switch (action.type) {
   case fromDaylight.SET_COLOR:
   case fromDaylight.SET_INTENSITY:
@@ -43,7 +43,7 @@ const configSaved = (state = { lamp: true, wifi: true }, action) => {
   }
 };
 
-export default configSaved;
+export default saved;
 
 // action creators
 export const startSaving = (lampId) => ({ type: SAVE_START, lampId });

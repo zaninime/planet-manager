@@ -2,7 +2,7 @@
 
 **This is a work in progress!**
 
-The goal of this module is to convert the lamp configuration (called `lampConfig`) to an intelligible representation used by the application (called `highLevel`).
+The goal of this module is to convert the lamp configuration (called `config`) to an intelligible representation used by the application (called `highLevel`).
 
 The module should also identify different lamp models and firmware versions, in order to declare and correct specific bugs. Bugs and features should be considered in each function, processed inline.
 
@@ -39,7 +39,7 @@ const highLevel = {
   features: ['MASTER_SWITCH', 'CHANNEL_MAPPING', 'FAN_CONFIG', 'TEMPERATURE_CONFIG']
 };
 
-const lampConfig = {
+const config = {
   daylight: {
     white: {
       intensity: 56,

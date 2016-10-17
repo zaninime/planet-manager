@@ -69,7 +69,8 @@ class NavigationMenu extends Component {
       selectedIndex: 0,
       unsavedChangesDialogOpen: false,
       fieldErrorDialogOpen: false,
-      wifiChangedDialogOpen: false
+      wifiChangedDialogOpen: false,
+      snackbarOpen: false
     };
   }
 

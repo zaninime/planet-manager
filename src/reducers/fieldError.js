@@ -1,5 +1,5 @@
 // actions
-export const SET_ERROR = 'lampConfig/fieldError/SET_ERROR';
+export const SET_ERROR = 'config/fieldError/SET_ERROR';
 
 const fieldError = (state = false, action) => {
   switch (action.type) {

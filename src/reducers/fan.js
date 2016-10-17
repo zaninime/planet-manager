@@ -1,7 +1,7 @@
-import { LOAD_COMPLETED } from './lampConfig';
+import { LOAD_COMPLETED } from './config';
 
 // actions
-export const SET_MAX_SPEED = 'lampConfig/fan/SET_MAX_SPEED';
+export const SET_MAX_SPEED = 'config/fan/SET_MAX_SPEED';
 
 // TODO: state initial value
 const fan = (state = { maxSpeed: 50 }, action) => {

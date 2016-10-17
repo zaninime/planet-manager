@@ -2,8 +2,8 @@ import { SET_SSID } from './wifi';
 import addressing, * as fromAddressing from './addressing';
 
 // actions
-export const SET_PASSWORD = 'lampConfig/wifi/managed/SET_PASSWORD';
-export const TOGGLE_DHCP = 'lampConfig/wifi/managed/SET_DHCP';
+export const SET_PASSWORD = 'config/wifi/managed/SET_PASSWORD';
+export const TOGGLE_DHCP = 'config/wifi/managed/SET_DHCP';
 
 const managed = (state = {
   ssid: '', password: '', dhcp: true, addressing: {  }

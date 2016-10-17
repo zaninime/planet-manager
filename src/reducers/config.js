@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import { push } from 'react-router-redux';
+
 import daylight, * as fromDaylight from './daylight';
 import timings, * as fromTimings from './timings';
 import twilight, * as fromTwilight from './twilight';
@@ -8,16 +9,12 @@ import temperature, * as fromTemperature from './temperature';
 import fan, * as fromFan from './fan';
 import channels, * as fromChannels from './channels';
 import master from './master';
+import * as fromSaved from './saved';
 import { setMessage } from './error';
-import wifi, * as fromWifi from './wifi';
-import caps, * as fromCaps from './caps';
-import * as fromManaged from './managed';
-import * as fromAddressing from './addressing';
-import configSaved, * as fromConfigSaved from './configSaved';
-import fieldError, * as fromFieldError from 'reducers/fieldError';
+import * as fromLamps from './lamps';
+
 import sleep from 'utils/sleep';
 import { wifiToProtocolFormat } from 'utils/addressing';
-
 import { collect } from 'protocol/photon/collector';
 import { emit } from 'protocol/photon/emitter';
 import {
@@ -28,10 +25,10 @@ import {
   saveWifiConfig
 } from 'protocol/api';
 
-export const LOAD_START = 'lampConfig/LOAD_START';
-export const LOAD_COMPLETED = 'lampConfig/LOAD_COMPLETED';
+export const LOAD_START = 'config/LOAD_START';
+export const LOAD_COMPLETED = 'config/LOAD_COMPLETED';
 
-const singleConfig = combineReducers({
+const config = combineReducers({
   daylight,
   night,
   timings,
@@ -39,46 +36,10 @@ const singleConfig = combineReducers({
   channels,
   temperature,
   fan,
-  master,
-  caps,
-  wifi,
-  configSaved,
-  fieldError
+  master
 });
 
-const configs = (state = {}, action) => {
-  switch (action.type) {
-  // yeah, just a few...
-  case LOAD_COMPLETED:
-  case fromDaylight.SET_COLOR:
-  case fromDaylight.SET_INTENSITY:
-  case fromTimings.SET_TIMER_START:
-  case fromTimings.SET_TIMER_END:
-  case fromTwilight.SET_RED_LEVEL:
-  case fromNight.SET_COLOR:
-  case fromNight.SET_INTENSITY:
-  case fromTemperature.SET_START_TEMPERATURE:
-  case fromFan.SET_MAX_SPEED:
-  case fromChannels.NEXT_COLOR:
-  case fromChannels.TOGGLE_ENABLE:
-  case fromChannels.TOGGLE_DISABLE:
-  case fromWifi.SET_MODE:
-  case fromWifi.SET_SSID:
-  case fromManaged.SET_PASSWORD:
-  case fromManaged.TOGGLE_DHCP:
-  case fromAddressing.SET_IP:
-  case fromAddressing.SET_NETMASK:
-  case fromAddressing.SET_GATEWAY:
-  case fromConfigSaved.SAVE_START:
-  case fromConfigSaved.SAVE_COMPLETED:
-  case fromFieldError.SET_ERROR:
-    return { ...state, [action.lampId]: singleConfig(state[action.lampId], action) };
-  default:
-    return state;
-  }
-};
-
-export default configs;
+export default config;
 
 // action creators
 export const loadConfig = (lampId) => (dispatch) => {
@@ -110,28 +71,32 @@ export const loadConfig = (lampId) => (dispatch) => {
 };
 
 export const saveConfig = (lampId, state) => (dispatch) => {
-  dispatch(fromConfigSaved.startSaving(lampId));
-  let configSaved = isLampConfigSaved(state);
-  const wifiConfigSaved = isWifiConfigSaved(state);
+  dispatch(fromSaved.startSaving(lampId));
+
+  let configSaved = fromLamps.isLampConfigSaved(state);
+  const wifiConfigSaved = fromLamps.isWifiConfigSaved(state);
+
   (async (lampId, state) => {
+    const { config, wifi, caps } = state;
+
     await saveClock(lampId, new Date());
     await sleep(1000);
-    const config = await emit(state, state.caps);
-    await apiSaveConfig(lampId, config);
+    const lampConfig = await emit(config, caps);
+    await apiSaveConfig(lampId, lampConfig);
     await sleep(1000);
 
     configSaved = true;
 
     if (!wifiConfigSaved) {
-      const wifiConfig = await wifiToProtocolFormat(state.wifi);
+      const wifiConfig = await wifiToProtocolFormat(wifi);
       await saveWifiConfig(lampId, wifiConfig);
     }
   })(lampId, state).then(() => {
-    dispatch(fromConfigSaved.setConfigSaved(lampId));
+    dispatch(fromSaved.setConfigSaved(lampId));
 
-    // if wifi has changed then redirect
-    // done after saving otherwise loading
-    // dialog is reopened in home page
+    // if wifi has changed then redirect to the home page,
+    // this is done after saving otherwise the loading
+    // dialog is reopened in the home page
     if (!wifiConfigSaved)
       dispatch(push('/'));
   }, err => {
@@ -176,25 +141,3 @@ export const getFanStartTemperature = (state) => fromTemperature.getFanStartTemp
 
 // fan
 export const getFanMaxSpeed = (state) => fromFan.getFanMaxSpeed(state.fan);
-
-// caps
-export const isChannelMappingAvailable = (state) => fromCaps.isChannelMappingAvailable(state.caps);
-export const isFanConfigAvailable = (state) => fromCaps.isFanConfigAvailable(state.caps);
-export const isTemperatureConfigAvailable = (state) => fromCaps.isTemperatureConfigAvailable(state.caps);
-
-// wifi
-export const getMode = (state) => fromWifi.getMode(state.wifi);
-export const getSsid = (state) => fromWifi.getSsid(state.wifi);
-export const getPassword = (state) => fromWifi.getPassword(state.wifi);
-export const isDhcpEnabled = (state) => fromWifi.isDhcpEnabled(state.wifi);
-export const getIp = (state) => fromWifi.getIp(state.wifi);
-export const getNetmask = (state) => fromWifi.getNetmask(state.wifi);
-export const getGateway = (state) => fromWifi.getGateway(state.wifi);
-
-// configSaved
-export const isConfigSaved = (state) => fromConfigSaved.isConfigSaved(state.configSaved);
-export const isLampConfigSaved = (state) => fromConfigSaved.isLampConfigSaved(state.configSaved);
-export const isWifiConfigSaved = (state) => fromConfigSaved.isWifiConfigSaved(state.configSaved);
-
-// fieldError
-export const getFieldError = (state) => fromFieldError.getFieldError(state.fieldError);

@@ -1,10 +1,11 @@
 import { connect } from 'react-redux';
-import { isThrown } from 'reducers';
-import { loadConfig } from 'reducers/lampConfig';
+import { isThrown, isLoadingDialogOpen } from 'reducers';
+import { loadConfig } from 'reducers/config';
 import ManualConnectionDialog from 'components/presentational/ManualConnectionDialog';
 
 const mapStateToProps = (state) => ({
-  isThrown: isThrown(state)
+  isThrown: isThrown(state),
+  isLoadingDialogOpen: isLoadingDialogOpen(state)
 });
 
 export default connect(mapStateToProps, {

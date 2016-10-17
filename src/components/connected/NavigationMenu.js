@@ -2,9 +2,9 @@ import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
 import NavigationMenu from 'components/presentational/NavigationMenu';
 import { isConfigSaved, getFieldError, isWifiConfigSaved } from 'reducers';
-import { saveConfig } from 'reducers/lampConfig';
+import { saveConfig } from 'reducers/config';
 import { setFieldError } from 'reducers/fieldError';
-import { setConfigSaved } from 'reducers/configSaved';
+import { setConfigSaved } from 'reducers/saved';
 
 const mapStateToProps = (state, { lampId }) => ({
   state,
@@ -23,15 +23,17 @@ const mapDispatchToProps = (dispatch, { lampId }) => ({
 // TODO: temporary solution, not really the proper way.
 // MUST fix.
 const mergeProps = (stateProps, dispatchProps, ownProps) => {
-  const { lampConfig } = stateProps.state;
+  const { lamps } = stateProps.state;
   const { dispatch } = dispatchProps;
   const { lampId } = ownProps;
+
+  // console.log(lamps);
 
   return {
     ...stateProps,
     ...dispatchProps,
     ...ownProps,
-    saveConfig: () => saveConfig(lampId, lampConfig[lampId])(dispatch),
+    saveConfig: () => saveConfig(lampId, lamps[lampId])(dispatch),
   };
 };
 

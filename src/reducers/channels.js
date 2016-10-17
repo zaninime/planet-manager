@@ -1,11 +1,11 @@
-import { LOAD_COMPLETED } from './lampConfig';
+import { LOAD_COMPLETED } from './config';
 
 const colors = ['white', 'red', 'green', 'blue'];
 
 // actions
-export const NEXT_COLOR = "lampConfig/channels/CONFIG_NEXT_STRIP_COLOR";
-export const TOGGLE_ENABLE = "lampConfig/channels/CONFIG_TOGGLE_STRIP_ENABLE";
-export const TOGGLE_DISABLE = "lampConfig/channels/CONFIG_TOGGLE_STRIP_DISABLE";
+export const NEXT_COLOR = "config/channels/CONFIG_NEXT_STRIP_COLOR";
+export const TOGGLE_ENABLE = "config/channels/CONFIG_TOGGLE_STRIP_ENABLE";
+export const TOGGLE_DISABLE = "config/channels/CONFIG_TOGGLE_STRIP_DISABLE";
 
 // reducer
 const channel = (state = {color: 'white', enabled: true}, action) => {

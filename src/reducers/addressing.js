@@ -1,7 +1,7 @@
 // actions
-export const SET_IP = 'lampConfig/wifi/managed/addressing/SET_IP';
-export const SET_NETMASK = 'lampConfig/wifi/managed/addressing/SET_NETMASK';
-export const SET_GATEWAY = 'lampConfig/wifi/managed/addressing/SET_GATEWAY';
+export const SET_IP = 'config/wifi/managed/addressing/SET_IP';
+export const SET_NETMASK = 'config/wifi/managed/addressing/SET_NETMASK';
+export const SET_GATEWAY = 'config/wifi/managed/addressing/SET_GATEWAY';
 
 const addressing = (state = { ip: '', netmask: '', gateway: '' }, action) => {
   switch (action.type) {

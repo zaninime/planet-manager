@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import DiscoveryList from 'components/presentational/DiscoveryList';
-import { loadConfig } from 'reducers/lampConfig';
+import { loadConfig } from 'reducers/config';
 import { getRecentLamps } from 'reducers';
 
 const mapStateToProps = (state, { now }) => ({

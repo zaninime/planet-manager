@@ -1,7 +1,7 @@
-import { LOAD_COMPLETED } from './lampConfig';
+import { LOAD_COMPLETED } from './config';
 
 // actions
-export const SET_RED_LEVEL = 'lampConfig/twilight/SET_RED_LEVEL';
+export const SET_RED_LEVEL = 'config/twilight/SET_RED_LEVEL';
 
 const twilight = (state = {redLevel: 0}, action) => {
   switch (action.type) {

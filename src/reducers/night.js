@@ -1,8 +1,8 @@
-import { LOAD_COMPLETED } from './lampConfig';
+import { LOAD_COMPLETED } from './config';
 
 // actions
-export const SET_COLOR = "lampConfig/night/SET_COLOR";
-export const SET_INTENSITY = "lampConfig/night/SET_INTENSITY";
+export const SET_COLOR = "config/night/SET_COLOR";
+export const SET_INTENSITY = "config/night/SET_INTENSITY";
 
 const night = (state = {color: 'blue', intensity: 0}, action) => {
   switch (action.type) {

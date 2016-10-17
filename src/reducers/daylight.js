@@ -1,8 +1,8 @@
-import { LOAD_COMPLETED } from './lampConfig';
+import { LOAD_COMPLETED } from './config';
 
 // actions
-export const SET_COLOR = 'lampConfig/daylight/SET_COLOR';
-export const SET_INTENSITY = 'lampConfig/daylight/SET_INTENSIY';
+export const SET_COLOR = 'config/daylight/SET_COLOR';
+export const SET_INTENSITY = 'config/daylight/SET_INTENSIY';
 
 const daylight = (state = {mainColor: 0, intensity: 0}, action) => {
   switch (action.type) {
