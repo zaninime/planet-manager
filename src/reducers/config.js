@@ -1,5 +1,6 @@
 import { combineReducers } from 'redux';
 import { push } from 'react-router-redux';
+import Rx from 'rxjs/Rx';
 
 import daylight, * as fromDaylight from './daylight';
 import timings, * as fromTimings from './timings';
@@ -13,13 +14,13 @@ import * as fromSaved from './saved';
 import { setMessage } from './error';
 import * as fromLamps from './lamps';
 
-import sleep from 'utils/sleep';
-import { wifiToProtocolFormat } from 'utils/addressing';
+import { wifiToProtocolFormat, wifiToReducerFormat } from 'utils/addressing';
 import { collect } from 'protocol/photon/collector';
 import { emit } from 'protocol/photon/emitter';
 import {
   fetchConfig,
   fetchStatus,
+  fetchWifiConfig,
   saveConfig as apiSaveConfig,
   saveClock,
   saveWifiConfig
@@ -42,76 +43,70 @@ const config = combineReducers({
 export default config;
 
 // action creators
-export const loadConfig = (lampId) => (dispatch) => {
-  dispatch({type: LOAD_START, lampId});
-  (async (lampId, dispatch) => {
-    let status = {}, config = {}, error = false;
+export const startLoading = (lampId) => ({ type: LOAD_START, lampId });
+export const completeLoading = (lampId, data, wifi) => ({ type: LOAD_COMPLETED, lampId, data, wifi });
 
-    try {
-      status = await fetchStatus(lampId);
-      await sleep(1000);
-      config = await fetchConfig(lampId);
-    }
-    catch (e) {
-      error = true;
-      if (e.message !== undefined)
-        dispatch(setMessage(e.message));
-      else
-        dispatch(setMessage("Unknown"));
-    }
+// epics
+export const startLoadingEpic = action$ =>
+  action$.ofType(LOAD_START)
+    .mergeMap(action =>
+        Rx.Observable.from([
+          fetchStatus(action.lampId),
+          Rx.Observable.timer(1000),
+          fetchConfig(action.lampId),
+          Rx.Observable.timer(1000),
+          fetchWifiConfig(action.lampId)
+        ])
+        .concatAll()
+        .toArray()
+        .map(x => completeLoading(action.lampId, collect(x[2], x[0]), wifiToReducerFormat(x[4])))
+        .catch(error => Rx.Observable.of(setMessage(error.message || "Unknown")))
+    );
 
-    return { status, config, error };
-  })(lampId, dispatch).then(({ config, status, error }) => {
-    if (!error) {
-      config = collect(config, status);
-      dispatch({type: LOAD_COMPLETED, lampId, data: config});
-      dispatch(push(`/${lampId}/day/`));
-    }
-  });
-};
+export const completeLoadingEpic = action$ =>
+  action$.ofType(LOAD_COMPLETED)
+    .map(action => push(`/${action.lampId}/day/`));
 
-export const saveConfig = (lampId, state) => (dispatch) => {
-  dispatch(fromSaved.startSaving(lampId));
+export const startSavingEpic = (action$, store) => {
+  return action$.ofType(fromSaved.SAVE_START)
+    .mergeMap(action => {
+      const state = store.getState().lamps[action.lampId];
+      let configSaved = false;
+      let wifiConfigSaved = fromLamps.isWifiConfigSaved(state);
 
-  let configSaved = fromLamps.isLampConfigSaved(state);
-  const wifiConfigSaved = fromLamps.isWifiConfigSaved(state);
+      const getConfigError = (configSaved, wifiConfigSaved) => {
+        if (!configSaved && !wifiConfigSaved)
+          return ". Retry, lamp and wifi configurations haven't been saved!";
+        else if (!configSaved)
+          return ". Retry, lamp configuration hasn't been saved!";
+        else if (!wifiConfigSaved)
+          return ". Retry, wifi configuration hasn't been saved!";
+      };
 
-  (async (lampId, state) => {
-    const { config, wifi, caps } = state;
+      return Rx.Observable.of(saveClock(action.lampId, new Date()))
+        .mergeMap(x => x)
+        .mergeMap(() => Rx.Observable.timer(1000))
+        .mergeMap(() => apiSaveConfig(action.lampId, emit(state.config, state.caps)))
+        .mergeMap(() => Rx.Observable.timer(1000))
+        .do(() => configSaved = true)
+        .map(() =>
+          !wifiConfigSaved ?
+          Rx.Observable.of(saveWifiConfig(action.lampId, wifiToProtocolFormat(state.wifi))).mergeMap(x => x) :
+          Rx.Observable.empty()
+        )
+        .do(() => wifiConfigSaved = true)
+        .mergeMap(() => [
+          ...[fromSaved.setConfigSaved(action.lampId)],
+          !fromLamps.isWifiConfigSaved(state) ? push('/') : undefined
+        ])
+        .filter(x => x !== undefined)
+        .catch(error => {
+          if (error.message !== undefined)
+            error.message = getConfigError(configSaved, wifiConfigSaved);
 
-    await saveClock(lampId, new Date());
-    await sleep(1000);
-    const lampConfig = await emit(config, caps);
-    await apiSaveConfig(lampId, lampConfig);
-    await sleep(1000);
-
-    configSaved = true;
-
-    if (!wifiConfigSaved) {
-      const wifiConfig = await wifiToProtocolFormat(wifi);
-      await saveWifiConfig(lampId, wifiConfig);
-    }
-  })(lampId, state).then(() => {
-    dispatch(fromSaved.setConfigSaved(lampId));
-
-    // if wifi has changed then redirect to the home page,
-    // this is done after saving otherwise the loading
-    // dialog is reopened in the home page
-    if (!wifiConfigSaved)
-      dispatch(push('/'));
-  }, err => {
-    if (err.message === undefined)
-      err.message = "Unknown";
-
-    if (!configSaved && !wifiConfigSaved)
-      err.message += ". Retry, lamp and wifi configurations haven't been saved!";
-    else if (!configSaved)
-      err.message += ". Retry, lamp configuration hasn't been saved!";
-    else if (!wifiConfigSaved)
-      err.message += ". Retry, wifi configuration hasn't been saved!";
-
-    dispatch(setMessage(err.message));
-  });
+          return Rx.Observable.of(setMessage(error.message || "Unknown"));
+        });
+    });
 };
 
 // selectors

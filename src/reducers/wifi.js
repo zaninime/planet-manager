@@ -1,6 +1,7 @@
 import managed, * as fromManaged from './managed';
 import ibss, * as fromIbss from './ibss';
 import * as fromAddressing from './addressing';
+import { LOAD_COMPLETED } from './config';
 
 // actions
 export const SET_MODE = 'lampConfig/wifi/SET_MODE';
@@ -8,6 +9,8 @@ export const SET_SSID = 'lampConfig/wifi/SET_SSID';
 
 const wifi = (state = { mode: 'ibss', ibss: { }, managed: { } }, action) => {
   switch (action.type) {
+  case LOAD_COMPLETED:
+    return action.wifi;
   case SET_MODE:
     return { ...state, mode: action.mode };
   case SET_SSID:

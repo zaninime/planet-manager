@@ -6,7 +6,7 @@ import { browserHistory } from 'react-router';
 import { routerMiddleware, syncHistoryWithStore } from 'react-router-redux';
 import thunk from 'redux-thunk';
 import { createStore, compose, applyMiddleware } from 'redux';
-import rootReducer from '../reducers';
+import rootReducer, { epicMiddleware } from '../reducers';
 
 const configureStore = ({
   historyType = browserHistory,
@@ -20,7 +20,8 @@ const configureStore = ({
       //   }
       // }),
     thunk,
-    routerMiddleware(historyType)
+    routerMiddleware(historyType),
+    epicMiddleware
   ];
 
   const tools = [];

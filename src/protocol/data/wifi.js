@@ -1,5 +1,18 @@
+/* @flow */
 import { currifiedPad } from './utils';
 import { createProtocolError } from '../errors';
+
+export type WifiConfig = {|
+  ssid: string,
+  password: string,
+  channel: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 'auto',
+  address: string,
+  mask: string,
+  gateway: string,
+  port: number,
+  dhcp: boolean,
+  mode: 'station' | 'ibss',
+|};
 
 const reformatIPAddress = (str) => str.split('.').map((e) => parseInt(e)).join('.');
 
@@ -34,7 +47,7 @@ const fixedLengthIPAddress = addr => {
   return addr.split('.').map(e => parseInt(e)).map(pad).join('');
 };
 
-export const parseResponse = (str) => {
+export const parseResponse = (str): WifiConfig => {
   const parts = str.slice(0, -2).split(',');
   if (parts.length !== 9) throw createProtocolError('Invalid number of fields');
 
@@ -83,7 +96,7 @@ export const parseResponse = (str) => {
   };
 };
 
-export const buildUpdate = (config) => {
+export const buildUpdate = (config: WifiConfig) => {
   const strPad32 = zeroedStringPad(32);
   const pad4 = currifiedPad(4);
   const parts = [

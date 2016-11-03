@@ -1,10 +1,17 @@
 import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
+import { combineEpics, createEpicMiddleware } from 'redux-observable';
 import lamps, * as fromLamps from './lamps';
 import discovery, * as fromDiscovery from './discovery';
 import error, * as fromError from './error';
 import ui, * as fromUi from './ui';
+import {
+  startLoadingEpic,
+  completeLoadingEpic,
+  startSavingEpic
+} from './config';
 
+// reducer
 const rootReducer = combineReducers({
   routing: routerReducer,
   lamps,
@@ -14,6 +21,15 @@ const rootReducer = combineReducers({
 });
 
 export default rootReducer;
+
+// epic
+const rootEpic = combineEpics(
+  startLoadingEpic,
+  completeLoadingEpic,
+  startSavingEpic
+);
+
+export const epicMiddleware = createEpicMiddleware(rootEpic);
 
 // selectors
 

@@ -69,7 +69,7 @@ export const wifiToProtocolFormat = (wifiState) => {
   }
 
   if (mode === 'managed')
-    mode = 'static';
+    mode = 'station';
 
   return {
     mode: mode,
@@ -81,5 +81,24 @@ export const wifiToProtocolFormat = (wifiState) => {
     port: 65535,
     gateway: gateway,
     mask: netmask
+  };
+};
+
+export const wifiToReducerFormat = (wifiConfig) => {
+  return {
+    mode: wifiConfig.mode === 'station' ? 'managed' : wifiConfig.mode,
+    ibss: {
+      ssid: wifiConfig === 'station' ?  'ELOS WiFish' : wifiConfig.ssid
+    },
+    managed: {
+      ssid: wifiConfig.ssid,
+      password: wifiConfig.password,
+      dhcp: wifiConfig.dhcp,
+      addressing: {
+        ip: wifiConfig.address,
+        netmask: wifiConfig.mask,
+        gateway: wifiConfig.gateway
+      }
+    }
   };
 };
