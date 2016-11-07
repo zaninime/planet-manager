@@ -51,11 +51,11 @@ export const startLoadingEpic = action$ =>
   action$.ofType(LOAD_START)
     .mergeMap(action =>
         Rx.Observable.from([
-          fetchStatus(action.lampId),
+          Rx.Observable.of(action.lampId).flatMap((lampId) => fetchStatus(lampId)),
           Rx.Observable.timer(1000),
-          fetchConfig(action.lampId),
+          Rx.Observable.of(action.lampId).flatMap((lampId) => fetchConfig(lampId)),
           Rx.Observable.timer(1000),
-          fetchWifiConfig(action.lampId)
+          Rx.Observable.of(action.lampId).flatMap((lampId) => fetchWifiConfig(lampId)),
         ])
         .concatAll()
         .toArray()
