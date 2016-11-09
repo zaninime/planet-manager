@@ -18,11 +18,12 @@ const devPort   = process.env.PORT || 3001;
 const publicPath = '';
 
 const root = resolve(__dirname);
-const src = join(root, 'src');
+const src = join(root, 'app');
 const dest = join(root, 'dist', 'android');
 //const css = join(src, 'styles');
 
 var config = getConfig({
+  cache: true,
   isDev: isDev,
   in: join(src, 'app.js'),
   out: dest,
@@ -42,7 +43,7 @@ if (!isDev) {
 }
 
 config.output.publicPath = '';
-config.resolve.root = [src];
+config.resolve.root = [__dirname];
 
 config.resolve.extensions.push('.android.js');
 
