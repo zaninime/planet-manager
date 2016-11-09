@@ -9,17 +9,26 @@
   extends:
     - eslint:recommended
     - plugin:react/recommended
+    - airbnb
   env:
     browser: true
     node: true
     es6: true
   plugins:
     - react
+    - flowtype-errors
   rules:
-    strict: 0
-    semi: 1
-    indent: [1, 2]
-    keyword-spacing: 1
-    space-before-blocks: 1
-    prefer-const: 1
-    no-import-index: 2
+    arrow-parens: 0
+    flowtype-errors/show-errors: 2
+    func-names: 0
+    global-require: 0
+    import/extensions: 0
+    import/no-extraneous-dependencies: 0
+    import/no-unresolved: 0
+    indent: [2, 4]
+    max-len: [2, 120]
+    prefer-arrow-callback: 0
+    react/forbid-prop-types: 0
+    react/jsx-filename-extension: 0
+    react/jsx-indent-props: [2, 4]
+    react/jsx-indent: [2, 4]

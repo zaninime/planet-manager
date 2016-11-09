@@ -21,7 +21,7 @@ android {
         } else {
             versionCode 400000
         }
-        versionName v.version
+        versionName v.versionCode.standard
     }
     signingConfigs {
         if (System.getenv("KEYSTORE") != null) {

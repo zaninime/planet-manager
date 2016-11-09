@@ -1,4 +1,4 @@
 {
-    "modulePaths": "src",
+    "modulePaths": "<rootDir>",
     "modulePathIgnorePatterns": [".npm"]
 }

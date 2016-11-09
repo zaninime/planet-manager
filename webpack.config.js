@@ -18,7 +18,7 @@ const setPublicPath = process.env.SET_PUBLIC_PATH !== 'false';
 const publicPath  = (isDev && setPublicPath) ? `//${devHost}:${devPort}/` : '';
 
 const root = resolve(__dirname);
-const src = join(root, 'src');
+const src = join(root, 'app');
 const dest = join(root, 'dist', 'electron');
 const fs = require('fs');
 
@@ -31,6 +31,7 @@ fs.readFile(join(root, 'electron', 'index.js'), 'utf8', function(err, contents) 
 });
 
 var config = getConfig({
+  cache: true,
   isDev: isDev,
   in: join(src, 'app.js'),
   out: dest,
@@ -50,7 +51,7 @@ if (!isDev) {
 }
 
 config.output.publicPath = '';
-config.resolve.root = [src];
+config.resolve.root = [__dirname];
 
 config.resolve.extensions.push('.desktop.js');
 
