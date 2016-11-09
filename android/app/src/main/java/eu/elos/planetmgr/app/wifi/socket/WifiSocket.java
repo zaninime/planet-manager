@@ -115,7 +115,6 @@ public class WifiSocket {
                 OutputStream outputStream = socket.getOutputStream();
                 InputStream inputStream = socket.getInputStream();
                 outputStream.write(request.getBytes());
-                inputStream.read(new byte[1024]);
                 socket.close();
             } catch (Exception e) {
                 try {
