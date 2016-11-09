@@ -6,6 +6,7 @@
 import EError from 'app/utils/error';
 import { blockOnFetch } from './bugs';
 import { twilightDuration, floorIntensity, compactChannels } from './constants';
+import * as lamps from './lamps';
 import type { LowLevelConfig, LampStatus, Features } from './types';
 
 class IncompatibleConfigError extends EError {}
@@ -54,16 +55,18 @@ const twilight = (config: LowLevelConfig) => ({
 });
 
 const channels = (config: LowLevelConfig, status: LampStatus) => {
-    let channels = config.channels;
-  // if compact, return just 6 channels
-    const isCompact = Math.floor(status.firmwareVersion / 100) === 2;
-    if (isCompact) {
-        channels = compactChannels.map(idx => config.channels[idx]);
+    const convert = channel => {
+        if (channel === 'off') {
+            return { color: 'white', enabled: false };
+        }
+        return { color: channel, enabled: true };
+    };
+    const model = lamps.detectModel(status);
+
+    if (model === lamps.COMPACT) {
+        return compactChannels.map(idx => convert(config.channels[idx]));
     }
-    return channels.map((c) => {
-        if (c === 'off') return { color: 'white', enabled: false };
-        return { color: c, enabled: true };
-    });
+    return config.channels.map(convert);
 };
 
 const temperature = (config: LowLevelConfig) => ({ ...config.temperature });
@@ -73,40 +76,38 @@ const fan = (config: LowLevelConfig) => ({ ...config.fan });
 const master = (config: LowLevelConfig) => config.mode === 'master';
 
 const features = (config: LowLevelConfig, status: LampStatus): Features => {
-    switch (status.productId) {
-    case 16:
-        // PlanetPRO v1 and Compact
-        {
-            const features: Features = {
-                CHANNEL_MAPPING: true,
-                CLOCK_SYNC: true,
-                FAN_CONFIG: true,
-                TEMPERATURE_CONFIG: true,
-                MASTER_SWITCH: true,
-                DEMO_MODE: true,
-            };
-            const isCompact = Math.floor(status.firmwareVersion / 100) === 2;
-            if (isCompact) features.CHANNEL_MAPPING_COMPACT = true;
-            return features;
-        }
-    case 562:
-        // PlanetPRO v2
-        return {
+    const model = lamps.detectModel(status);
+    const featureMap = {
+        [lamps.PRO]: {
+            CHANNEL_MAPPING: true,
+            CLOCK_SYNC: true,
+            FAN_CONFIG: true,
+            TEMPERATURE_CONFIG: true,
+            MASTER_SWITCH: true,
+            DEMO_MODE: true,
+        },
+        [lamps.COMPACT]: {
+            CHANNEL_MAPPING: true,
+            CHANNEL_MAPPING_COMPACT: true,
+            CLOCK_SYNC: true,
+            FAN_CONFIG: true,
+            TEMPERATURE_CONFIG: true,
+            MASTER_SWITCH: true,
+            DEMO_MODE: true,
+        },
+        [lamps.PRO_V2]: {
             CHANNEL_MAPPING: true,
             CLOCK_SYNC: true,
             FAN_CONFIG: true,
             TEMPERATURE_CONFIG: true,
             DEMO_MODE: true,
-        };
-    case 564:
-        // PlanetStella
-        return {
+        },
+        [lamps.STELLA]: {
             CLOCK_SYNC: true,
             DEMO_MODE: true,
-        };
-    default:
-        return {};
-    }
+        },
+    };
+    return featureMap[model];
 };
 
 export const collect = (config: LowLevelConfig, status: LampStatus) => {

@@ -32,7 +32,7 @@ function genericBeforeEach() {
                 intensity: 100,
             },
         },
-        channels: [],
+        channels: ['white', 'red', 'green', 'blue', 'white', 'red', 'green', 'blue', 'off', 'off', 'off', 'off'],
         temperature: {
             fanStart: 12,
             shutdown: 50,
@@ -134,6 +134,21 @@ describe('twilight', () => {
         this.config.daylight.white.delay = 50;
 
         expect(collect(this.config, this.status).twilight.redLevel).toBeCloseTo(0.33, 0.01);
+    });
+});
+
+describe('channels', () => {
+    beforeEach(genericBeforeEach);
+
+    it('returns 12 channels for a generic lamp model', function () {
+        expect(collect(this.config, this.status).channels.length).toBe(12);
+    });
+
+    it('returns 6 channels for PlanetCompact', function () {
+        this.status.productId = 16;
+        this.status.firmwareVersion = 201;
+
+        expect(collect(this.config, this.status).channels.length).toBe(6);
     });
 });
 
