@@ -1,11 +1,11 @@
 import { connect } from 'react-redux';
 import ErrorDialog from 'app/components/layout/ErrorDialog';
-import { isThrown, getMessage } from 'app/reducers';
-import { toggleError } from 'app/reducers/error';
+import { isThrown, getErrorContent } from 'app/redux/modules';
+import { clearError } from 'app/redux/modules/error';
 
 const mapStateToProps = state => ({
     isThrown: isThrown(state),
-    message: getMessage(state),
+    error: getErrorContent(state),
 });
 
-export default connect(mapStateToProps, { toggleError })(ErrorDialog);
+export default connect(mapStateToProps, { clearError })(ErrorDialog);

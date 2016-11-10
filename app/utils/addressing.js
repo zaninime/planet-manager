@@ -1,18 +1,18 @@
 import ip from 'ip';
 
 export const validateNetmask = (value) => {
-    value = value.trim();
+    const trimmedValue = value.trim();
     const regex = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
-    const match = value.match(regex);
+    const match = trimmedValue.match(regex);
 
     let valid = true;
     if (match !== null) {
         const netmaskBytes = [0, 128, 192, 224, 240, 248, 252, 254, 255];
         let last = 0;
 
-        for (let i = 4; i > 0; i--) {
-            for (let j = netmaskBytes.length - 1; j >= last; j--) {
-                if (netmaskBytes[j] === parseInt(match[i])) {
+        for (let i = 4; i > 0; i -= 1) {
+            for (let j = netmaskBytes.length - 1; j >= last; j -= 1) {
+                if (netmaskBytes[j] === parseInt(match[i], 10)) {
                     last = j;
                     break;
                 }
@@ -27,53 +27,47 @@ export const validateNetmask = (value) => {
     return valid && match !== null;
 };
 
-export const validateAddress = value =>
-   ip.isV4Format(value)
-;
+export const validateAddress = value => ip.isV4Format(value);
 
 export const validateGateway = (gatewayValue, netmaskValue, addressValue) => {
     if (!(validateNetmask(netmaskValue) && validateAddress(addressValue))) {
         return false;
     }
 
-    gatewayValue = gatewayValue.trim();
+    const gatewayTrimmedValue = gatewayValue.trim();
 
     const regex = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
-    const match = gatewayValue.match(regex);
+    const match = gatewayTrimmedValue.match(regex);
 
-  // subnet information
+    // subnet information
     const result = ip.subnet(addressValue, netmaskValue);
 
-    return match != null && result.contains(gatewayValue);
+    return match != null && result.contains(gatewayTrimmedValue);
 };
 
 export const wifiToProtocolFormat = (wifiState) => {
-    let mode = wifiState.mode;
+    const { mode } = wifiState;
     const { ssid } = wifiState[mode];
-    let password = '',
-        dhcp = false;
+    let password = '';
+    let dhcp = false;
     let addressing = { };
-    let ip = '',
-        netmask = '',
-        gateway = '';
+    let ipAddress = '';
+    let netmask = '';
+    let gateway = '';
 
-  // No need to validate them since the state
-  // must never contain invalid values.
-  // Furthermore, they're validated in the ui.
-    if (mode === 'managed') {
+    // No need to validate them since the state
+    // must never contain invalid values.
+    // Furthermore, they're validated in the ui.
+    if (mode === 'station') {
         password = wifiState[mode].password;
         dhcp = wifiState[mode].dhcp;
         addressing = wifiState[mode].addressing;
     }
 
-    if (dhcp) {
-        ip = addressing.ip;
+    if (!dhcp) {
+        ipAddress = addressing.ip;
         netmask = addressing.netmask;
         gateway = addressing.gateway;
-    }
-
-    if (mode === 'managed') {
-        mode = 'station';
     }
 
     return {
@@ -82,7 +76,7 @@ export const wifiToProtocolFormat = (wifiState) => {
         password,
         channel: 'auto',
         dhcp,
-        address: ip,
+        address: ipAddress,
         port: 65535,
         gateway,
         mask: netmask,
@@ -90,20 +84,19 @@ export const wifiToProtocolFormat = (wifiState) => {
 };
 
 export const wifiToReducerFormat = wifiConfig =>
-   ({
-       mode: wifiConfig.mode === 'station' ? 'managed' : wifiConfig.mode,
-       ibss: {
-           ssid: wifiConfig === 'station' ? 'ELOS WiFish' : wifiConfig.ssid,
-       },
-       managed: {
-           ssid: wifiConfig.ssid,
-           password: wifiConfig.password,
-           dhcp: wifiConfig.dhcp,
-           addressing: {
-               ip: wifiConfig.address,
-               netmask: wifiConfig.mask,
-               gateway: wifiConfig.gateway,
-           },
-       },
-   })
-;
+({
+    mode: wifiConfig.mode,
+    ibss: {
+        ssid: wifiConfig.mode === 'station' ? 'ELOS WiFish' : wifiConfig.ssid,
+    },
+    station: {
+        ssid: wifiConfig.ssid,
+        password: wifiConfig.password,
+        dhcp: wifiConfig.dhcp,
+        addressing: {
+            ip: wifiConfig.address,
+            netmask: wifiConfig.mask,
+            gateway: wifiConfig.gateway,
+        },
+    },
+});

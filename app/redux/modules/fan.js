@@ -7,9 +7,9 @@ export const SET_MAX_SPEED = 'config/fan/SET_MAX_SPEED';
 const fan = (state = { maxSpeed: 50 }, action) => {
     switch (action.type) {
     case LOAD_COMPLETED:
-        return action.data.fan;
+        return action.payload.data.fan;
     case SET_MAX_SPEED:
-        return { ...state, maxSpeed: action.maxSpeed };
+        return { ...state, maxSpeed: action.payload.maxSpeed };
     default:
         return state;
     }
@@ -18,7 +18,7 @@ const fan = (state = { maxSpeed: 50 }, action) => {
 export default fan;
 
 // action creators
-export const setMaxSpeed = (maxSpeed, lampId) => ({ type: SET_MAX_SPEED, maxSpeed, lampId });
+export const setMaxSpeed = (maxSpeed, lampId) => ({ type: SET_MAX_SPEED, payload: { maxSpeed, lampId } });
 
 // selectors
 export const getFanMaxSpeed = state => state.maxSpeed;

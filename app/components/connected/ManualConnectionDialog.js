@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
-import { isThrown, isLoadingDialogOpen } from 'app/reducers';
-import { startLoading } from 'app/reducers/config';
+import { isThrown, isLoadingDialogOpen } from 'app/redux/modules';
+import { startLoading } from 'app/redux/modules/config';
 import ManualConnectionDialog from 'app/components/presentational/ManualConnectionDialog';
 
 const mapStateToProps = state => ({

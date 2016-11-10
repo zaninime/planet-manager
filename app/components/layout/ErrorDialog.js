@@ -24,11 +24,11 @@ class ErrorDialog extends Component {
 
     handleRequestClose() {
         this.setState({ open: false });
-        this.props.toggleError();
+        this.props.clearError();
     }
 
     handleTouchTap() {
-        this.props.toggleError();
+        this.props.clearError();
     }
 
     render() {
@@ -40,6 +40,8 @@ class ErrorDialog extends Component {
             />,
         ];
 
+        const message = this.props.error.message || 'Unknown';
+
         return (
             <Dialog
                 title="ERROR!"
@@ -48,7 +50,7 @@ class ErrorDialog extends Component {
                 onRequestClose={this.handleRequestClose}
                 style={styles.unselectableDialog}
             >
-                {this.props.message}
+                {message}
             </Dialog>
         );
     }
@@ -56,8 +58,8 @@ class ErrorDialog extends Component {
 
 ErrorDialog.propTypes = {
     isThrown: React.PropTypes.bool.isRequired,
-    message: React.PropTypes.string.isRequired,
-    toggleError: React.PropTypes.func.isRequired,
+    error: React.PropTypes.object.isRequired,
+    clearError: React.PropTypes.func.isRequired,
 };
 
 export default Radium(ErrorDialog);

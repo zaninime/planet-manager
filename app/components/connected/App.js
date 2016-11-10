@@ -32,7 +32,8 @@ class App extends React.Component {
         actions: T.object,
     };
 
-    static get devTools() {
+    /* eslint-disable class-methods-use-this */
+    get devTools() {
         if (__DEBUG__) {
             if (!window.devToolsExtension) {
                 const DevTools = require('app/components/connected/DevTools').default;
@@ -42,6 +43,7 @@ class App extends React.Component {
 
         return undefined;
     }
+    /* eslint-enable class-methods-use-this */
 
     get content() {
         const { history, routes, routerKey, store, actions } = this.props;

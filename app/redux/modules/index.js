@@ -1,18 +1,9 @@
-import Rx from 'rxjs/Rx';
 import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
-import { combineEpics, createEpicMiddleware } from 'redux-observable';
-import { applyTempColor } from 'app/protocol/api';
 import lamps, * as fromLamps from './lamps';
 import discovery, * as fromDiscovery from './discovery';
 import error, * as fromError from './error';
 import ui, * as fromUi from './ui';
-
-import {
-  startLoadingEpic,
-  completeLoadingEpic,
-  startSavingEpic,
-} from './config';
 
 // reducer
 const rootReducer = combineReducers({
@@ -24,25 +15,6 @@ const rootReducer = combineReducers({
 });
 
 export default rootReducer;
-
-const DEMO_MODE = 'lamps/DEMO_MODE';
-
-const demoEpic = action$ =>
-    action$.ofType(DEMO_MODE)
-        .mergeMap(({ payload: { white, red, green, blue, lampId } }) =>
-            Rx.Observable.from(applyTempColor(lampId, { white, red, green, blue })),
-        )
-        .mergeMap(() => Rx.Observable.empty());
-
-// epic
-const rootEpic = combineEpics(
-    startLoadingEpic,
-    completeLoadingEpic,
-    startSavingEpic,
-    demoEpic,
-);
-
-export const epicMiddleware = createEpicMiddleware(rootEpic);
 
 // selectors
 
@@ -80,7 +52,7 @@ export const getRecentLamps = (state, now) => fromDiscovery.getRecentLamps(state
 
 // error
 export const isThrown = state => fromError.isThrown(state.error);
-export const getMessage = state => fromError.getMessage(state.error);
+export const getErrorContent = state => fromError.getErrorContent(state.error);
 
 // ui
 export const getFieldError = state => fromUi.getFieldError(state.ui);

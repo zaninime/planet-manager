@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import fieldError, * as fromFieldError from 'app/reducers/fieldError';
+import fieldError, * as fromFieldError from 'app/redux/modules/fieldError';
 import loadingDialogOpen, * as fromLoadingDialogOpen from './loadingDialogOpen';
 
 const ui = combineReducers({

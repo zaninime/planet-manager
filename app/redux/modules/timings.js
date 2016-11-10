@@ -7,11 +7,11 @@ export const SET_TIMER_END = 'config/timings/SET_TIMER_END';
 const timings = (state = { dawnBeginsAt: 8 * 60, duskEndsAt: 18 * 60 }, action) => {
     switch (action.type) {
     case LOAD_COMPLETED:
-        return action.data.timings;
+        return action.payload.data.timings;
     case SET_TIMER_START:
-        return { ...state, dawnBeginsAt: action.dawnBeginsAt };
+        return { ...state, dawnBeginsAt: action.payload.dawnBeginsAt };
     case SET_TIMER_END:
-        return { ...state, duskEndsAt: action.duskEndsAt };
+        return { ...state, duskEndsAt: action.payload.duskEndsAt };
     default:
         return state;
     }
@@ -20,8 +20,8 @@ const timings = (state = { dawnBeginsAt: 8 * 60, duskEndsAt: 18 * 60 }, action) 
 export default timings;
 
 // action creators
-export const setSunriseTime = (dawnBeginsAt, lampId) => ({ type: SET_TIMER_START, dawnBeginsAt, lampId });
-export const setSunsetTime = (duskEndsAt, lampId) => ({ type: SET_TIMER_END, duskEndsAt, lampId });
+export const setSunriseTime = (dawnBeginsAt, lampId) => ({ type: SET_TIMER_START, payload: { dawnBeginsAt, lampId } });
+export const setSunsetTime = (duskEndsAt, lampId) => ({ type: SET_TIMER_END, payload: { duskEndsAt, lampId } });
 
 // selectors
 export const getSunriseTime = state => state.dawnBeginsAt;

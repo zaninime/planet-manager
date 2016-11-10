@@ -9,7 +9,7 @@ const loadingDialogOpen = (state = false, action) => {
         return true;
     case fromLampConfig.LOAD_COMPLETED:
     case fromSaved.SAVE_COMPLETED:
-    case fromConnectError.SET_MESSAGE: // prevents the overlapping of dialogs
+    case fromConnectError.SET_ERROR: // prevents the overlapping of dialogs
         return false;
     default:
         return state;

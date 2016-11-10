@@ -5,8 +5,9 @@ import type { HighLevelConfig, Features } from './types';
 
 const emitTarget = target => (config, caps) =>
    Object.keys(target).reduce((nextTarget, key) => {
-       nextTarget[key] = target[key](config, caps);
-       return nextTarget;
+       const result = nextTarget;
+       result[key] = target[key](config, caps);
+       return result;
    }, {})
 ;
 
@@ -19,16 +20,16 @@ const daylight = (config) => {
     const r = 100 * (floorIntensity + Math.max(i * (1 - floorIntensity) * (-x), 0));
     let g;
     if ((x >= -1 && x < -0.5) || (x > 0.5 && x <= 1)) {
-        g = 100 * ((2 / 3) * (floorIntensity + i * (1 - floorIntensity) * (1 - (Math.abs(x)))));
+        g = 100 * ((2 / 3) * (floorIntensity + ((i * (1 - floorIntensity)) * (1 - (Math.abs(x))))));
     } else if (x >= -0.5 && x <= 0.5) {
-        g = 100 * ((2 / 3) * (floorIntensity + i * (1 - floorIntensity) * ((3 / 4) - Math.abs(x / 2))));
+        g = 100 * ((2 / 3) * (floorIntensity + ((i * (1 - floorIntensity)) * ((3 / 4) - Math.abs(x / 2)))));
     }
 
     const b = 100 * (floorIntensity + Math.max(i * (1 - floorIntensity) * (x), 0));
-    const w = 100 * (floorIntensity + i * (1 - floorIntensity) * (1 - Math.abs(x)));
+    const w = 100 * (floorIntensity + ((i * (1 - floorIntensity)) * (1 - Math.abs(x))));
 
-    const duration = (dusk - dawn) - 2 * twilightDuration;
-    const delay = dawn + config.twilight.redLevel * twilightDuration;
+    const duration = (dusk - dawn) - (2 * twilightDuration);
+    const delay = dawn + (config.twilight.redLevel * twilightDuration);
     const slope = (1 - config.twilight.redLevel) * twilightDuration;
 
     return {
@@ -106,9 +107,11 @@ const night = config => ({
 
 const mode = config => (config.master ? 'master' : 'slave');
 
-export const emit = (config: HighLevelConfig, caps: { features: Features, bugs: string[] }) => {
+const emit = (config: HighLevelConfig, caps: { features: Features, bugs: string[] }) => {
     const emitter = emitTarget({ daylight, channels, temperature, fan, night, mode });
     const goodConfig = emitter(config, caps);
     const brokenConfig = supportOnSave(goodConfig, caps.bugs);
     return brokenConfig;
 };
+
+export default emit;

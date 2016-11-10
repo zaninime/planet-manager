@@ -1,8 +1,8 @@
 import { connect } from 'react-redux';
 import DhcpSettings from 'app/components/presentational/DhcpSettings';
-import { isDhcpEnabled, getIp, getNetmask, getGateway } from 'app/reducers';
-import { toggleDhcp } from 'app/reducers/managed';
-import { setIp, setNetmask, setGateway } from 'app/reducers/addressing';
+import { isDhcpEnabled, getIp, getNetmask, getGateway } from 'app/redux/modules';
+import { toggleDhcp } from 'app/redux/modules/station';
+import { setIp, setNetmask, setGateway } from 'app/redux/modules/addressing';
 
 const mapStateToProps = (state, { lampId }) => ({
     dhcpEnabled: isDhcpEnabled(state, lampId),

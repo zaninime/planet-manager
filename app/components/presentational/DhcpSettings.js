@@ -123,12 +123,12 @@ class DhcpSettings extends Component {
 
     handleGatewayFieldBlur(e, state = this.state) {
         const {
-      addressValue,
-      netmaskValue,
-      gatewayValue,
-      addressErrorText,
-      netmaskErrorText,
-    } = state;
+          addressValue,
+          netmaskValue,
+          gatewayValue,
+          addressErrorText,
+          netmaskErrorText,
+        } = state;
 
         let errorText = '';
         if (gatewayValue === '') {
@@ -157,7 +157,7 @@ class DhcpSettings extends Component {
     render() {
         let fieldsContainer = null;
 
-        if (this.state.toggled) {
+        if (!this.state.toggled) {
             fieldsContainer = (
                 <div style={styles.fieldsContainer}>
                     <p>Address</p>
@@ -190,7 +190,7 @@ class DhcpSettings extends Component {
                         onBlur={this.handleGatewayFieldBlur}
                     />
                 </div>
-      );
+            );
         }
 
         return (

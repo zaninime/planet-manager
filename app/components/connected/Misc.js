@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import Misc from 'app/components/layout/Misc';
-import { isFanConfigAvailable, isTemperatureConfigAvailable } from 'app/reducers';
+import { isFanConfigAvailable, isTemperatureConfigAvailable } from 'app/redux/modules';
 
 const mapStateToProps = (state, { lampId }) => ({
     fanConfigAvailable: isFanConfigAvailable(state, lampId),

@@ -16,7 +16,7 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
 
-import configureStore from 'app/store/configureStore';
+import configureStore from 'app/redux/configureStore';
 
 import platformInit from 'app/init';
 

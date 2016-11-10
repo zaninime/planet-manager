@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import ChannelColor from 'app/components/presentational/ChannelColor';
-import { getStripCurrentColor, getStripIsEnabled } from 'app/reducers';
-import { enableStrip, disableStrip, nextStripColor } from 'app/reducers/channels';
+import { getStripCurrentColor, getStripIsEnabled } from 'app/redux/modules';
+import { enableStrip, disableStrip, nextStripColor } from 'app/redux/modules/channels';
 
 const mapStateToProps = (state, { lampId, stripNumber }) => ({
     color: getStripCurrentColor(state, stripNumber, lampId),

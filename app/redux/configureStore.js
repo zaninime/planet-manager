@@ -6,7 +6,8 @@ import { browserHistory } from 'react-router';
 import { routerMiddleware, syncHistoryWithStore } from 'react-router-redux';
 import thunk from 'redux-thunk';
 import { createStore, compose, applyMiddleware } from 'redux';
-import rootReducer, { epicMiddleware } from '../reducers';
+import rootReducer from 'app/redux/modules';
+import epicMiddleware from 'app/redux/epics';
 
 const configureStore = ({
   historyType = browserHistory,
@@ -44,8 +45,8 @@ const configureStore = ({
     });
 
     if (module.hot) {
-        module.hot.accept('../reducers', () => {
-            const newRootReducer = require('../reducers').default;
+        module.hot.accept('./modules', () => {
+            const newRootReducer = require('./modules').default;
             store.replaceReducer(newRootReducer);
         });
     }

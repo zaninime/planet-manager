@@ -7,11 +7,11 @@ export const SET_INTENSITY = 'config/daylight/SET_INTENSIY';
 const daylight = (state = { mainColor: 0, intensity: 0 }, action) => {
     switch (action.type) {
     case LOAD_COMPLETED:
-        return action.data.daylight;
+        return action.payload.data.daylight;
     case SET_COLOR:
-        return { ...state, mainColor: action.mainColor };
+        return { ...state, mainColor: action.payload.mainColor };
     case SET_INTENSITY:
-        return { ...state, intensity: action.intensity };
+        return { ...state, intensity: action.payload.intensity };
     default:
         return state;
     }
@@ -20,8 +20,8 @@ const daylight = (state = { mainColor: 0, intensity: 0 }, action) => {
 export default daylight;
 
 // action creators
-export const setColor = (mainColor, lampId) => ({ type: SET_COLOR, mainColor, lampId });
-export const setIntensity = (intensity, lampId) => ({ type: SET_INTENSITY, intensity, lampId });
+export const setColor = (mainColor, lampId) => ({ type: SET_COLOR, payload: { mainColor, lampId } });
+export const setIntensity = (intensity, lampId) => ({ type: SET_INTENSITY, payload: { intensity, lampId } });
 
 // selectors
 export const getDayColor = state => state.mainColor;

@@ -1,7 +1,7 @@
 import RaisedButton from 'material-ui/RaisedButton';
 import { compose, mapProps } from 'recompose';
 import { connect } from 'react-redux';
-import { getDayColor, getDayColorIntensity } from 'app/reducers';
+import { getDayColor, getDayColorIntensity } from 'app/redux/modules';
 import Radium from 'radium';
 import emitDemo from 'app/protocol/photon/demo';
 

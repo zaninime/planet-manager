@@ -10,7 +10,7 @@ import * as fromNight from './night';
 import * as fromTemperature from './temperature';
 import * as fromFan from './fan';
 import * as fromChannels from './channels';
-import * as fromManaged from './managed';
+import * as fromStation from './station';
 import * as fromAddressing from './addressing';
 import * as fromFieldError from './fieldError';
 
@@ -39,15 +39,15 @@ const lamps = (state = { }, action) => {
     case fromChannels.TOGGLE_DISABLE:
     case fromWifi.SET_MODE:
     case fromWifi.SET_SSID:
-    case fromManaged.SET_PASSWORD:
-    case fromManaged.TOGGLE_DHCP:
+    case fromStation.SET_PASSWORD:
+    case fromStation.TOGGLE_DHCP:
     case fromAddressing.SET_IP:
     case fromAddressing.SET_NETMASK:
     case fromAddressing.SET_GATEWAY:
     case fromSaved.SAVE_START:
     case fromSaved.SAVE_COMPLETED:
     case fromFieldError.SET_ERROR:
-        return { ...state, [action.lampId]: singleLamp(state[action.lampId], action) };
+        return { ...state, [action.payload.lampId]: singleLamp(state[action.payload.lampId], action) };
     default:
         return state;
     }

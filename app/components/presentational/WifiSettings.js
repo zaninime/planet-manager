@@ -108,7 +108,7 @@ class WifiSettings extends Component {
     render() {
         let passwordDhcpContainer = null;
 
-        if (this.state.selectedMode === 'managed') {
+        if (this.state.selectedMode === 'station') {
             passwordDhcpContainer = (
                 <div>
                     <p>Password</p>
@@ -130,7 +130,7 @@ class WifiSettings extends Component {
                         onFieldErrorChange={this.handleFieldErrorChange}
                     />
                 </div>
-      );
+            );
         }
 
         return (
@@ -147,7 +147,7 @@ class WifiSettings extends Component {
                             label="Access Point"
                         />
                         <RadioButton
-                            value="managed"
+                            value="station"
                             label="Client"
                         />
                     </RadioButtonGroup>

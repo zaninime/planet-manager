@@ -24,14 +24,14 @@ const channel = (state = { color: 'white', enabled: true }, action) => {
 const channels = (state = [], action) => {
     switch (action.type) {
     case LOAD_COMPLETED:
-        return action.data.channels;
+        return action.payload.data.channels;
     case NEXT_COLOR:
     case TOGGLE_ENABLE:
     case TOGGLE_DISABLE:
         return [
-            ...state.slice(0, (action.idx - 1)),
-            channel(state[action.idx - 1], action),
-            ...state.slice(action.idx),
+            ...state.slice(0, (action.payload.idx - 1)),
+            channel(state[action.payload.idx - 1], action),
+            ...state.slice(action.payload.idx),
         ];
     default:
         return state;
@@ -41,9 +41,9 @@ const channels = (state = [], action) => {
 export default channels;
 
 // action creators
-export const nextStripColor = (idx, lampId) => ({ type: NEXT_COLOR, idx, lampId });
-export const enableStrip = (idx, lampId) => ({ type: TOGGLE_ENABLE, idx, lampId });
-export const disableStrip = (idx, lampId) => ({ type: TOGGLE_DISABLE, idx, lampId });
+export const nextStripColor = (idx, lampId) => ({ type: NEXT_COLOR, payload: { idx, lampId } });
+export const enableStrip = (idx, lampId) => ({ type: TOGGLE_ENABLE, payload: { idx, lampId } });
+export const disableStrip = (idx, lampId) => ({ type: TOGGLE_DISABLE, payload: { idx, lampId } });
 
 // selectors
 export const getStripCurrentColor = (state, stripNumber) => state[stripNumber - 1].color;

@@ -6,12 +6,12 @@ import * as fromTemperature from './temperature';
 import * as fromFan from './fan';
 import * as fromChannels from './channels';
 import * as fromWifi from './wifi';
-import * as fromManaged from './managed';
+import * as fromStation from './station';
 import * as fromAddressing from './addressing';
 
 // actions
-export const SAVE_START = 'config/SAVE_START';
-export const SAVE_COMPLETED = 'config/SAVE_COMPLETED';
+export const SAVE_START = 'config/saved/SAVE_START';
+export const SAVE_COMPLETED = 'config/saved/SAVE_COMPLETED';
 
 const saved = (state = { lamp: true, wifi: true }, action) => {
     switch (action.type) {
@@ -30,8 +30,8 @@ const saved = (state = { lamp: true, wifi: true }, action) => {
         return { ...state, lamp: false };
     case fromWifi.SET_MODE:
     case fromWifi.SET_SSID:
-    case fromManaged.SET_PASSWORD:
-    case fromManaged.TOGGLE_DHCP:
+    case fromStation.SET_PASSWORD:
+    case fromStation.TOGGLE_DHCP:
     case fromAddressing.SET_IP:
     case fromAddressing.SET_NETMASK:
     case fromAddressing.SET_GATEWAY:
@@ -46,8 +46,8 @@ const saved = (state = { lamp: true, wifi: true }, action) => {
 export default saved;
 
 // action creators
-export const startSaving = lampId => ({ type: SAVE_START, lampId });
-export const setConfigSaved = lampId => ({ type: SAVE_COMPLETED, lampId });
+export const startSaving = lampId => ({ type: SAVE_START, payload: { lampId } });
+export const setConfigSaved = lampId => ({ type: SAVE_COMPLETED, payload: { lampId } });
 
 // selectors
 export const isConfigSaved = state => state.lamp && state.wifi;

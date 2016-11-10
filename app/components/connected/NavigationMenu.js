@@ -1,9 +1,9 @@
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
 import NavigationMenu from 'app/components/presentational/NavigationMenu';
-import { isConfigSaved, getFieldError, isWifiConfigSaved } from 'app/reducers';
-import { setFieldError } from 'app/reducers/fieldError';
-import { setConfigSaved, startSaving } from 'app/reducers/saved';
+import { isConfigSaved, getFieldError, isWifiConfigSaved } from 'app/redux/modules';
+import { setFieldError } from 'app/redux/modules/fieldError';
+import { setConfigSaved, startSaving } from 'app/redux/modules/saved';
 
 const mapStateToProps = (state, { lampId }) => ({
     state,

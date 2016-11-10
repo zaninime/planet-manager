@@ -6,7 +6,7 @@ const BEACON_RECEIVED = 'discovery/BEACON_RECEIVED';
 const byId = (state = {}, action) => {
     switch (action.type) {
     case BEACON_RECEIVED: {
-        const { address, port, time } = action;
+        const { address, port, time } = action.payload;
         const id = lampId.encode(address, port);
         return {
             ...state,
@@ -25,7 +25,7 @@ const byId = (state = {}, action) => {
 const ids = (state = [], action) => {
     switch (action.type) {
     case BEACON_RECEIVED: {
-        const { address, port } = action;
+        const { address, port } = action.payload;
         const id = lampId.encode(address, port);
         if (state.indexOf(id) === -1) return [...state, id];
         return state;
@@ -38,7 +38,10 @@ const ids = (state = [], action) => {
 export default combineReducers({ byId, ids });
 
 // action creators
-export const receiveBeacon = (address, port) => ({ type: BEACON_RECEIVED, address, port, time: new Date() });
+export const receiveBeacon = (address, port) => ({
+    type: BEACON_RECEIVED,
+    payload: { address, port, time: new Date() },
+});
 
 // selectors
 export const getRecentLamps = (state, now) => (
