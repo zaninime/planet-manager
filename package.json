@@ -10,6 +10,8 @@
     "clean": "rimraf dist",
     "test": "jest --config jest.config.json --colors",
     "lint": "eslint --rulesdir eslint_rules --cache --color app"
+    "ci:test": "jest --config jest.config.json --colors",
+    "ci:lint": "eslint --rulesdir eslint_rules --color app"
   },
   "author": "Francesco Zanini, Patrick Predella, Omar Mahili <support@zanini.me>",
   "license": "GPL-3.0",
