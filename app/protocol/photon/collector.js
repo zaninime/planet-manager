@@ -13,8 +13,9 @@ class IncompatibleConfigError extends EError {}
 
 const collectTarget = target => (config: LowLevelConfig, status: LampStatus) =>
     Object.keys(target).reduce((acc, key) => {
-        acc[key] = target[key](config, status);
-        return acc;
+        const result = acc;
+        result[key] = target[key](config, status);
+        return result;
     }, {});
 
 const daylight = (config: LowLevelConfig) => {
@@ -22,7 +23,11 @@ const daylight = (config: LowLevelConfig) => {
     const b = config.daylight.blue.intensity / 100;
     const w = config.daylight.white.intensity / 100;
 
-    const intensity = +(Math.max(((r + w - 2 * floorIntensity) / (1 - floorIntensity)), ((b + w - 2 * floorIntensity) / (1 - floorIntensity)))).toFixed(2);
+    const intensity = +(Math.max(
+      (((r + w) - (2 * floorIntensity)) / (1 - floorIntensity)),
+      (((b + w) - (2 * floorIntensity)) / (1 - floorIntensity)),
+    )).toFixed(2);
+
     let mainColor;
     if (b > r) {
         mainColor = (b - floorIntensity) / ((1 - floorIntensity) * intensity);
@@ -47,7 +52,7 @@ const night = (config: LowLevelConfig) => ({
 
 const timings = (config: LowLevelConfig) => ({
     dawnBeginsAt: config.daylight.red.delay,
-    duskEndsAt: (config.daylight.red.delay + config.daylight.red.duration + 2 * twilightDuration),
+    duskEndsAt: (config.daylight.red.delay + config.daylight.red.duration + (2 * twilightDuration)),
 });
 
 const twilight = (config: LowLevelConfig) => ({
@@ -110,8 +115,10 @@ const features = (config: LowLevelConfig, status: LampStatus): Features => {
     return featureMap[model];
 };
 
-export const collect = (config: LowLevelConfig, status: LampStatus) => {
+const collect = (config: LowLevelConfig, status: LampStatus) => {
     const convert = collectTarget({ daylight, night, timings, twilight, channels, temperature, fan, master, features });
     const { config: bugFreeConfig, bugs } = blockOnFetch(config, status);
     return { ...convert(bugFreeConfig, status), bugs };
 };
+
+export default collect;

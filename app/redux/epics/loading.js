@@ -2,7 +2,7 @@ import { push } from 'react-router-redux';
 import Rx from 'rxjs/Rx';
 
 import { wifiToReducerFormat } from 'app/utils/addressing';
-import { collect } from 'app/protocol/photon/collector';
+import collect from 'app/protocol/photon/collector';
 import {
   fetchConfig,
   fetchStatus,

@@ -1,5 +1,5 @@
 /* globals describe it expect beforeEach jasmine */
-import { collect } from './collector';
+import collect from './collector';
 
 function genericBeforeEach() {
     this.status = {
