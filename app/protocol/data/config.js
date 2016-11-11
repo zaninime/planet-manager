@@ -1,7 +1,8 @@
 import { createProtocolError } from '../errors';
 import { currifiedPad } from './utils';
 
-const int = parseInt;
+const int = x => parseInt(x, 10);
+const toInt = x => Math.round(x);
 const pad2 = currifiedPad(2);
 const pad3 = currifiedPad(3);
 
@@ -121,26 +122,26 @@ export const buildUpdate = (config) => {
         const delay = [Math.floor(color.delay / 60), color.delay % 60];
         const duration = [Math.floor(color.duration / 60), color.duration % 60];
         parts.push(
-            `${pad2(delay[0]) +
-                pad2(delay[1]) +
-                pad2(duration[0]) +
-                pad2(duration[1])}00000000${pad2(color.slope)}`);
+            `${pad2(toInt(delay[0])) +
+                pad2(toInt(delay[1])) +
+                pad2(toInt(duration[0])) +
+                pad2(toInt(duration[1]))}00000000${pad2(toInt(color.slope))}`);
     }
     const channelMap = { white: 1, red: 2, green: 3, blue: 4, off: 0 };
     parts.push(config.channels.map(e => channelMap[e]).join(''));
     parts.push(
-        pad3(config.temperature.fanStart) +
-        pad3(config.fan.minSpeed) +
-        pad3(config.fan.speedRamp) +
-        pad3(config.fan.maxSpeed) +
-        pad3(config.temperature.shutdown));
+        pad3(toInt(config.temperature.fanStart)) +
+        pad3(toInt(config.fan.minSpeed)) +
+        pad3(toInt(config.fan.speedRamp)) +
+        pad3(toInt(config.fan.maxSpeed)) +
+        pad3(toInt(config.temperature.shutdown)));
     const nightModeMap = { white: '1', red: '2', green: '3', blue: '4' };
-    parts.push(nightModeMap[config.night.color] + pad3(config.night.intensity));
+    parts.push(nightModeMap[config.night.color] + pad3(toInt(config.night.intensity)));
     parts.push(
-        pad3(config.daylight.white.intensity) +
-        pad3(config.daylight.red.intensity) +
-        pad3(config.daylight.green.intensity) +
-        pad3(config.daylight.blue.intensity));
+        pad3(toInt(config.daylight.white.intensity)) +
+        pad3(toInt(config.daylight.red.intensity)) +
+        pad3(toInt(config.daylight.green.intensity)) +
+        pad3(toInt(config.daylight.blue.intensity)));
     const modeMap = { master: '1', slave: '0' };
     parts.push(modeMap[config.mode]);
     return `\x02PLANETSETPARAM01${parts.join('')}\x03`;

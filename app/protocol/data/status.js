@@ -2,7 +2,8 @@ import { currifiedPad } from './utils';
 import { createProtocolError } from '../errors';
 
 const pad3 = currifiedPad(3);
-const int = parseInt;
+const int = x => parseInt(x, 10);
+const toInt = x => Math.round(x);
 
 export const parseResponse = (str) => {
     const regex = /^(016)(\d{3})(\d{3})(\d{3})(\d{3})(\d{3})(\d{3})(\d{3})(\d{4})(\d{4})\r\n$/;
@@ -29,7 +30,7 @@ export const buildUpdate = (w, r, g, b) => {
         if (isNaN(c)) throw TypeError(`Expected a number, got a ${typeof c}`);
         if (!(c >= 0 && c <= 100)) throw RangeError(`Channel intensity value out of range: ${c}`);
     }
-    return `\x02PLANETSETSTATUS01${pad3(int(w))}${pad3(int(r))}${pad3(int(g))}${pad3(int(b))}\x03`;
+    return `\x02PLANETSETSTATUS01${pad3(toInt(w))}${pad3(toInt(r))}${pad3(toInt(g))}${pad3(toInt(b))}\x03`;
 };
 
 export const buildRequest = () => '\x02PLANETGETSTATUS01\x03';
