@@ -1,8 +1,8 @@
 {
   "name": "planet-manager",
-  "version": "20161110.090108.0",
+  "version": "20161111.224149.0",
   "versionCode": {
-    "standard": "2016-11-10T090108Z"
+    "standard": "2016-11-11T224149Z"
   },
   "description": "",
   "scripts": {
