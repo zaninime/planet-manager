@@ -70,6 +70,20 @@ describe('daylight', () => {
 
         expect(collect(this.config, this.status).daylight.intensity).toEqual(0.76);
         expect(collect(this.config, this.status).daylight.mainColor).toEqual(0);
+
+        this.config.daylight.white.intensity = 90; // too much light
+        this.config.daylight.red.intensity = 40;
+        this.config.daylight.blue.intensity = 40;
+
+        expect(collect(this.config, this.status).daylight.intensity).toEqual(1);
+        expect(collect(this.config, this.status).daylight.mainColor).toEqual(0);
+
+        this.config.daylight.white.intensity = 5;   // not enough light
+        this.config.daylight.red.intensity = 5;
+        this.config.daylight.blue.intensity = 10;
+
+        expect(collect(this.config, this.status).daylight.intensity).toEqual(0);
+        expect(collect(this.config, this.status).daylight.mainColor).toEqual(0);
     });
 });
 

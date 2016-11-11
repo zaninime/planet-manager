@@ -100,6 +100,14 @@ describe('daylight', () => {
         this.config.timings.dawnBeginsAt = 0;
         this.config.timings.duskEndsAt = 1000;
         expect(emit(this.config, this.caps).daylight.green.duration).toEqual(940);
+
+        this.config.timings.dawnBeginsAt = 1400;
+        this.config.timings.duskEndsAt = 1500;
+        expect(emit(this.config, this.caps).daylight.green.duration).toEqual(0);
+
+        this.config.timings.dawnBeginsAt = 300;
+        this.config.timings.duskEndsAt = 200;
+        expect(emit(this.config, this.caps).daylight.green.duration).toEqual(0);
     });
 
     it('generates correct delay values', function () {
@@ -124,6 +132,21 @@ describe('daylight', () => {
         expect(emit(this.config, this.caps).daylight.green.delay).toEqual(6);
         expect(emit(this.config, this.caps).daylight.blue.delay).toEqual(6);
         expect(emit(this.config, this.caps).daylight.white.delay).toEqual(6);
+
+        this.config.timings.dawnBeginsAt = 1500;
+        this.config.timings.duskEndsAt = 1500;
+        this.config.twilight.redLevel = 0;
+        expect(emit(this.config, this.caps).daylight.red.delay).toEqual(1379);
+        expect(emit(this.config, this.caps).daylight.green.delay).toEqual(1379);
+        expect(emit(this.config, this.caps).daylight.blue.delay).toEqual(1379);
+        expect(emit(this.config, this.caps).daylight.white.delay).toEqual(1379);
+
+        this.config.timings.duskEndsAt = 0;
+        this.config.twilight.redLevel = 0;
+        expect(emit(this.config, this.caps).daylight.red.delay).toEqual(1379);
+        expect(emit(this.config, this.caps).daylight.green.delay).toEqual(1379);
+        expect(emit(this.config, this.caps).daylight.blue.delay).toEqual(1379);
+        expect(emit(this.config, this.caps).daylight.white.delay).toEqual(1379);
     });
 
     it('generates correct slope values', function () {

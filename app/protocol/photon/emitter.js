@@ -11,11 +11,15 @@ const emitTarget = target => (config, caps) =>
    }, {})
 ;
 
+// function clipping the value in a strict range
+const clamp = (value, minValue, maxValue) => Math.min(Math.max(value, minValue), maxValue);
+
 const daylight = (config) => {
-    const x = config.daylight.mainColor;
-    const i = config.daylight.intensity;
-    const dawn = config.timings.dawnBeginsAt;
-    const dusk = config.timings.duskEndsAt;
+    const lastMinuteOfDay = (60 * 24) - 1;
+    const x = clamp(config.daylight.mainColor, -1, 1);
+    const i = clamp(config.daylight.intensity, 0, 1);
+    const dawn = clamp(config.timings.dawnBeginsAt, 0, lastMinuteOfDay - (2 * twilightDuration));
+    const dusk = clamp(config.timings.duskEndsAt, dawn + (2 * twilightDuration), lastMinuteOfDay);
 
     const r = 100 * (floorIntensity + Math.max(i * (1 - floorIntensity) * (-x), 0));
     let g;

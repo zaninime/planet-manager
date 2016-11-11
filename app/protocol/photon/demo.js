@@ -2,10 +2,11 @@
 
 import { floorIntensity } from './constants';
 
+const clamp = (value, minValue, maxValue) => Math.min(Math.max(value, minValue), maxValue);
 /* eslint-disable no-mixed-operators */
 export default (color: number, intensity: number) => {
-    const x = color;
-    const i = intensity;
+    const x = clamp(color, -1, 1);
+    const i = clamp(intensity, 0, 1);
 
     const red = 100 * (floorIntensity + Math.max(i * (1 - floorIntensity) * (-x), 0));
     let green;

@@ -11,6 +11,8 @@ import type { LowLevelConfig, LampStatus, Features } from './types';
 
 class IncompatibleConfigError extends EError {}
 
+const clamp = (value, minValue, maxValue) => Math.min(Math.max(value, minValue), maxValue);
+
 const collectTarget = target => (config: LowLevelConfig, status: LampStatus) =>
     Object.keys(target).reduce((acc, key) => {
         const result = acc;
@@ -23,10 +25,12 @@ const daylight = (config: LowLevelConfig) => {
     const b = config.daylight.blue.intensity / 100;
     const w = config.daylight.white.intensity / 100;
 
-    const intensity = +(Math.max(
-      (((r + w) - (2 * floorIntensity)) / (1 - floorIntensity)),
-      (((b + w) - (2 * floorIntensity)) / (1 - floorIntensity)),
-    )).toFixed(2);
+    const intensity = Math.round(
+        clamp(Math.max(
+          (((r + w) - (2 * floorIntensity)) / (1 - floorIntensity)),
+          (((b + w) - (2 * floorIntensity)) / (1 - floorIntensity)),
+        ), 0, 1) * 100,
+    ) / 100;
 
     let mainColor;
     if (b > r) {
@@ -39,6 +43,12 @@ const daylight = (config: LowLevelConfig) => {
         throw new IncompatibleConfigError('Invalid daylight configuration');
     }
 
+    mainColor = clamp(mainColor, -1, 1);
+
+    if (intensity === 0) { // with non compatible values and 0 intensity, maincolor is NaN because of division by 0.
+        mainColor = 0;
+    }
+
     return {
         mainColor,
         intensity,
@@ -47,12 +57,16 @@ const daylight = (config: LowLevelConfig) => {
 
 const night = (config: LowLevelConfig) => ({
     color: config.night.color,
-    intensity: config.night.intensity / 100,
+    intensity: Math.min(Math.max(config.night.intensity / 100, 0), 1),
 });
 
+const lastMinuteOfDay = (60 * 24) - 1;
+
 const timings = (config: LowLevelConfig) => ({
-    dawnBeginsAt: config.daylight.red.delay,
-    duskEndsAt: (config.daylight.red.delay + config.daylight.red.duration + (2 * twilightDuration)),
+    dawnBeginsAt: Math.min(
+        config.daylight.red.delay, lastMinuteOfDay - (config.daylight.red.duration + (2 * twilightDuration))),
+    duskEndsAt: Math.min(
+        (config.daylight.red.delay + config.daylight.red.duration + (2 * twilightDuration)), lastMinuteOfDay),
 });
 
 const twilight = (config: LowLevelConfig) => ({
