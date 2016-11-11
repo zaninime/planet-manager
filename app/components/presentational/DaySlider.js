@@ -40,15 +40,15 @@ class DaySlider extends Component {
         this.intensityRadius = 90;
         this.buttonRadius = 20;
 
-        this.firstColor = '#EB490B';
-        this.secondColor = '#E2E095';
-        this.thirdColor = '#C0E3DF';
-        this.fourthColor = '#2D99DA';
+        this.colors = ['#ff404c', '#ffc781', '#ffffd8', '#82c7ff', '#4c40ff'];
 
-        this.gr = new GradientReader([{ stop: 0.20, color: this.firstColor },
-                                  { stop: 0.40, color: this.secondColor },
-                                  { stop: 0.60, color: this.thirdColor },
-                                  { stop: 0.80, color: this.fourthColor }]);
+        this.gr = new GradientReader([
+            { stop: 0.00, color: this.colors[0] },
+            { stop: 0.25, color: this.colors[1] },
+            { stop: 0.50, color: this.colors[2] },
+            { stop: 0.75, color: this.colors[3] },
+            { stop: 1.00, color: this.colors[4] },
+        ]);
 
         styles.colorSlider.width = this.colorRadius * 2;
         styles.colorSlider.height = this.colorRadius * 2;
@@ -97,10 +97,7 @@ class DaySlider extends Component {
                         style={styles.colorSlider}
                         radius={this.colorRadius}
                         borderWidth={this.buttonRadius * 2}
-                        firstColor={this.firstColor}
-                        secondColor={this.secondColor}
-                        thirdColor={this.thirdColor}
-                        fourthColor={this.fourthColor}
+                        colors={this.colors}
                     />
                     <SliderButton
                         value={this.state.color}
