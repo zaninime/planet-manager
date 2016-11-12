@@ -1,28 +1,19 @@
 import RaisedButton from 'material-ui/RaisedButton';
+import filterProps from 'app/components/enhancer/filterProps';
 import { compose, mapProps } from 'recompose';
 import { connect } from 'react-redux';
-import { getDayColor, getDayColorIntensity } from 'app/redux/modules';
 import Radium from 'radium';
-import { emitDemo } from 'app/protocol/photon/emitter';
-
-const mapStateToProps = (state, { lampId }) => ({
-    color: getDayColor(state, lampId),
-    intensity: getDayColorIntensity(state, lampId),
-});
 
 const mapDispatchToProps = (dispatch, { lampId }) => ({
-    demoMode: (colors) => dispatch({ type: 'lamps/DEMO_MODE', payload: { lampId, ...colors } }),
+    demoMode: () => dispatch({ type: 'lamps/DEMO_MODE', payload: { lampId } }),
 });
 
 export default compose(
-    connect(mapStateToProps, mapDispatchToProps),
-    mapProps(({ color, intensity, demoMode, ...props }) => {
-        const colors = emitDemo(color, intensity);
-        return {
-            ...props,
-            lampId: undefined,
-            onClick: () => demoMode(colors),
-        };
-    }),
+    connect(null, mapDispatchToProps),
+    mapProps(({ demoMode, ...props }) => ({
+        ...props,
+        onClick: () => demoMode(),
+    })),
+    filterProps('lampId'),
     Radium,
 )(RaisedButton);
