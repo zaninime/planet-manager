@@ -14,49 +14,56 @@ const emitTarget = target => (config, caps) =>
 // function clipping the value in a strict range
 const clamp = (value, minValue, maxValue) => Math.min(Math.max(value, minValue), maxValue);
 
-const daylight = (config) => {
-    const lastMinuteOfDay = (60 * 24) - 1;
-    const x = clamp(config.daylight.mainColor, -1, 1);
-    const i = clamp(config.daylight.intensity, 0, 1);
-    const dawn = clamp(config.timings.dawnBeginsAt, 0, lastMinuteOfDay - (2 * twilightDuration));
-    const dusk = clamp(config.timings.duskEndsAt, dawn + (2 * twilightDuration), lastMinuteOfDay);
+const daylightColor = (mainColor: number, intensity: number) => {
+    const x = clamp(mainColor, -1, 1);
+    const i = clamp(intensity, 0, 1);
 
-    const r = 100 * (floorIntensity + Math.max(i * (1 - floorIntensity) * (-x), 0));
-    let g;
+    const red = 100 * (floorIntensity + Math.max(i * (1 - floorIntensity) * (-x), 0));
+    let green;
     if ((x >= -1 && x < -0.5) || (x > 0.5 && x <= 1)) {
-        g = 100 * ((2 / 3) * (floorIntensity + ((i * (1 - floorIntensity)) * (1 - (Math.abs(x))))));
+        green = 100 * ((2 / 3) * (floorIntensity + ((i * (1 - floorIntensity)) * (1 - (Math.abs(x))))));
     } else if (x >= -0.5 && x <= 0.5) {
-        g = 100 * ((2 / 3) * (floorIntensity + ((i * (1 - floorIntensity)) * ((3 / 4) - Math.abs(x / 2)))));
+        green = 100 * ((2 / 3) * (floorIntensity + ((i * (1 - floorIntensity)) * ((3 / 4) - Math.abs(x / 2)))));
     }
 
-    const b = 100 * (floorIntensity + Math.max(i * (1 - floorIntensity) * (x), 0));
-    const w = 100 * (floorIntensity + ((i * (1 - floorIntensity)) * (1 - Math.abs(x))));
+    const blue = 100 * (floorIntensity + Math.max(i * (1 - floorIntensity) * (x), 0));
+    const white = 100 * (floorIntensity + ((i * (1 - floorIntensity)) * (1 - Math.abs(x))));
+
+    return { white, red, green, blue };
+};
+
+export const daylight = (config: HighLevelConfig) => {
+    const lastMinuteOfDay = (60 * 24) - 1;
+    const dawn = clamp(config.timings.dawnBeginsAt, 0, lastMinuteOfDay - (2 * twilightDuration));
+    const dusk = clamp(config.timings.duskEndsAt, dawn + (2 * twilightDuration), lastMinuteOfDay);
 
     const duration = (dusk - dawn) - (2 * twilightDuration);
     const delay = dawn + (config.twilight.redLevel * twilightDuration);
     const slope = (1 - config.twilight.redLevel) * twilightDuration;
 
+    const { white, red, green, blue } = daylightColor(config.daylight.mainColor, config.daylight.intensity);
+
     return {
         white: {
-            intensity: w,
+            intensity: white,
             duration,
             delay,
             slope,
         },
         red: {
-            intensity: r,
+            intensity: red,
             duration,
             delay: dawn,
             slope: twilightDuration,
         },
         green: {
-            intensity: g,
+            intensity: green,
             duration,
             delay,
             slope,
         },
         blue: {
-            intensity: b,
+            intensity: blue,
             duration,
             delay,
             slope,
@@ -64,7 +71,7 @@ const daylight = (config) => {
     };
 };
 
-const channels = (config, { features }) => {
+export const channels = (config: HighLevelConfig, { features }) => {
     const convert = (ch) => {
         if (!ch.enabled) return 'off';
         return ch.color;
@@ -83,7 +90,7 @@ const channels = (config, { features }) => {
     return config.channels.map(convert);
 };
 
-const temperature = (config, { features }) => {
+export const temperature = (config, { features }) => {
     if (!features.TEMPERATURE_CONFIG) {
         return {
             fanStart: 0,
@@ -93,7 +100,7 @@ const temperature = (config, { features }) => {
     return { ...config.temperature };
 };
 
-const fan = (config, { features }) => {
+export const fan = (config, { features }) => {
     if (!features.FAN_CONFIG) {
         return {
             minSpeed: 0,
@@ -104,12 +111,14 @@ const fan = (config, { features }) => {
     return { ...config.fan };
 };
 
-const night = config => ({
+export const night = config => ({
     color: config.night.color,
     intensity: Math.round(config.night.intensity * 100),
 });
 
-const mode = config => (config.master ? 'master' : 'slave');
+export const mode = config => (config.master ? 'master' : 'slave');
+
+export const emitDemo = daylightColor;
 
 const emit = (config: HighLevelConfig, caps: { features: Features, bugs: string[] }) => {
     const emitter = emitTarget({ daylight, channels, temperature, fan, night, mode });
