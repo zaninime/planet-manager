@@ -44,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
         WebSettings settings = webView.getSettings();
         settings.setJavaScriptEnabled(true);
         settings.setSupportZoom(false);
+        settings.setAllowUniversalAccessFromFileURLs(true);
 
         WifiDiscovery wifiDiscovery = new WifiDiscovery(webView);
         WifiSocket wifiPlug = new WifiSocket(webView);
