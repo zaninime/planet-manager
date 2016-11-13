@@ -1,4 +1,3 @@
-/* global __DEBUG__ */
 import Raven from 'raven-js';
 import ravenInit from 'app/raven-plugin';
 import { id as releaseId } from '../release.json';

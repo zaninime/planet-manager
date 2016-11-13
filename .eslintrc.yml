@@ -17,6 +17,8 @@
   plugins:
     - react
     - flowtype-errors
+  globals:
+    __DEBUG__: false
   rules:
     arrow-parens: 0
     flowtype-errors/show-errors: 2

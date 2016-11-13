@@ -16,11 +16,11 @@ export const detectModel = (status: LampStatus): LampModel => {
             if (isCompact) return COMPACT;
             return PRO;
         }
-    case 562:
+    case 101:
         return PRO_V2;
-    case 564:
+    case 100:
         return STELLA;
     default:
-        throw new Error('Unable to recognize lamp model');
+        throw new Error(`Lamp model ${status.productId} is not recognized.`);
     }
 };

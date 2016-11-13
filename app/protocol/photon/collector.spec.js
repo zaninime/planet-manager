@@ -189,7 +189,7 @@ describe('features', () => {
     });
 
     it('recognizes a PlanetPRO v2', function () {
-        this.status.productId = 562;
+        this.status.productId = 101;
         this.status.firmwareVersion = 300;
 
         const expectedFeatures = {
@@ -227,7 +227,7 @@ describe('features', () => {
     });
 
     it('recognizes a PlanetStella', function () {
-        this.status.productId = 564;
+        this.status.productId = 100;
         this.status.firmwareVersion = 300;
 
         const expectedFeatures = {

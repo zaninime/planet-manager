@@ -1,4 +1,3 @@
-/* globals __DEBUG__ */
 import React, { PropTypes as T } from 'react';
 import { Router } from 'react-router';
 import { Provider } from 'react-redux';

@@ -1,4 +1,3 @@
-/* global __DEBUG__ */
 import { createDiscoveryListener } from 'app/protocol/discovery';
 import { receiveBeacon } from 'app/redux/modules/discovery';
 import Raven from 'raven-js';

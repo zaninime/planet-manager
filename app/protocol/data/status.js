@@ -6,7 +6,7 @@ const int = x => parseInt(x, 10);
 const toInt = x => Math.round(x);
 
 export const parseResponse = (str) => {
-    const regex = /^(016)(\d{3})(\d{3})(\d{3})(\d{3})(\d{3})(\d{3})(\d{3})(\d{4})(\d{4})\r\n$/;
+    const regex = /^(\d{3})(\d{3})(\d{3})(\d{3})(\d{3})(\d{3})(\d{3})(\d{3})(\d{4})(\d{4})\r\n$/;
     const m = str.match(regex);
     if (m === null) throw createProtocolError('Invalid status response format');
     return {
