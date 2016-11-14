@@ -9,7 +9,16 @@ import { twilightDuration, floorIntensity, compactChannels } from './constants';
 import * as lamps from './lamps';
 import type { LowLevelConfig, LampStatus, Features } from './types';
 
-class IncompatibleConfigError extends EError {}
+class IncompatibleConfigError extends EError {
+    constructor(message, failingData = null) {
+        super(message);
+        this.failingData = JSON.stringify(failingData);
+    }
+
+    getRavenExtra() {
+        return { failingData: this.failingData };
+    }
+}
 
 const clamp = (value, minValue, maxValue) => Math.min(Math.max(value, minValue), maxValue);
 
@@ -40,7 +49,7 @@ const daylight = (config: LowLevelConfig) => {
     } else if (r === b) {
         mainColor = 0;
     } else {
-        throw new IncompatibleConfigError('Invalid daylight configuration');
+        throw new IncompatibleConfigError('Invalid daylight configuration', config);
     }
 
     mainColor = clamp(mainColor, -1, 1);

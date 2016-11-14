@@ -1,6 +1,6 @@
 /* globals NativeWifiSocket */
 import { v4 as uuid4 } from 'node-uuid';
-import { createIOError, createProtocolError } from './errors';
+import { createIOError, ProtocolError } from './errors';
 
 const CB_PREFIX = 'cb_socket_';
 
@@ -24,7 +24,7 @@ export const fetchGeneric = (address, port, query) => (new Promise((resolve, rej
         const err = info.error;
         switch (err.name) {
         case 'eu.elos.planetmgr.app.wifi.socket.InvalidHandshakeException':
-            return reject(createProtocolError('Invalid handshake received'));
+            return reject(new ProtocolError('Invalid handshake received'));
         case 'java.net.SocketTimeoutException':
             return reject(createIOError('TIMEOUT'));
         default:
@@ -44,7 +44,7 @@ export const saveGeneric = (address, port, query) => (new Promise((resolve, reje
         const err = info.error;
         switch (err.name) {
         case 'eu.elos.planetmgr.app.wifi.socket.InvalidHandshakeException':
-            return reject(createProtocolError('Invalid handshake received'));
+            return reject(new ProtocolError('Invalid handshake received'));
         case 'java.net.SocketTimeoutException':
             return reject(createIOError('TIMEOUT'));
         default:

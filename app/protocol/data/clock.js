@@ -1,10 +1,10 @@
 import { pad } from './utils';
-import { createProtocolError } from '../errors';
+import { ProtocolError } from '../errors';
 
 export const parseResponse = (str) => {
     const regex = /^PLANETCOUNTER([\dA-F]{5})\r\n$/;
     const m = str.match(regex);
-    if (m === null) throw createProtocolError('Invalid clock response');
+    if (m === null) throw new ProtocolError('Invalid clock response', str);
     const seconds = parseInt(m[1], 16);
     const date = new Date();
     date.setHours(0);

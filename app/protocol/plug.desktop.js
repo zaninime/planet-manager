@@ -1,6 +1,6 @@
 import nativeRequire from 'app/require';
 import { ab2str } from './arraybuffer';
-import { createIOError, createProtocolError } from './errors';
+import { createIOError, ProtocolError } from './errors';
 
 const net = nativeRequire('net');
 
@@ -15,7 +15,7 @@ export const fetchGeneric = (address, port, query) => (new Promise((resolve, rej
         switch (state) {
         case 1:
             if (!/\*HELLO\*/.test(strData)) {
-                reject(createProtocolError('Invalid handshake received'));
+                reject(new ProtocolError('Invalid handshake received'));
             }
             state = 2;
             sock.write(query, 'ASCII', () => {
@@ -38,7 +38,7 @@ export const fetchGeneric = (address, port, query) => (new Promise((resolve, rej
         case 4:
             break;
         default:
-            reject(createProtocolError('Connection closed prematurely'));
+            reject(new ProtocolError('Connection closed prematurely'));
         }
     });
     sock.on('timeout', () => {
@@ -59,7 +59,7 @@ export const saveGeneric = (address, port, query) => (new Promise((resolve, reje
         switch (state) {
         case 1:
             if (!/\*HELLO\*/.test(data)) {
-                reject(createProtocolError('Invalid handshake received'));
+                reject(new ProtocolError('Invalid handshake received'));
             }
             state = 2;
             sock.write(query, 'ASCII', () => {
@@ -79,7 +79,7 @@ export const saveGeneric = (address, port, query) => (new Promise((resolve, reje
         case 3:
             break;
         default:
-            reject(createProtocolError('Connection closed prematurely'));
+            reject(new ProtocolError('Connection closed prematurely'));
         }
     });
     sock.on('timeout', () => {

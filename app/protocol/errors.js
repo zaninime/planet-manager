@@ -1,7 +1,17 @@
 import ExtensibleError from 'app/utils/error';
 
 export class IOError extends ExtensibleError {}
-export class ProtocolError extends ExtensibleError {}
+
+export class ProtocolError extends ExtensibleError {
+    constructor(message, failingData = null) {
+        super(message);
+        this.failingData = JSON.stringify(failingData);
+    }
+
+    getRavenExtra() {
+        return { failingData: this.failingData };
+    }
+}
 
 export const createIOError = (cause, ...args) => {
     switch (cause) {
@@ -19,8 +29,3 @@ export const createIOError = (cause, ...args) => {
         throw new Error('Invalid cause');
     }
 };
-
-/* istanbul ignore next */
-export const createProtocolError = message =>
-   new ProtocolError(message)
-;

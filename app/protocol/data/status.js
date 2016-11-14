@@ -1,5 +1,5 @@
 import { currifiedPad } from './utils';
-import { createProtocolError } from '../errors';
+import { ProtocolError } from '../errors';
 
 const pad3 = currifiedPad(3);
 const int = x => parseInt(x, 10);
@@ -8,7 +8,7 @@ const toInt = x => Math.round(x);
 export const parseResponse = (str) => {
     const regex = /^(\d{3})(\d{3})(\d{3})(\d{3})(\d{3})(\d{3})(\d{3})(\d{3})(\d{4})(\d{4})\r\n$/;
     const m = str.match(regex);
-    if (m === null) throw createProtocolError('Invalid status response format');
+    if (m === null) throw new ProtocolError('Invalid status response format', str);
     return {
         productId: int(m[1]),
         colors: {

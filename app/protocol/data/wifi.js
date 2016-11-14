@@ -1,6 +1,6 @@
 /* @flow */
 import { currifiedPad } from './utils';
-import { createProtocolError } from '../errors';
+import { ProtocolError } from '../errors';
 
 export type WifiConfig = {|
   ssid: string,
@@ -49,11 +49,13 @@ const fixedLengthIPAddress = (addr) => {
 
 export const parseResponse = (str: string): WifiConfig => {
     const parts = str.slice(0, -2).split(',');
-    if (parts.length !== 9) throw createProtocolError('Invalid number of fields');
+    if (parts.length !== 9) throw new ProtocolError('Invalid number of fields', str);
 
     const ipFields = [2, 6, 7];
-    if (!ipFields.map(e => parts[e]).every(validateIPAdress)) throw createProtocolError('Invalid IP address');
-    if (!validateTCPPort(parts[3])) throw createProtocolError('Invalid TCP port number');
+    if (!ipFields.map(e => parts[e]).every(validateIPAdress)) {
+        throw new ProtocolError('Invalid IP address', ipFields.map(e => parts[e]));
+    }
+    if (!validateTCPPort(parts[3])) throw new ProtocolError('Invalid TCP port number', parts[3]);
 
     let dhcp;
     switch (parts[4]) {
@@ -65,11 +67,11 @@ export const parseResponse = (str: string): WifiConfig => {
         dhcp = true;
         break;
     default:
-        throw createProtocolError('Invalid DHCP mode');
+        throw new ProtocolError('Invalid DHCP mode', parts[4]);
     }
 
     let channel = parseInt(parts[5], 10);
-    if (!(channel >= 0 && channel <= 12)) throw createProtocolError('Invalid Wi-Fi channel');
+    if (!(channel >= 0 && channel <= 12)) throw new ProtocolError('Invalid Wi-Fi channel', channel);
     if (channel === 0) channel = 'auto';
 
     let mode;
@@ -81,7 +83,7 @@ export const parseResponse = (str: string): WifiConfig => {
         mode = 'ibss';
         break;
     default:
-        throw createProtocolError('Invalid Wi-Fi mode');
+        throw new ProtocolError('Invalid Wi-Fi mode', parts[8]);
     }
     return {
         ssid: parts[0],

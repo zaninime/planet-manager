@@ -21,9 +21,13 @@ export default error;
 export const clearError = () => ({ type: CLEAR_ERROR });
 export const setError = err => {
     if (!__DEBUG__) {
-        Raven.captureException(err);
+        if (typeof err.getRavenExtra === 'function') {
+            Raven.captureException(err, { extra: err.getRavenExtra() });
+        } else {
+            Raven.captureException(err);
+        }
     } else {
-        console.warn(err.stack); // eslint-disable-line
+        console.warn('Managed exception', err); // eslint-disable-line
     }
     return { type: SET_ERROR, payload: err, error: true };
 };

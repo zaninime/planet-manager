@@ -1,4 +1,4 @@
-import { createProtocolError } from '../errors';
+import { ProtocolError } from '../errors';
 import { currifiedPad } from './utils';
 
 const int = x => parseInt(x, 10);
@@ -9,7 +9,7 @@ const pad3 = currifiedPad(3);
 const parseDayColor = (color, timingStr, intensityStr) => {
     const regex = /^(\d{2})(\d{2})(\d{2})(\d{2})\d{8}(\d{2})/;
     const m = timingStr.match(regex);
-    if (m === null) throw createProtocolError(`Invalid color configuration format for channel ${color}`);
+    if (m === null) throw new ProtocolError(`Invalid color configuration format for channel ${color}`, timingStr);
     return {
         delay: (int(m[1]) * 60) + int(m[2]),
         duration: (int(m[3]) * 60) + int(m[4]),
@@ -31,14 +31,14 @@ const parseChannels = str => str.split('').map((e) => {
     case '4':
         return 'blue';
     default:
-        throw createProtocolError('Invalid channel mapping configuration');
+        throw new ProtocolError('Invalid channel mapping configuration', e);
     }
 });
 
 const parseTemperature = (str) => {
     const regex = /^(\d{3})\d{9}(\d{3})$/;
     const m = str.match(regex);
-    if (m === null) throw createProtocolError('Invalid temperature configuration format');
+    if (m === null) throw new ProtocolError('Invalid temperature configuration format', str);
     return {
         fanStart: int(m[1]),
         shutdown: int(m[2]),
@@ -48,7 +48,7 @@ const parseTemperature = (str) => {
 const parseFan = (str) => {
     const regex = /^\d{3}(\d{3})(\d{3})(\d{3})\d{3}$/;
     const m = str.match(regex);
-    if (m === null) throw createProtocolError('Invalid fan configuration format');
+    if (m === null) throw new ProtocolError('Invalid fan configuration format', str);
     return {
         minSpeed: int(m[1]),
         speedRamp: int(m[2]),
@@ -59,7 +59,7 @@ const parseFan = (str) => {
 const parseNight = (str) => {
     const regex = /^(\d)(\d{3})$/;
     const m = str.match(regex);
-    if (m === null) throw createProtocolError('Invalid night configuration format');
+    if (m === null) throw new ProtocolError('Invalid night configuration format', str);
     let color;
     switch (m[1]) {
     case '0':
@@ -76,7 +76,7 @@ const parseNight = (str) => {
         color = 'green';
         break;
     default:
-        throw createProtocolError('Invalid night color');
+        throw new ProtocolError('Invalid night color', m[1]);
     }
     return {
         color,
@@ -91,14 +91,14 @@ const parseMode = (str) => {
     case '1':
         return 'master';
     default:
-        throw createProtocolError('Invalid mode configuration format');
+        throw new ProtocolError('Invalid mode configuration format', str);
     }
 };
 
 export const parseResponse = (str) => {
     const topRegex = /^(\d{18})(\d{18})(\d{18})(\d{18})(\d{12})(\d{15})(\d{4})(\d{3})(\d{3})(\d{3})(\d{3})(\d)\r\n$/;
     const m = str.match(topRegex);
-    if (m === null) throw createProtocolError('Invalid configuration format');
+    if (m === null) throw new ProtocolError('Invalid configuration format', str);
     const out = {
         daylight: {
             white: parseDayColor('white', m[1], m[8]),
