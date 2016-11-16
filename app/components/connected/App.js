@@ -5,7 +5,6 @@ import Radium, { Style } from 'radium';
 
 const styles = {
     body: {
-        fontWeight: 'lighter',
         fontFamily: 'Roboto, sans-serif',
         fontSmoothing: 'antialiased',
         padding: '0',

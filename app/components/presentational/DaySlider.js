@@ -34,7 +34,8 @@ class DaySlider extends Component {
     constructor(props) {
         super(props);
         this.handleColorChange = this.handleColorChange.bind(this);
-        this.handleIntensityChange = this.handleIntensityChange.bind(this);
+        this.handleColorRelease = this.handleColorRelease.bind(this);
+        this.handleIntensityRelease = this.handleIntensityRelease.bind(this);
 
         this.colorRadius = 140;
         this.intensityRadius = 90;
@@ -80,12 +81,14 @@ class DaySlider extends Component {
 
     handleColorChange(value) {
         const color = this.gr.getColor(value * 100);
-
         this.setState({ secondColor: `rgb(${color[0]},${color[1]},${color[2]})` });
+    }
+
+    handleColorRelease(value) {
         this.props.setColor(value);
     }
 
-    handleIntensityChange(value) {
+    handleIntensityRelease(value) {
         this.props.setIntensity(value);
     }
 
@@ -104,6 +107,7 @@ class DaySlider extends Component {
                         radius={this.colorRadius}
                         buttonRadius={this.buttonRadius - 2}
                         onChange={this.handleColorChange}
+                        onRelease={this.handleColorRelease}
                     />
 
                     <CircleGradientIcon
@@ -118,6 +122,7 @@ class DaySlider extends Component {
                         radius={this.intensityRadius}
                         buttonRadius={this.buttonRadius - 2}
                         onChange={this.handleIntensityChange}
+                        onRelease={this.handleIntensityRelease}
                         auxiliaryButtonsEnabled
                         auxiliaryRemoveButtonColor="black"
                         auxiliaryAddButtonColor={this.state.secondColor}

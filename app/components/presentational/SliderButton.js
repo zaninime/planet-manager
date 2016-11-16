@@ -76,7 +76,7 @@ class SliderButton extends Component {
     }
 
     componentWillMount() {
-        this.setValue(this.props.value, false);
+        this.setValue(this.props.value);
     }
 
     componentDidMount() {
@@ -87,7 +87,7 @@ class SliderButton extends Component {
         this.updateFields(nextProps);
 
         if (nextProps.value !== this.props.value) {
-            this.setValue(nextProps.value, false);
+            this.setValue(nextProps.value);
         }
 
         let { sliderStyle, sliderButtonStyle } = this.state;
@@ -106,7 +106,7 @@ class SliderButton extends Component {
         return shallowCompare(this, nextProps, nextState);
     }
 
-    setValue(value, triggerOnChange = true) {
+    setValue(value, touchType = 'none') {
         let adjustedValue = value;
         if (value >= 1.00) {
             adjustedValue = 1.00;
@@ -119,10 +119,10 @@ class SliderButton extends Component {
             v = (adjustedValue * 270) - 135;
         }
 
-        this.setDegrees(v, triggerOnChange);
+        this.setDegrees(v, touchType);
     }
 
-    setDegrees(deg, triggerOnChange = true) {
+    setDegrees(deg, touchType) {
         let adjustedDeg = deg;
         if (adjustedDeg < 225 && adjustedDeg > 225 - this.buttonRadius) {
             adjustedDeg = 225;
@@ -144,14 +144,25 @@ class SliderButton extends Component {
                 value = 135 + adjustedDeg;
             }
 
-            value = Math.round((value / 270) * 1e2) / 1e2;
+            value = parseFloat(Math.round((value / 270) * 1e2) / 1e2);
+            const { onChange, onRelease } = this.props;
 
             if (value !== this.state.value) {
                 this.setState({ value, sliderButtonStyle });
 
-                if (triggerOnChange) {
-                    this.props.onChange(value * 1);
+                if (touchType !== 'none') {
+                    if (onChange) {
+                        onChange(value);
+                    }
+
+                    if (onRelease && (touchType === 'tap' || touchType === 'button')) {
+                        onRelease(value);
+                    }
                 }
+            } else if (onRelease && touchType === 'panEnd') {
+                // panEnd isn't detected since the value equals
+                // to the last one computed on the last pan
+                onRelease(value);
             }
         }
     }
@@ -182,6 +193,8 @@ class SliderButton extends Component {
     }
 
     handleTouchEvent(e, type) {
+        e.preventDefault();
+
         const position = {
             x: Math.max(0, e.center.x - this.bb.left),
             y: Math.max(0, e.center.y - this.bb.top),
@@ -200,28 +213,28 @@ class SliderButton extends Component {
 
         if (type === 'panStart' && isInsideInnerCircle) {
             this.panStartedInside = true;
-        } else if (type !== 'pan') {
+        } else if (!type.startsWith('pan')) {
+            // set it false for every 'non-pan' touch
             this.panStartedInside = false;
         }
 
         // a tap can't be perfomed outside the inner and outer boundaries
         // while a pan can start on the inside only and continue anywhere else
         // so this behaves like a material slider
-        if ((type === 'pan' && this.panStartedInside) || (isInsideInnerCircle && type === 'tap')) {
-            e.preventDefault();
-
+        if ((type.startsWith('pan') && this.panStartedInside) || (isInsideInnerCircle && type === 'tap')) {
             const atan = Math.atan2(position.x - this.radius, position.y - this.radius);
             const deg = Math.round((-atan / (Math.PI / 180)) + 180);
-            this.setDegrees(deg);
+
+            this.setDegrees(deg, type);
         }
     }
 
     handleRemoveTouchTap() {
-        this.setValue(this.state.value - 0.01);
+        this.setValue(this.state.value - 0.01, 'button');
     }
 
     handleAddTouchTap() {
-        this.setValue(this.state.value + 0.01);
+        this.setValue(this.state.value + 0.01, 'button');
     }
 
     render() {
@@ -264,19 +277,18 @@ class SliderButton extends Component {
             );
         }
 
-        /* eslint-disable */
         return (
             <div>
                 <Hammer
                     onPan={e => this.handleTouchEvent(e, 'pan')}
                     onPanStart={e => this.handleTouchEvent(e, 'panStart')}
                     onPanEnd={e => this.handleTouchEvent(e, 'panEnd')}
+                    onPanCancel={e => this.handleTouchEvent(e, 'panCancel')}
                     onTap={e => this.handleTouchEvent(e, 'tap')}
                 >
-                    <div
-                        ref={ref => this.buttonContainer = ref}
-                        style={[styles.slider, this.state.sliderStyle]}
-                    >
+                    {/* eslint-disable */}
+                    <div ref={ref => this.buttonContainer = ref} style={[styles.slider, this.state.sliderStyle]}>
+                    {/* eslint-enable */}
                         <div style={[styles.sliderButton, this.state.sliderButtonStyle]} />
                     </div>
                 </Hammer>
@@ -293,11 +305,13 @@ SliderButton.propTypes = {
     radius: React.PropTypes.number.isRequired,
     buttonRadius: React.PropTypes.number.isRequired,
     value: React.PropTypes.number.isRequired,
-    onChange: React.PropTypes.func.isRequired,
+    onChange: React.PropTypes.func,
+    onRelease: React.PropTypes.func,
     auxiliaryButtonsEnabled: React.PropTypes.bool,
     valueLabelEnabled: React.PropTypes.bool,
     auxiliaryAddButtonColor: React.PropTypes.string,
     auxiliaryRemoveButtonColor: React.PropTypes.string,
 };
+/* eslint-enable */
 
 export default Radium(SliderButton);

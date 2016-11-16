@@ -80,6 +80,7 @@ class TwilightSlider extends Component {
     constructor(props) {
         super(props);
         this.handleOnChange = this.handleOnChange.bind(this);
+        this.handleOnRelease = this.handleOnRelease.bind(this);
 
         this.state = TwilightSlider.initState(props);
 
@@ -103,6 +104,9 @@ class TwilightSlider extends Component {
 
     handleOnChange(value) {
         this.setState(TwilightSlider.setIconsOpacity(value));
+    }
+
+    handleOnRelease(value) {
         this.props.setValue(value);
     }
 
@@ -126,6 +130,7 @@ class TwilightSlider extends Component {
                     radius={this.radius}
                     buttonRadius={this.buttonRadius - 2}
                     onChange={this.handleOnChange}
+                    onRelease={this.handleOnRelease}
                 />
                 <SunIcon style={sunStyle} />
 
