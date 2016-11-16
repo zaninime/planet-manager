@@ -7,8 +7,11 @@ DATE_ISO8601=$(echo $DATES | awk '{ print $3; }')
 
 
 sed -i "s/\"version\": \".*\"/\"version\": \"$DATE_SEMVER\"/" package.json
-sed -i "s/\"standard\": \".*\"/\"standard\": \"$DATE_STD\"/" package.json
 
-git add package.json
-git commit --date=$DATE_ISO8601 -m 'Version bump'
+sed -i "s/\"semver\": \".*\"/\"semver\": \"$DATE_SEMVER\"/" release.json
+sed -i "s/\"standard\": \".*\"/\"standard\": \"$DATE_STD\"/" release.json
+sed -i "s/\"fullISO8601\": \".*\"/\"fullISO8601\": \"$DATE_ISO8601\"/" release.json
+
+git add package.json release.json
+git commit --date=$DATE_ISO8601 -m "Release $DATE_STD"
 $(export GIT_COMMITTER_DATE=$DATE_ISO8601; git tag -a -m "Version $DATE_STD" $DATE_STD)

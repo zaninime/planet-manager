@@ -2,9 +2,7 @@ import React from 'react';
 import { Card } from 'material-ui/Card';
 import Radium from 'radium';
 import { blue500 } from 'material-ui/styles/colors';
-/* eslint-disable */
-import Logo from '!!babel!react-svg!./Header/logo.svg';
-/* eslint-enable */
+import logo from './Header/logo.svg';
 
 const styles = {
     headerCard: {
@@ -41,7 +39,7 @@ const Header = () =>
     <div>
         <Card style={styles.headerCard}>
             <div style={styles.elosLogo}>
-                <Logo />
+                <img src={logo} role="presentation" />
             </div>
         </Card>
         <div style={styles.navSpan} />

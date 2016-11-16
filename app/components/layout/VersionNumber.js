@@ -1,6 +1,6 @@
 import React from 'react';
 import Radium from 'radium';
-import { versionCode } from '../../../package.json';
+import { standard } from 'release.json';
 
 const styles = {
     version: {
@@ -13,7 +13,7 @@ const styles = {
 
 const VersionNumber = () =>
 (
-    <p style={styles.version}>v{versionCode.standard}</p>
+    <p style={styles.version}>v{standard}</p>
 );
 
 export default Radium(VersionNumber);

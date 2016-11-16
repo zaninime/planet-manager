@@ -4,7 +4,7 @@ import groovy.json.JsonSlurper
 
 def version() {
     def jsonSlurper = new JsonSlurper()
-    return jsonSlurper.parse(new File('../package.json'))
+    return jsonSlurper.parse(new File('../release.json'))
 }
 
 android {
@@ -21,7 +21,7 @@ android {
         } else {
             versionCode 400000
         }
-        versionName v.versionCode.standard
+        versionName v.standard
     }
     signingConfigs {
         if (System.getenv("KEYSTORE") != null) {

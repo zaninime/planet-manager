@@ -1,6 +1,6 @@
 /* eslint-disable */
 const path = require('path');
-const releaseId = require(path.join(__dirname, '..', 'release.json')).id;
+const releaseId = require(path.join(__dirname, '..', 'release.json')).standard;
 
 const ORG = 'zaninime';
 const PROJECT_PREFIX = 'planet-manager-';

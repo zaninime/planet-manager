@@ -1,8 +1,7 @@
-import nativeRequire from 'app/require';
 import { ab2str } from './arraybuffer';
 import { createIOError, ProtocolError } from './errors';
 
-const net = nativeRequire('net');
+const net = window.require('net');
 
 export const fetchGeneric = (address, port, query) => (new Promise((resolve, reject) => {
     const sock = new net.Socket();

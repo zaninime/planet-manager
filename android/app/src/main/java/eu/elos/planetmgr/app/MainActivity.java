@@ -15,7 +15,7 @@ import eu.elos.planetmgr.app.wifi.socket.WifiSocket;
 
 public class MainActivity extends AppCompatActivity {
     static final String PAGE = "file:///android_asset/web/index.html";
-//    static final String PAGE = "http://192.168.2.116:3000/index.html";
+//    static final String PAGE = "http://192.168.2.116:3001/index.html";
 
     private WebView webView;
 

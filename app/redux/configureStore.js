@@ -23,7 +23,7 @@ const configureStore = ({
     ];
 
     const tools = [];
-    if (__DEBUG__) {
+    if (__DEV__) {
         const DevTools = require('app/components/connected/DevTools').default;
         const devTools = window.devToolsExtension ? window.devToolsExtension : DevTools.instrument;
         if (typeof devTools === 'function') {

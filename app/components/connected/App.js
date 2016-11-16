@@ -32,7 +32,7 @@ class App extends React.Component {
 
     /* eslint-disable class-methods-use-this */
     get devTools() {
-        if (__DEBUG__) {
+        if (__DEV__) {
             if (!window.devToolsExtension) {
                 const DevTools = require('app/components/connected/DevTools').default;
                 return <DevTools />;

@@ -3,7 +3,7 @@ import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-import 'font-awesome/css/font-awesome.css';
+// import 'font-awesome/css/font-awesome.css';
 
 import App from 'app/components/connected/App';
 
@@ -38,10 +38,17 @@ const muiTheme = getMuiTheme({
 });
 
 let render = (routerKey = null) => {
+    const match = window.location.hash.match(/#(.+)\?/);
+    if (match && match[1] !== '/') {
+        window.location = window.location.origin + window.location.pathname;
+        throw new Error('You should not get here');
+    }
     const makeRoutes = require('./routes').default;
     const routes = makeRoutes(store);
 
-    const mountNode = document.querySelector('#root');
+    const mountNode = document.createElement('div');
+    document.body.appendChild(mountNode);
+    // const mountNode = document.querySelector('#root');
     ReactDOM.render(
         <MuiThemeProvider muiTheme={muiTheme}>
             <App
@@ -53,7 +60,7 @@ let render = (routerKey = null) => {
         </MuiThemeProvider>, mountNode);
 };
 
-if (__DEBUG__ && module.hot) {
+if (__DEV__ && module.hot) {
     const renderApp = render;
     render = () => renderApp(Math.random());
 

@@ -18,7 +18,7 @@
     - react
     - flowtype-errors
   globals:
-    __DEBUG__: false
+    __DEV__: false
   rules:
     arrow-parens: 0
     flowtype-errors/show-errors: 2
@@ -29,6 +29,7 @@
     import/no-unresolved: 0
     indent: [2, 4]
     max-len: [2, 120]
+    no-restricted-syntax: 0
     prefer-arrow-callback: 0
     react/forbid-prop-types: 0
     react/jsx-filename-extension: 0

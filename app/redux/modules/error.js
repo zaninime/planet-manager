@@ -20,7 +20,7 @@ export default error;
 // action creators
 export const clearError = () => ({ type: CLEAR_ERROR });
 export const setError = err => {
-    if (!__DEBUG__) {
+    if (!__DEV__) {
         if (typeof err.getRavenExtra === 'function') {
             Raven.captureException(err, { extra: err.getRavenExtra() });
         } else {

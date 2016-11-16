@@ -1,7 +1,6 @@
-import nativeRequire from 'app/require';
 import { createIOError } from './errors';
 
-const dgram = nativeRequire('dgram');
+const dgram = window.require('dgram');
 
 export const createDiscoveryListener = () => (new Promise((resolve, reject) => {    // eslint-disable-line
     const server = dgram.createSocket('udp4');
