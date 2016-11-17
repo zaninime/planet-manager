@@ -24,8 +24,6 @@ const makeBaseConfig = () => {
                     exclude: /(node_modules|bower_components)/,
                     loader: 'babel',
                     query: {
-                        babelrc: false,
-                        presets: ['latest', 'react', 'stage-2'],
                         cacheDirectory: true,
                     },
                 },
@@ -53,8 +51,7 @@ const makeBaseConfig = () => {
             }),
         ],
         eslint: {
-            emitError: true,
-            failOnError: true,
+            cache: true,
         },
         devServer: {
             host: '0.0.0.0',
