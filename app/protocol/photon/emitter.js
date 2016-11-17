@@ -1,4 +1,5 @@
 /* @flow */
+import clamp from 'app/utils/clamp';
 import { twilightDuration, floorIntensity, compactChannels } from './constants';
 import { supportOnSave } from './bugs';
 import type { HighLevelConfig, Features } from './types';
@@ -10,9 +11,6 @@ const emitTarget = target => (config, caps) =>
        return result;
    }, {})
 ;
-
-// function clipping the value in a strict range
-const clamp = (value, minValue, maxValue) => Math.min(Math.max(value, minValue), maxValue);
 
 const daylightColor = (mainColor: number, intensity: number) => {
     const x = clamp(mainColor, -1, 1);

@@ -4,6 +4,7 @@
  */
 
 import EError from 'app/utils/error';
+import clamp from 'app/utils/clamp';
 import { blockOnFetch } from './bugs';
 import { twilightDuration, floorIntensity, compactChannels } from './constants';
 import * as lamps from './lamps';
@@ -19,8 +20,6 @@ class IncompatibleConfigError extends EError {
         return { failingData: this.failingData };
     }
 }
-
-const clamp = (value, minValue, maxValue) => Math.min(Math.max(value, minValue), maxValue);
 
 const collectTarget = target => (config: LowLevelConfig, status: LampStatus) =>
     Object.keys(target).reduce((acc, key) => {

@@ -3,7 +3,9 @@ import Radium from 'radium';
 import CircleGradientIcon from 'app/components/presentational/CircleGradientIcon';
 import SliderButton from 'app/components/presentational/SliderButton';
 import { GradientReader } from 'app/utils/gradient';
+import { minimumIntensity } from 'app/protocol/photon/constants';
 import shallowCompare from 'react-addons-shallow-compare';
+import shadeRgb from 'app/utils/shadeRgb';
 import DayGradientIcon from './DayGradientIcon';
 
 const styles = {
@@ -74,6 +76,7 @@ class DaySlider extends Component {
         const adjColor = ((props.color + 1) / 2);
         const color = this.gr.getColor(adjColor * 100);
         return {
+            firstColor: shadeRgb(color[0], color[1], color[2], -0.8),
             secondColor: `rgb(${color[0]},${color[1]},${color[2]})`,
             // the lamp mainColor gives values in a [-1, 1] range
             // while the slider accepts values in a [0, 1] range
@@ -84,7 +87,10 @@ class DaySlider extends Component {
 
     handleColorChange(value) {
         const color = this.gr.getColor(value * 100);
-        this.setState({ secondColor: `rgb(${color[0]},${color[1]},${color[2]})` });
+        this.setState({
+            firstColor: shadeRgb(color[0], color[1], color[2], -0.8),
+            secondColor: `rgb(${color[0]},${color[1]},${color[2]})`,
+        });
     }
 
     handleColorRelease(value) {
@@ -119,17 +125,18 @@ class DaySlider extends Component {
                         style={styles.intensitySlider}
                         radius={this.intensityRadius}
                         borderWidth={this.buttonRadius * 2}
-                        firstColor="black"
+                        firstColor={this.state.firstColor}
                         secondColor={this.state.secondColor}
                     />
                     <SliderButton
                         value={this.state.intensity}
+                        minValue={minimumIntensity}
                         radius={this.intensityRadius}
                         buttonRadius={this.buttonRadius - 2}
                         onChange={this.handleIntensityChange}
                         onRelease={this.handleIntensityRelease}
                         auxiliaryButtonsEnabled
-                        auxiliaryRemoveButtonColor="black"
+                        auxiliaryRemoveButtonColor={this.state.firstColor}
                         auxiliaryAddButtonColor={this.state.secondColor}
                         valueLabelEnabled
                     />

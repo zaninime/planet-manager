@@ -5,6 +5,7 @@ import FloatingActionButton from 'material-ui/FloatingActionButton';
 import AddIcon from 'material-ui/svg-icons/content/add';
 import RemoveIcon from 'material-ui/svg-icons/content/remove';
 import shallowCompare from 'react-addons-shallow-compare';
+import clamp from 'app/utils/clamp';
 
 const styles = {
     slider: {
@@ -56,6 +57,18 @@ const styles = {
 
 
 class SliderButton extends Component {
+    static checkMinMaxPropType(props, name, component) {
+        if (props[name] < 0) {
+            throw new Error(`Invalid prop ${name} supplied to ${component}. Must be greater than 0.`);
+        } else if (props[name] > 1) {
+            throw new Error(`Invalid prop ${name} supplied to ${component}. Must be smaller than 1.`);
+        } else if (props.minValue >= props.maxValue || (props.maxValue * 10) - (props.minValue * 10) < 1) {
+            const error = `Invalid props minValue and maxValue supplied to ${component}. ` +
+                          'maxValue (default 1) must be greater than minValue (default 0), at least by a tenth.';
+            throw new Error(error);
+        }
+    }
+
     constructor(props) {
         super(props);
 
@@ -107,19 +120,13 @@ class SliderButton extends Component {
     }
 
     setValue(value, touchType = 'none') {
-        let adjustedValue = value;
-        if (value >= 1.00) {
-            adjustedValue = 1.00;
-        } else if (value <= 0.00) {
-            adjustedValue = 0.00;
-        }
+        const sliderProportion = this.getSliderProportion(value);
 
-        let v = (adjustedValue * 270) + 225;
-        if (adjustedValue <= 0.5) {
-            v = (adjustedValue * 270) - 135;
+        if (value <= 0.5) {
+            this.setDegrees((sliderProportion * 270) - 135, touchType);
+            return;
         }
-
-        this.setDegrees(v, touchType);
+        this.setDegrees((sliderProportion * 270) + 225, touchType);
     }
 
     setDegrees(deg, touchType) {
@@ -147,24 +154,36 @@ class SliderButton extends Component {
             value = parseFloat(Math.round((value / 270) * 1e2) / 1e2);
             const { onChange, onRelease } = this.props;
 
+            const valueProportion = this.getValueProportion(value, false);
+
             if (value !== this.state.value) {
                 this.setState({ value, sliderButtonStyle });
 
                 if (touchType !== 'none') {
                     if (onChange) {
-                        onChange(value);
+                        onChange(valueProportion);
                     }
 
                     if (onRelease && (touchType === 'tap' || touchType === 'button')) {
-                        onRelease(value);
+                        onRelease(valueProportion);
                     }
                 }
             } else if (onRelease && touchType === 'panEnd') {
                 // panEnd isn't detected since the value equals
                 // to the last one computed on the last pan
-                onRelease(value);
+                onRelease(valueProportion);
             }
         }
+    }
+
+    getValueProportion(value) {
+        const { maxValue, minValue } = this.props;
+        return (clamp(value, 0.0, 1.0) * (maxValue - minValue)) + minValue;
+    }
+
+    getSliderProportion(value) {
+        const { maxValue, minValue } = this.props;
+        return (clamp(value, minValue, maxValue) - minValue) / (maxValue - minValue);
     }
 
     updateFields(props) {
@@ -271,7 +290,7 @@ class SliderButton extends Component {
             valueLabel = (
                 <div style={styles.textContainer}>
                     <p style={styles.intensityText}>
-                        {`${Math.round(this.state.value * 100)}%`}
+                        {`${Math.round(this.getValueProportion(this.state.value) * 100)}%`}
                     </p>
                 </div>
             );
@@ -283,7 +302,6 @@ class SliderButton extends Component {
                     onPan={e => this.handleTouchEvent(e, 'pan')}
                     onPanStart={e => this.handleTouchEvent(e, 'panStart')}
                     onPanEnd={e => this.handleTouchEvent(e, 'panEnd')}
-                    onPanCancel={e => this.handleTouchEvent(e, 'panCancel')}
                     onTap={e => this.handleTouchEvent(e, 'tap')}
                 >
                     {/* eslint-disable */}
@@ -300,11 +318,12 @@ class SliderButton extends Component {
     }
 }
 
-/* eslint-disable */
 SliderButton.propTypes = {
-    radius: React.PropTypes.number.isRequired,
-    buttonRadius: React.PropTypes.number.isRequired,
+    radius: React.PropTypes.number.isRequired, // eslint-disable-line react/no-unused-prop-types
+    buttonRadius: React.PropTypes.number.isRequired, // eslint-disable-line react/no-unused-prop-types
     value: React.PropTypes.number.isRequired,
+    minValue: SliderButton.checkMinMaxPropType,
+    maxValue: SliderButton.checkMinMaxPropType,
     onChange: React.PropTypes.func,
     onRelease: React.PropTypes.func,
     auxiliaryButtonsEnabled: React.PropTypes.bool,
@@ -312,6 +331,10 @@ SliderButton.propTypes = {
     auxiliaryAddButtonColor: React.PropTypes.string,
     auxiliaryRemoveButtonColor: React.PropTypes.string,
 };
-/* eslint-enable */
+
+SliderButton.defaultProps = {
+    minValue: 0.0,
+    maxValue: 1.0,
+};
 
 export default Radium(SliderButton);
