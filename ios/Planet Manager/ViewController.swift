@@ -25,19 +25,19 @@ class ViewController: UIViewController {
         contentController.add(plug, name: "plug_save")
         
         //let url = Bundle.main.url(forResource: "index", withExtension: "html", subdirectory: "web")
-        let devURL = URLRequest(url: URL(string: "http://192.168.2.115:3002/")!)
+        let devURL = URLRequest(url: URL(string: "http://10.0.1.11:3002/")!)
         
         //webView.loadFileURL(url!, allowingReadAccessTo: (url?.deletingLastPathComponent())!)
         webView.load(devURL)
         
         self.view = webView
+        self.setNeedsStatusBarAppearanceUpdate()
     }
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-
 
 }
 
