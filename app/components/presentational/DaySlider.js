@@ -5,7 +5,7 @@ import SliderButton from 'app/components/presentational/SliderButton';
 import { GradientReader } from 'app/utils/gradient';
 import { minimumIntensity } from 'app/protocol/photon/constants';
 import shallowCompare from 'react-addons-shallow-compare';
-import shadeRgb from 'app/utils/shadeRgb';
+import { shadeRgb, contrastColor } from 'app/utils/rgb';
 import DayGradientIcon from './DayGradientIcon';
 
 const styles = {
@@ -78,6 +78,7 @@ class DaySlider extends Component {
         return {
             firstColor: shadeRgb(color[0], color[1], color[2], -0.8),
             secondColor: `rgb(${color[0]},${color[1]},${color[2]})`,
+            secondContrastColor: contrastColor(color[0], color[1], color[2], 'white', 'black'),
             // the lamp mainColor gives values in a [-1, 1] range
             // while the slider accepts values in a [0, 1] range
             color: adjColor,
@@ -86,10 +87,14 @@ class DaySlider extends Component {
     }
 
     handleColorChange(value) {
-        const color = this.gr.getColor(value * 100);
+        // rounding the color avoids stressing the ui
+        // since the responsivness is set to 0.01
+        // increase this value to decrease the number of state changes
+        const color = this.gr.getColor(Math.round(value * 100));
         this.setState({
             firstColor: shadeRgb(color[0], color[1], color[2], -0.8),
             secondColor: `rgb(${color[0]},${color[1]},${color[2]})`,
+            secondContrastColor: contrastColor(color[0], color[1], color[2], 'white', 'black'),
         });
     }
 
@@ -135,9 +140,11 @@ class DaySlider extends Component {
                         buttonRadius={this.buttonRadius - 2}
                         onChange={this.handleIntensityChange}
                         onRelease={this.handleIntensityRelease}
-                        auxiliaryButtonsEnabled
-                        auxiliaryRemoveButtonColor={this.state.firstColor}
-                        auxiliaryAddButtonColor={this.state.secondColor}
+                        buttonsEnabled
+                        removeButtonColor={this.state.firstColor}
+                        removeButtonIconColor="white"
+                        addButtonColor={this.state.secondColor}
+                        addButtonIconColor={this.state.secondContrastColor}
                         valueLabelEnabled
                     />
                 </div>
