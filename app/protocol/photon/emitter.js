@@ -90,7 +90,7 @@ export const channels = (config: HighLevelConfig, { features }) => {
     return config.channels.map(convert);
 };
 
-export const temperature = (config, { features }) => {
+export const temperature = (config: HighLevelConfig, { features }) => {
     if (!features.TEMPERATURE_CONFIG) {
         return {
             fanStart: 0,
@@ -100,7 +100,7 @@ export const temperature = (config, { features }) => {
     return { ...config.temperature };
 };
 
-export const fan = (config, { features }) => {
+export const fan = (config: HighLevelConfig, { features }) => {
     if (!features.FAN_CONFIG) {
         return {
             minSpeed: 0,
@@ -111,12 +111,12 @@ export const fan = (config, { features }) => {
     return { ...config.fan };
 };
 
-export const night = config => ({
+export const night = (config: HighLevelConfig) => ({
     color: config.night.color,
     intensity: Math.round(config.night.intensity * 100),
 });
 
-export const mode = config => (config.master ? 'master' : 'slave');
+export const mode = (config: HighLevelConfig) => (config.master ? 'master' : 'slave');
 
 export const emitDemo = daylightColor;
 
