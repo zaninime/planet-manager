@@ -43,6 +43,13 @@ let render = (routerKey = null) => {
         window.location = window.location.origin + window.location.pathname;
         throw new Error('You should not get here');
     }
+
+    // ensure viewport is correctly sized
+    const viewportTag = document.createElement('meta');
+    viewportTag.name = 'viewport';
+    viewportTag.content = 'width=device-width, initial-scale=1';
+    document.head.appendChild(viewportTag);
+
     const makeRoutes = require('./routes').default;
     const routes = makeRoutes(store);
 
