@@ -71,10 +71,13 @@ class DaySlider extends Component {
     }
 
     initState(props) {
-        const color = this.gr.getColor(props.color * 100);
+        const adjColor = ((props.color + 1) / 2);
+        const color = this.gr.getColor(adjColor * 100);
         return {
             secondColor: `rgb(${color[0]},${color[1]},${color[2]})`,
-            color: props.color,
+            // the lamp mainColor gives values in a [-1, 1] range
+            // while the slider accepts values in a [0, 1] range
+            color: adjColor,
             intensity: props.intensity,
         };
     }
@@ -85,7 +88,9 @@ class DaySlider extends Component {
     }
 
     handleColorRelease(value) {
-        this.props.setColor(value);
+        // the slider gives values in a [0, 1] range
+        // while the lamp mainColor accepts values in a [-1, 1] range
+        this.props.setColor((value * 2) - 1);
     }
 
     handleIntensityRelease(value) {
