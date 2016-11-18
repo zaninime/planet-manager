@@ -75,12 +75,11 @@ const makeBaseConfig = () => {
 const makeElectronConfig = () => {
     const config = makeBaseConfig();
     const staticFilesPath = path.resolve(__dirname, 'electron');
-    const outputPath = path.resolve(__dirname, 'dist', 'electron');
 
-    config.output.path = outputPath;
+    config.output.path = path.resolve(__dirname, 'dist', 'electron');
     config.plugins.push(new CopyWebpackPlugin([
-        { from: path.join(staticFilesPath, 'index.js'), to: outputPath },
-        { from: path.join(staticFilesPath, 'package.json'), to: outputPath },
+        { from: path.join(staticFilesPath, 'index.js'), to: '' },
+        { from: path.join(staticFilesPath, 'package.json'), to: '' },
     ]));
     config.resolve.extensions.push('.desktop.js');
     config.devServer.port = 3000;
