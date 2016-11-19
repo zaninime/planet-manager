@@ -16,16 +16,42 @@ const daylightColor = (mainColor: number, intensity: number) => {
     const x = clamp(mainColor, -1, 1);
     const i = clamp(intensity, 0, 1);
 
-    const red = 100 * (floorIntensity + Math.max(i * (1 - floorIntensity) * (-x), 0));
-    let green;
-    if ((x >= -1 && x < -0.5) || (x > 0.5 && x <= 1)) {
-        green = 100 * ((2 / 3) * (floorIntensity + ((i * (1 - floorIntensity)) * (1 - (Math.abs(x))))));
-    } else if (x >= -0.5 && x <= 0.5) {
-        green = 100 * ((2 / 3) * (floorIntensity + ((i * (1 - floorIntensity)) * ((3 / 4) - Math.abs(x / 2)))));
+    let red = 0;
+    let green = 0;
+    let blue = 0;
+    let white = 0;
+    if (x < 0) {
+        red = 100 * (floorIntensity + (i * (1 - floorIntensity)));
+    } else if (x >= 0 && x < 0.5) {
+        red = 100 * (floorIntensity + (i * (1 - floorIntensity) * (1 - (2 * x))));
+    } else if (x >= 0.5) {
+        red = 100 * (floorIntensity);
     }
 
-    const blue = 100 * (floorIntensity + Math.max(i * (1 - floorIntensity) * (x), 0));
-    const white = 100 * (floorIntensity + ((i * (1 - floorIntensity)) * (1 - Math.abs(x))));
+    if (x >= -0.5 && x < 0.5) {
+        green = 100 * (floorIntensity + (i * (1 - floorIntensity) * (1 - ((60 / 85) * Math.abs(x)))));
+    } else if (x < -0.5 || x >= 0.5) {
+        green = 100 * (floorIntensity + (i * (1 - floorIntensity) * ((110 / 85) - ((110 / 85) * Math.abs(x)))));
+    }
+
+    if (x >= 0) {
+        blue = 100 * (floorIntensity + (i * (1 - floorIntensity)));
+    } else if (x >= -0.5 && x < 0) {
+        blue = 100 * (floorIntensity + (i * (1 - floorIntensity) * (1 + (2 * x))));
+    } else if (x < -0.5) {
+        blue = 100 * (floorIntensity);
+    }
+
+    if (x >= -1 && x <= 1) {
+        white = 100 * (floorIntensity + (i * (1 - floorIntensity) * (1 - ((60 / 85) * Math.abs(x)))));
+    } else {
+        white = 100 * (floorIntensity + (i * (1 - floorIntensity) * (25 / 85)));
+    }
+
+    red = Math.round(red);
+    green = Math.round(green);
+    blue = Math.round(blue);
+    white = Math.round(white);
 
     return { white, red, green, blue };
 };

@@ -1,25 +1,12 @@
 /*
- * eslint-disable no-unused-vars
  * @flow
  */
 
-import EError from 'app/utils/error';
 import clamp from 'app/utils/clamp';
 import { blockOnFetch } from './bugs';
 import { twilightDuration, floorIntensity, compactChannels } from './constants';
 import * as lamps from './lamps';
 import type { LowLevelConfig, LampStatus, Features } from './types';
-
-class IncompatibleConfigError extends EError {
-    constructor(message, failingData = null) {
-        super(message);
-        this.failingData = JSON.stringify(failingData);
-    }
-
-    getRavenExtra() {
-        return { failingData: this.failingData };
-    }
-}
 
 const collectTarget = target => (config: LowLevelConfig, status: LampStatus) =>
     Object.keys(target).reduce((acc, key) => {
@@ -28,32 +15,23 @@ const collectTarget = target => (config: LowLevelConfig, status: LampStatus) =>
         return result;
     }, {});
 
-const daylight = (config: LowLevelConfig) => {
+export const daylight = (config: LowLevelConfig) => {
     const r = config.daylight.red.intensity / 100;
     const b = config.daylight.blue.intensity / 100;
     const w = config.daylight.white.intensity / 100;
 
-    const intensity = Math.round(
-        clamp(Math.max(
-          (((r + w) - (2 * floorIntensity)) / (1 - floorIntensity)),
-          (((b + w) - (2 * floorIntensity)) / (1 - floorIntensity)),
-        ), 0, 1) * 100,
-    ) / 100;
+    let intensity = Math.round(((Math.max(r, b) - floorIntensity) / (1 - floorIntensity)) * 100) / 100;
 
     let mainColor;
-    if (b > r) {
-        mainColor = (b - floorIntensity) / ((1 - floorIntensity) * intensity);
-    } else if (r > b) {
-        mainColor = -(r - floorIntensity) / ((1 - floorIntensity) * intensity);
-    } else if (r === b) {
-        mainColor = 0;
-    } else {
-        throw new IncompatibleConfigError('Invalid daylight configuration', config);
-    }
+
+    mainColor = (-85 / 60) * (((w - floorIntensity) / (intensity * (1 - floorIntensity))) - 1);
+    mainColor = Math.round(((r > b) ? (-mainColor) : mainColor) * 100) / 100;
 
     mainColor = clamp(mainColor, -1, 1);
+    intensity = clamp(intensity, 0, 1);
 
-    if (intensity === 0) { // with non compatible values and 0 intensity, maincolor is NaN because of division by 0.
+    if (intensity === 0 || (w > r && w > b)) {
+        // with non compatible values and 0 intensity, maincolor is NaN because of division by 0.
         mainColor = 0;
     }
 
@@ -63,25 +41,25 @@ const daylight = (config: LowLevelConfig) => {
     };
 };
 
-const night = (config: LowLevelConfig) => ({
+export const night = (config: LowLevelConfig) => ({
     color: config.night.color,
     intensity: Math.min(Math.max(config.night.intensity / 100, 0), 1),
 });
 
 const lastMinuteOfDay = (60 * 24) - 1;
 
-const timings = (config: LowLevelConfig) => ({
+export const timings = (config: LowLevelConfig) => ({
     dawnBeginsAt: Math.min(
         config.daylight.red.delay, lastMinuteOfDay - (config.daylight.red.duration + (2 * twilightDuration))),
     duskEndsAt: Math.min(
         (config.daylight.red.delay + config.daylight.red.duration + (2 * twilightDuration)), lastMinuteOfDay),
 });
 
-const twilight = (config: LowLevelConfig) => ({
+export const twilight = (config: LowLevelConfig) => ({
     redLevel: Math.min(1, Math.max(0, (config.daylight.white.delay - config.daylight.red.delay) / twilightDuration)),
 });
 
-const channels = (config: LowLevelConfig, status: LampStatus) => {
+export const channels = (config: LowLevelConfig, status: LampStatus) => {
     const convert = channel => {
         if (channel === 'off') {
             return { color: 'white', enabled: false };
@@ -96,13 +74,13 @@ const channels = (config: LowLevelConfig, status: LampStatus) => {
     return config.channels.map(convert);
 };
 
-const temperature = (config: LowLevelConfig) => ({ ...config.temperature });
+export const temperature = (config: LowLevelConfig) => ({ ...config.temperature });
 
-const fan = (config: LowLevelConfig) => ({ ...config.fan });
+export const fan = (config: LowLevelConfig) => ({ ...config.fan });
 
-const master = (config: LowLevelConfig) => config.mode === 'master';
+export const master = (config: LowLevelConfig) => config.mode === 'master';
 
-const features = (config: LowLevelConfig, status: LampStatus): Features => {
+export const features = (config: LowLevelConfig, status: LampStatus): Features => {
     const model = lamps.detectModel(status);
     const featureMap = {
         [lamps.PRO]: {
