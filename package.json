@@ -13,7 +13,7 @@
     "test": "jest --config jest.config.json --colors",
     "lint": "eslint --rulesdir eslint_rules --cache --color app",
     "ci:build": "rimraf dist && NODE_ENV=production webpack --config webpack.config.babel.js",
-    "ci:test": "jest --config jest.config.json --colors",
+    "ci:test": "jest --config jest.config.json --colors --coverage",
     "ci:lint": "eslint --rulesdir eslint_rules --color app"
   },
   "author": "Francesco Zanini, Patrick Predella, Omar Mahili <support@zanini.me>",
