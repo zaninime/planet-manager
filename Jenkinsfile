@@ -16,6 +16,15 @@ def authSlackSend(Map args) {
 def sentry = evaluate readTrusted('pipeline/sentry.groovy')
 
 node('docker') {
+    stage('Init') {
+        try {
+            cleanWorkspace()
+            checkout scm
+        } catch (err) {
+            authSlackSend message: "failed (repo checkout)", color: 'danger'
+            throw err
+        }
+    }
     docker.image('node:6.7.0').inside {
         sh 'mkdir -p home'
         withEnv(["HOME=${pwd()}/home"]) {
@@ -58,7 +67,7 @@ node('docker') {
             stage('Build JS bundles') {
                 try {
                     wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm']) {
-                        sh 'npm run build'
+                        sh 'npm run ci:build'
                     }
                 } catch (err) {
                     authSlackSend message: "failed. Webpack returned an error.", color: 'danger'
@@ -67,7 +76,7 @@ node('docker') {
             }
             stage('Sentry') {
                 try {
-                    if (env['RELEASE']) {
+                    if (env['RELEASE'] && RELEASE == 'true') {
                         def cliPath = sentry.init('Linux-x86_64')
                         withCredentials([[$class: 'StringBinding', credentialsId: 'sentry-auth-token', variable: 'token']]) {
                             parallel(
