@@ -45,6 +45,7 @@ const makeBaseConfig = () => {
             new webpack.optimize.OccurrenceOrderPlugin(),
             new webpack.DefinePlugin({
                 __DEV__: process.env.NODE_ENV !== 'production',
+                'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
             }),
             new HtmlWebpackPlugin({
                 title: 'Planet Manager',
