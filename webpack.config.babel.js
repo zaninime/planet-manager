@@ -47,6 +47,9 @@ const makeBaseConfig = () => {
                 __DEV__: process.env.NODE_ENV !== 'production',
                 'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
             }),
+            new webpack.optimize.CommonsChunkPlugin({
+                children: true,
+            }),
             new HtmlWebpackPlugin({
                 title: 'Planet Manager',
             }),
