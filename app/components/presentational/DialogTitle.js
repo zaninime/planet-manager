@@ -1,7 +1,7 @@
 import React from 'react';
 import Radium from 'radium';
 import { gray800 } from 'material-ui/styles/colors';
-import MaterialIcon from './MaterialIcon';
+import MaterialIcon from '../layout/MaterialIcon';
 
 const styles = {
     title: {
@@ -9,7 +9,7 @@ const styles = {
         marginLeft: '20px',
     },
     icon: {
-        verticalAlign: 'text-top', // to center it, don't ask me why
+        verticalAlign: 'text-top', // don't know why, but it centers the icon
         marginRight: '10px',
     },
 };

@@ -3,7 +3,7 @@ import Radium from 'radium';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import { orange500 } from 'material-ui/styles/colors';
-import DialogTitle from './DialogTitle';
+import DialogTitle from '../presentational/DialogTitle';
 
 const styles = {
     unselectableDialog: {
