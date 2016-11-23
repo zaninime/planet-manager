@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import Radium from 'radium';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
+import { red900 } from 'material-ui/styles/colors';
+import DialogTitle from './DialogTitle';
 
 const styles = {
     unselectableDialog: {
@@ -44,7 +46,7 @@ class ErrorDialog extends Component {
 
         return (
             <Dialog
-                title="ERROR!"
+                title={<DialogTitle title="Error" icon="error" color={red900} />}
                 actions={actions}
                 open={this.state.open}
                 onRequestClose={this.handleRequestClose}

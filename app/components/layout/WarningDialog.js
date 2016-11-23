@@ -2,6 +2,8 @@ import React from 'react';
 import Radium from 'radium';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
+import { orange500 } from 'material-ui/styles/colors';
+import DialogTitle from './DialogTitle';
 
 const styles = {
     unselectableDialog: {
@@ -9,8 +11,7 @@ const styles = {
     },
 };
 
-const MessageDialog = ({
-  title,
+const WarningDialog = ({
   message,
   dialogOpen,
   onRequestClose,
@@ -26,7 +27,7 @@ const MessageDialog = ({
 
     return (
         <Dialog
-            title={title}
+            title={<DialogTitle title="Warning" icon="warning" color={orange500} />}
             actions={actions}
             open={dialogOpen}
             onRequestClose={onRequestClose}
@@ -37,12 +38,11 @@ const MessageDialog = ({
     );
 };
 
-MessageDialog.propTypes = {
-    title: React.PropTypes.string.isRequired,
+WarningDialog.propTypes = {
     message: React.PropTypes.string.isRequired,
     dialogOpen: React.PropTypes.bool.isRequired,
     onRequestClose: React.PropTypes.func,
     onTouchTapOk: React.PropTypes.func,
 };
 
-export default Radium(MessageDialog);
+export default Radium(WarningDialog);
