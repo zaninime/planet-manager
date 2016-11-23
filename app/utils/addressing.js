@@ -62,12 +62,12 @@ export const wifiToProtocolFormat = (wifiState) => {
         password = wifiState[mode].password;
         dhcp = wifiState[mode].dhcp;
         addressing = wifiState[mode].addressing;
-    }
 
-    if (!dhcp) {
-        ipAddress = addressing.ip;
-        netmask = addressing.netmask;
-        gateway = addressing.gateway;
+        if (!dhcp) {
+            ipAddress = addressing.ip;
+            netmask = addressing.netmask;
+            gateway = addressing.gateway;
+        }
     }
 
     return {
