@@ -13,13 +13,22 @@ def authSlackSend(Map args) {
     }
 }
 
+def getAndIncrementBuildNumber() {
+    def project = 'elos.planet-manager/build-number'
+    step([$class: 'CopyArtifact', fingerprintArtifacts: true, projectName: project, selector: [$class: 'StatusBuildSelector', stable: false]])
+    build project
+    return readFile('build_number.txt')
+}
+
+def universalBuildNumber
+
 def sentry = evaluate readTrusted('pipeline/sentry.groovy')
 
 node('docker') {
-    wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm']) {
-
+    ansiColor('xterm') {
         stage('Init') {
             try {
+                universalBuildNumber = getAndIncrementBuildNumber()
                 cleanWorkspace()
                 authSlackSend message: 'started'
                 checkout scm
@@ -102,7 +111,7 @@ node('docker') {
 }
 
 node('master') {
-    wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm']) {
+    ansiColor('xterm') {
         cleanWorkspace()
         unstash 'js'
 
@@ -112,7 +121,7 @@ node('master') {
 
                 sh 'rm -rf android/app/src/main/assets/web; cp -r dist/android android/app/src/main/assets/web'
                 dir('android') {
-                    withEnv(["PATH=${gradleHome}/bin:${env.PATH}", 'ANDROID_HOME=/home/jenkins/android-sdk-linux']) {
+                    withEnv(["PATH=${gradleHome}/bin:${env.PATH}", 'ANDROID_HOME=/home/jenkins/android-sdk-linux', "UNIVERSAL_BUILD_NUMBER=${universalBuildNumber}"]) {
                         withCredentials([
                             [$class: 'StringBinding', credentialsId: 'android-keystore-password', variable: 'KEYSTORE_PASSWORD'],
                             [$class: 'UsernamePasswordMultiBinding', credentialsId: 'android-keystore-key', passwordVariable: 'KEY_PASSWORD', usernameVariable: 'KEY_ALIAS'],
