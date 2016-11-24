@@ -33,7 +33,11 @@ const makeBaseConfig = () => {
                 },
                 {
                     test: /\.(ico|jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2)(\?.*)?$/,
-                    loader: 'file',
+                    loader: 'file-loader',
+                    include: [
+                        path.resolve(__dirname, 'app'),
+                        path.resolve(__dirname, 'node_modules/react-native-vector-icons'),
+                    ],
                 },
             ],
         },

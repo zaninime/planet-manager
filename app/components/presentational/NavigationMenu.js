@@ -12,10 +12,10 @@ import ChevronCheckIcon from 'material-ui/svg-icons/navigation/chevron-left';
 import Snackbar from 'material-ui/Snackbar';
 import Section from 'app/components/layout/Section';
 import DecisionDialog from 'app/components/layout/DecisionDialog';
-import MessageDialog from 'app/components/layout/MessageDialog';
+import WarningDialog from 'app/components/layout/WarningDialog';
 import LoadingDialog from 'app/components/connected/LoadingDialog';
 import SaveErrorDialog from 'app/components/connected/ErrorDialog';
-import { grey400 } from 'material-ui/styles/colors';
+import { grey400, orange500 } from 'material-ui/styles/colors';
 import shallowCompare from 'react-addons-shallow-compare';
 
 const styles = {
@@ -117,11 +117,7 @@ class NavigationMenu extends Component {
     }
 
     handleSaveClick() {
-        const {
-      configSaved,
-      wifiConfigSaved,
-      fieldError,
-    } = this.props;
+        const { configSaved, wifiConfigSaved, fieldError } = this.props;
 
         if (fieldError) {
             this.setFieldErrorDialogOpen(true);
@@ -211,7 +207,9 @@ class NavigationMenu extends Component {
                 </Paper>
 
                 <DecisionDialog
-                    title="WARNING!"
+                    title="Warning"
+                    titleColor={orange500}
+                    icon="warning"
                     message="Unsaved configurations will be lost, continue without saving?"
                     dialogOpen={this.state.unsavedChangesDialogOpen}
                     onRequestClose={this.handleUnsavedChangesCloseRequest}
@@ -219,16 +217,14 @@ class NavigationMenu extends Component {
                     onTouchTapYes={this.handleTouchTapYes}
                 />
 
-                <MessageDialog
-                    title="ERROR!"
+                <WarningDialog
                     message="Please, you need to fix the field error(s) to continue."
                     dialogOpen={this.state.fieldErrorDialogOpen}
                     onRequestClose={this.handleFieldErrorCloseRequest}
                     onTouchTapOk={this.handleFieldErrorCloseRequest}
                 />
 
-                <MessageDialog
-                    title="WARNING!"
+                <WarningDialog
                     message={wifiWarning}
                     dialogOpen={this.state.wifiChangedDialogOpen}
                     onTouchTapOk={this.handleWifiChangedCloseRequest}

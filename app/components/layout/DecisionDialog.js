@@ -1,10 +1,13 @@
 import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
+import DialogTitle from '../presentational/DialogTitle';
 
 const DecisionDialog = ({
   title,
   message,
+  titleColor,
+  icon,
   dialogOpen,
   onRequestClose,
   onTouchTapYes,
@@ -25,7 +28,7 @@ const DecisionDialog = ({
 
     return (
         <Dialog
-            title={title}
+            title={<DialogTitle title={title} icon={icon} color={titleColor} />}
             actions={actions}
             open={dialogOpen}
             onRequestClose={onRequestClose}
@@ -39,6 +42,8 @@ DecisionDialog.propTypes = {
     dialogOpen: React.PropTypes.bool.isRequired,
     title: React.PropTypes.string.isRequired,
     message: React.PropTypes.string.isRequired,
+    titleColor: React.PropTypes.string,
+    icon: React.PropTypes.string,
     onRequestClose: React.PropTypes.func,
     onTouchTapYes: React.PropTypes.func,
     onTouchTapNo: React.PropTypes.func,
