@@ -21,7 +21,6 @@
     __DEV__: false
   rules:
     arrow-parens: 0
-    flowtype-errors/show-errors: 2
     func-names: 0
     global-require: 0
     import/extensions: 0
