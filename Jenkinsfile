@@ -15,8 +15,8 @@ def authSlackSend(Map args) {
 
 def getAndIncrementBuildNumber() {
     def project = 'elos.planet-manager/build-number'
-    step([$class: 'CopyArtifact', fingerprintArtifacts: true, projectName: project, selector: [$class: 'StatusBuildSelector', stable: false]])
     build project
+    step([$class: 'CopyArtifact', fingerprintArtifacts: true, projectName: project, selector: [$class: 'StatusBuildSelector', stable: false]])
     return readFile('build_number.txt')
 }
 
