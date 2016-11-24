@@ -12,7 +12,7 @@ export const detectModel = (status: LampStatus): LampModel => {
     switch (status.productId) {
     case 16:
         {
-            const isCompact = Math.floor(status.firmwareVersion / 100) === 2;
+            const isCompact = status.firmwareVersion % 2 === 1;
             if (isCompact) return COMPACT;
             return PRO;
         }

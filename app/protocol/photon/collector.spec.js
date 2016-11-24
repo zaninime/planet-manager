@@ -164,7 +164,7 @@ describe('features', () => {
 
     it('recognizes a PlanetPRO v1', function () {
         this.status.productId = 16;
-        this.status.firmwareVersion = 114;
+        this.status.firmwareVersion = 40 + (Math.floor((Math.random() * 20)) * 2); // even version means compact
 
         const expectedFeatures = {
             CHANNEL_MAPPING: true,
@@ -177,13 +177,13 @@ describe('features', () => {
 
         const computedFeatures = features(this.config, this.status);
 
-        expect(expectedFeatures).toEqual(jasmine.objectContaining(computedFeatures));
-        expect(computedFeatures).toEqual(jasmine.objectContaining(expectedFeatures));
+        expect(expectedFeatures).toEqual(computedFeatures);
+        expect(computedFeatures).toEqual(expectedFeatures);
     });
 
     it('recognizes a PlanetPRO v2', function () {
         this.status.productId = 101;
-        this.status.firmwareVersion = 300;
+        this.status.firmwareVersion = Math.floor(Math.random() * 300);
 
         const expectedFeatures = {
             CHANNEL_MAPPING: true,
@@ -195,13 +195,13 @@ describe('features', () => {
 
         const computedFeatures = features(this.config, this.status);
 
-        expect(expectedFeatures).toEqual(jasmine.objectContaining(computedFeatures));
-        expect(computedFeatures).toEqual(jasmine.objectContaining(expectedFeatures));
+        expect(expectedFeatures).toEqual(computedFeatures);
+        expect(computedFeatures).toEqual(expectedFeatures);
     });
 
     it('recognizes a PlanetCompact', function () {
         this.status.productId = 16;
-        this.status.firmwareVersion = 201;
+        this.status.firmwareVersion = 40 + (Math.floor((Math.random() * 20)) * 2) + 1; // odd version means compact
 
         const expectedFeatures = {
             CHANNEL_MAPPING: true,
@@ -215,13 +215,13 @@ describe('features', () => {
 
         const computedFeatures = features(this.config, this.status);
 
-        expect(expectedFeatures).toEqual(jasmine.objectContaining(computedFeatures));
-        expect(computedFeatures).toEqual(jasmine.objectContaining(expectedFeatures));
+        expect(expectedFeatures).toEqual(computedFeatures);
+        expect(computedFeatures).toEqual(expectedFeatures);
     });
 
     it('recognizes a PlanetStella', function () {
         this.status.productId = 100;
-        this.status.firmwareVersion = 300;
+        this.status.firmwareVersion = Math.floor(Math.random() * 300);
 
         const expectedFeatures = {
             CLOCK_SYNC: true,
@@ -230,7 +230,7 @@ describe('features', () => {
 
         const computedFeatures = features(this.config, this.status);
 
-        expect(expectedFeatures).toEqual(jasmine.objectContaining(computedFeatures));
-        expect(computedFeatures).toEqual(jasmine.objectContaining(expectedFeatures));
+        expect(expectedFeatures).toEqual(computedFeatures);
+        expect(computedFeatures).toEqual(expectedFeatures);
     });
 });
