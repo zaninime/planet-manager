@@ -9,127 +9,134 @@ def cleanWorkspace() {
 
 def authSlackSend(Map args) {
     withCredentials([[$class: 'StringBinding', credentialsId: 'slack-token', variable: 'token']]) {
-        slackSend channel: 'planet-manager', color: args.color, message: "Build <${env.BUILD_URL}|#${env.BUILD_NUMBER}> ${args.message}", teamDomain: 'elos-srl', token: token
+        slackSend channel: 'planet-manager', color: args.color, message: "${BRANCH_NAME} <${BUILD_URL}|${BUILD_DISPLAY_NAME}>: ${args.message}", teamDomain: 'elos-srl', token: token
     }
 }
 
 def sentry = evaluate readTrusted('pipeline/sentry.groovy')
 
 node('docker') {
-    docker.image('node:6.7.0').inside {
-        sh 'mkdir -p home'
-        withEnv(["HOME=${pwd()}/home"]) {
-            stage('Fetch deps') {
-                try {
-                    wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm']) {
+    wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm']) {
+
+        stage('Init') {
+            try {
+                cleanWorkspace()
+                authSlackSend message: 'started'
+                checkout scm
+            } catch (err) {
+                authSlackSend message: 'failed (repo checkout)', color: 'danger'
+                throw err
+            }
+        }
+
+        docker.image('node:6.7.0').inside {
+            sh 'mkdir -p home'
+            withEnv(["HOME=${pwd()}/home"]) {
+                stage('Fetch deps') {
+                    try {
                         sh "npm config set prefix ${pwd()}/home"
                         sh 'npm install --loglevel error -g yarn'
                         sh 'home/bin/yarn'
+                    } catch (err) {
+                        authSlackSend message: 'failed (JS bootstrap)', color: 'danger'
+                        throw err
                     }
-                } catch (err) {
-                    authSlackSend message: "failed (JS bootstrap)", color: 'danger'
-                    throw err
                 }
-            }
-            stage('Fast QA') {
-                parallel (
-                    'Linter': {
-                        try {
-                            wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm']) {
+
+                stage('Fast QA') {
+                    parallel (
+                        'Linter': {
+                            try {
                                 sh 'npm run ci:lint'
+                            } catch (err) {
+                                authSlackSend message: 'aborted. Code not linted!', color: 'danger'
+                                throw err
                             }
-                        } catch (err) {
-                            authSlackSend message: "aborted. Code not linted!", color: 'danger'
-                            throw err
-                        }
-                    },
-                    'Tests': {
-                        try {
-                            wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm']) {
+                        },
+                        'Tests': {
+                            try {
                                 sh 'npm run ci:test'
+                            } catch (err) {
+                                authSlackSend message: 'aborted. Tests did not pass!', color: 'danger'
+                                throw err
+                            }
+                        }
+                    )
+                }
+
+                stage('Build JS bundles') {
+                    try {
+                        sh 'npm run ci:build'
+                        sh 'mkdir -p archive/js && \
+                            cp -r dist archive/js/full && \
+                            cp -r dist archive/js/stripped && \
+                            find archive/js/stripped -name "*.map" -type f -delete'
+                    } catch (err) {
+                        authSlackSend message: 'failed. Webpack returned an error.', color: 'danger'
+                        throw err
+                    }
+                }
+
+                if (BRANCH_NAME == 'staging') {
+                    stage('Sentry') {
+                        try {
+                            def cliPath = sentry.init('Linux-x86_64')
+                            withCredentials([[$class: 'StringBinding', credentialsId: 'sentry-auth-token', variable: 'token']]) {
+                                parallel(
+                                    'Electron': { sentry.execute(cliPath, token, 'Electron', 'dist/electron') },
+                                    'Android': { sentry.execute(cliPath, token, 'Android', 'dist/android') },
+                                    'iOS': { sentry.execute(cliPath, token, 'iOS', 'dist/ios') }
+                                )
                             }
                         } catch (err) {
-                            authSlackSend message: "aborted. Tests did not pass!", color: 'danger'
+                            authSlackSend message: 'failed. Error while uploading source maps.', color: 'danger'
                             throw err
                         }
                     }
-                )
-            }
-            stage('Build JS bundles') {
-                try {
-                    wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm']) {
-                        sh 'npm run build'
-                    }
-                } catch (err) {
-                    authSlackSend message: "failed. Webpack returned an error.", color: 'danger'
-                    throw err
                 }
-            }
-            stage('Sentry') {
-                try {
-                    if (env['RELEASE']) {
-                        def cliPath = sentry.init('Linux-x86_64')
-                        withCredentials([[$class: 'StringBinding', credentialsId: 'sentry-auth-token', variable: 'token']]) {
-                            parallel(
-                                'Electron': { sentry.execute(cliPath, token, 'Electron', 'dist/electron') },
-                                'Android': { sentry.execute(cliPath, token, 'Android', 'dist/android') },
-                                'iOS': { sentry.execute(cliPath, token, 'iOS', 'dist/ios') }
-                            )
-                        }
-                    } else {
-                        echo 'Skipping sourcemap upload (happens only on release builds)'
-                    }
-                } catch (err) {
-                    authSlackSend message: "failed. Error while uploading source maps.", color: 'danger'
-                    throw err
-                }
-            }
-            stage('Strip sourcemaps') {
-                sh 'find dist -name "*.map" -type f -delete'
-            }
-            stage('Pack desktop') {
-                sh 'mkdir -p archive/electron; cp -r dist/electron archive/electron/src'
+
             }
         }
+        stash name: 'js', includes: 'archive/,android/,ios/,electron/,dist/,package.json,release.json'
     }
-    stash name: 'js', includes: 'archive/,android/,ios/,electron/,dist/,package.json,release.json'
-    authSlackSend message: "is going well, JS bundles are ready"
 }
 
 node('master') {
-    cleanWorkspace()
-    unstash 'js'
+    wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm']) {
+        cleanWorkspace()
+        unstash 'js'
 
-    stage('Build Android') {
-        try {
-            def gradleHome = tool 'gradle-elos.planet-manager'
+        stage('Build Android') {
+            try {
+                def gradleHome = tool 'gradle-elos.planet-manager'
 
-            sh 'rm -rf android/app/src/main/assets/web; cp -r dist/android android/app/src/main/assets/web'
-            dir('android') {
-                withEnv(["PATH=${gradleHome}/bin:${env.PATH}", 'ANDROID_HOME=/home/jenkins/android-sdk-linux']) {
-                    withCredentials([
-                        [$class: 'StringBinding', credentialsId: 'android-keystore-password', variable: 'KEYSTORE_PASSWORD'],
-                        [$class: 'UsernamePasswordMultiBinding', credentialsId: 'android-keystore-key', passwordVariable: 'KEY_PASSWORD', usernameVariable: 'KEY_ALIAS'],
-                        [$class: 'FileBinding', credentialsId: 'android-keystore', variable: 'KEYSTORE']
-                    ]) {
-                        sh 'gradle build assembleDebug assembleRelease'
+                sh 'rm -rf android/app/src/main/assets/web; cp -r dist/android android/app/src/main/assets/web'
+                dir('android') {
+                    withEnv(["PATH=${gradleHome}/bin:${env.PATH}", 'ANDROID_HOME=/home/jenkins/android-sdk-linux']) {
+                        withCredentials([
+                            [$class: 'StringBinding', credentialsId: 'android-keystore-password', variable: 'KEYSTORE_PASSWORD'],
+                            [$class: 'UsernamePasswordMultiBinding', credentialsId: 'android-keystore-key', passwordVariable: 'KEY_PASSWORD', usernameVariable: 'KEY_ALIAS'],
+                            [$class: 'FileBinding', credentialsId: 'android-keystore', variable: 'KEYSTORE']
+                        ]) {
+                            sh 'gradle build assembleDebug assembleRelease'
+                        }
                     }
                 }
+
+                sh 'mkdir archive/android'
+                sh 'cp -r dist/android archive/android/js; cp -r android/app/build/outputs/apk archive/android/apk'
+            } catch (err) {
+                authSlackSend message: 'failed. Cannot build Android app.', color: 'danger'
+                throw err
             }
-
-            sh 'mkdir archive/android'
-            sh 'cp -r dist/android archive/android/js; cp -r android/app/build/outputs/apk archive/android/apk'
-        } catch (err) {
-            authSlackSend message: "failed. Cannot build Android app.", color: 'danger'
-            throw err
         }
-    }
 
-    stage('Archive artifacts') {
-        dir('archive') {
-            archiveArtifacts artifacts: '**', fingerprint: true
+        stage('Archive artifacts') {
+            dir('archive') {
+                archiveArtifacts artifacts: '**'
+            }
         }
-    }
 
-    authSlackSend message: "succeeded", color: 'good'
+        authSlackSend message: 'succeeded', color: 'good'
+    }
 }
