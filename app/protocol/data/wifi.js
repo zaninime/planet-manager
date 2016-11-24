@@ -77,10 +77,10 @@ export const parseResponse = (str: string): WifiConfig => {
     let mode;
     switch (parts[8]) {
     case '0':
-        mode = 'station';
+        mode = 'ibss';
         break;
     case '1':
-        mode = 'ibss';
+        mode = 'station';
         break;
     default:
         throw new ProtocolError('Invalid Wi-Fi mode', parts[8]);
@@ -113,12 +113,16 @@ export const buildUpdate = (config: WifiConfig) => {
         '2',
     ];
     if (config.mode === 'ibss') {
-        parts.push('4', '1');
+        parts.push('4', '0');
     } else {
-        parts.push(config.dhcp ? '1' : '0', '0');
+        parts.push(config.dhcp ? '1' : '0', '1');
     }
-    parts.push(currifiedPad(2)(config.channel), '\x03');
-    return parts.join('');
+    if (config.channel === 'auto') {
+        parts.push('00');
+    } else {
+        parts.push(currifiedPad(2)(config.channel));
+    }
+    return parts.concat('\x03').join('');
 };
 
 export const buildRequest = () => '\x02WiFishGETLAN\x03';

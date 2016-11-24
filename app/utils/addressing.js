@@ -49,11 +49,11 @@ export const wifiToProtocolFormat = (wifiState) => {
     const { mode } = wifiState;
     const { ssid } = wifiState[mode];
     let password = '';
-    let dhcp = false;
+    let dhcp = true;
     let addressing = { };
-    let ipAddress = '';
-    let netmask = '';
-    let gateway = '';
+    let ipAddress = '192.168.0.100';
+    let netmask = '255.255.255.0';
+    let gateway = '192.168.0.1';
 
     // No need to validate them since the state
     // must never contain invalid values.
@@ -62,12 +62,12 @@ export const wifiToProtocolFormat = (wifiState) => {
         password = wifiState[mode].password;
         dhcp = wifiState[mode].dhcp;
         addressing = wifiState[mode].addressing;
-    }
 
-    if (!dhcp) {
-        ipAddress = addressing.ip;
-        netmask = addressing.netmask;
-        gateway = addressing.gateway;
+        if (!dhcp) {
+            ipAddress = addressing.ip;
+            netmask = addressing.netmask;
+            gateway = addressing.gateway;
+        }
     }
 
     return {

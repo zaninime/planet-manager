@@ -16,8 +16,8 @@ android {
         applicationId "eu.elos.planetmgr.app"
         minSdkVersion 19
         targetSdkVersion 24
-        if (System.getenv("BUILD_NUMBER") != null) {
-            versionCode 400000 + Integer.parseInt(System.getenv("BUILD_NUMBER"))
+        if (System.getenv("UNIVERSAL_BUILD_NUMBER") != null) {
+            versionCode 400000 + Integer.parseInt(System.getenv("UNIVERSAL_BUILD_NUMBER"))
         } else {
             versionCode 400000
         }

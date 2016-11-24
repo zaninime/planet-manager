@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Dialog from 'material-ui/Dialog';
 import LinearProgress from 'material-ui/LinearProgress';
 import shallowCompare from 'react-addons-shallow-compare';
+import DialogTitle from '../presentational/DialogTitle';
 
 const styles = {
     progressbarContainer: {
@@ -31,7 +32,7 @@ class LoadingDialog extends Component {
     render() {
         return (
             <Dialog
-                title="Talking with your lamp..."
+                title={<DialogTitle title="Talking with your lamp" />}
                 open={this.state.open}
                 style={styles.unselectableDialog}
             >

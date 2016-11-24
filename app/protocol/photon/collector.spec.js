@@ -1,5 +1,5 @@
 /* globals describe it expect beforeEach jasmine */
-import collect from './collector';
+import { daylight, night, timings, twilight, channels, features } from './collector';
 
 function genericBeforeEach() {
     this.status = {
@@ -20,7 +20,7 @@ function genericBeforeEach() {
     this.config = {
         daylight: {
             white: {
-                intensity: 15,
+                intensity: 40,
                 delay: 50,
             },
             red: {
@@ -54,36 +54,29 @@ describe('daylight', () => {
     beforeEach(genericBeforeEach);
 
     it('translates correctly color configurations', function () {
-        expect(collect(this.config, this.status).daylight.intensity).toEqual(1);
-        expect(collect(this.config, this.status).daylight.mainColor).toEqual(1);
+        expect(daylight(this.config, this.status).intensity).toBe(1);
+        expect(daylight(this.config, this.status).mainColor).toBe(1);
 
-        this.config.daylight.white.intensity = 30;   // red config
-        this.config.daylight.red.intensity = 40;
+        this.config.daylight.white.intensity = 70;   // orange config
+        this.config.daylight.red.intensity = 100;
         this.config.daylight.blue.intensity = 15;
 
-        expect(collect(this.config, this.status).daylight.intensity).toEqual(0.47);
-        expect(collect(this.config, this.status).daylight.mainColor).toBeLessThan(-0.5);
+        expect(daylight(this.config, this.status).intensity).toBe(1);
+        expect(daylight(this.config, this.status).mainColor).toBe(-0.5);
 
-        this.config.daylight.white.intensity = 80;   // red config
-        this.config.daylight.red.intensity = 15;
-        this.config.daylight.blue.intensity = 15;
+        this.config.daylight.white.intensity = 10;   // total blue low light config with brokem red and white value
+        this.config.daylight.red.intensity = 10;
+        this.config.daylight.blue.intensity = 32;
 
-        expect(collect(this.config, this.status).daylight.intensity).toEqual(0.76);
-        expect(collect(this.config, this.status).daylight.mainColor).toEqual(0);
+        expect(daylight(this.config, this.status).intensity).toBe(0.2);
+        expect(daylight(this.config, this.status).mainColor).toBe(1);
 
-        this.config.daylight.white.intensity = 90; // too much light
-        this.config.daylight.red.intensity = 40;
-        this.config.daylight.blue.intensity = 40;
+        this.config.daylight.white.intensity = 100;   // Broken config, low light, should return white
+        this.config.daylight.red.intensity = 0;
+        this.config.daylight.blue.intensity = 57.5;
 
-        expect(collect(this.config, this.status).daylight.intensity).toEqual(1);
-        expect(collect(this.config, this.status).daylight.mainColor).toEqual(0);
-
-        this.config.daylight.white.intensity = 5;   // not enough light
-        this.config.daylight.red.intensity = 5;
-        this.config.daylight.blue.intensity = 10;
-
-        expect(collect(this.config, this.status).daylight.intensity).toEqual(0);
-        expect(collect(this.config, this.status).daylight.mainColor).toEqual(0);
+        expect(daylight(this.config, this.status).intensity).toBe(0.5);
+        expect(daylight(this.config, this.status).mainColor).toBe(0);
     });
 });
 
@@ -91,8 +84,8 @@ describe('night', () => {
     beforeEach(genericBeforeEach);
 
     it('reads night color and intensity correctly', function () {
-        expect(collect(this.config, this.status).night.color).toEqual('blue');
-        expect(collect(this.config, this.status).night.intensity).toEqual(0.38);
+        expect(night(this.config, this.status).color).toEqual('blue');
+        expect(night(this.config, this.status).intensity).toEqual(0.38);
     });
 });
 
@@ -100,8 +93,8 @@ describe('timings', () => {
     beforeEach(genericBeforeEach);
 
     it('finds out dawn and dusk timings correctly', function () {
-        expect(collect(this.config, this.status).timings.dawnBeginsAt).toEqual(50);
-        expect(collect(this.config, this.status).timings.duskEndsAt).toEqual(130);
+        expect(timings(this.config, this.status).dawnBeginsAt).toEqual(50);
+        expect(timings(this.config, this.status).duskEndsAt).toEqual(130);
     });
 });
 
@@ -109,13 +102,13 @@ describe('twilight', () => {
     beforeEach(genericBeforeEach);
 
     it('gives an acceptable red level answer', function () {
-        const redLevel1 = collect(this.config, this.status).twilight.redLevel;
+        const redLevel1 = twilight(this.config, this.status).redLevel;
         expect(redLevel1 >= 0 && redLevel1 <= 1).toBeTruthy();
 
         this.config.daylight.red.delay = 0;
         this.config.daylight.white.delay = 30;
 
-        const redLevel2 = collect(this.config, this.status).twilight.redLevel;
+        const redLevel2 = twilight(this.config, this.status).redLevel;
         expect(redLevel2 >= 0 && redLevel2 <= 1).toBeTruthy();
     });
 
@@ -123,13 +116,13 @@ describe('twilight', () => {
         this.config.daylight.red.delay = 0;
         this.config.daylight.white.delay = 31;
 
-        const redLevel1 = collect(this.config, this.status).twilight.redLevel;
+        const redLevel1 = twilight(this.config, this.status).redLevel;
         expect(redLevel1 >= 0 && redLevel1 <= 1).toBeTruthy();
 
         this.config.daylight.red.delay = 30;
         this.config.daylight.white.delay = 29;
 
-        const redLevel2 = collect(this.config, this.status).twilight.redLevel;
+        const redLevel2 = twilight(this.config, this.status).redLevel;
         expect(redLevel2 >= 0 && redLevel2 <= 1).toBeTruthy();
     });
 
@@ -137,17 +130,17 @@ describe('twilight', () => {
         this.config.daylight.red.delay = 0;
         this.config.daylight.white.delay = 0;
 
-        expect(collect(this.config, this.status).twilight.redLevel).toEqual(0);
+        expect(twilight(this.config, this.status).redLevel).toEqual(0);
 
         this.config.daylight.red.delay = 0;
         this.config.daylight.white.delay = 30;
 
-        expect(collect(this.config, this.status).twilight.redLevel).toEqual(1);
+        expect(twilight(this.config, this.status).redLevel).toEqual(1);
 
         this.config.daylight.red.delay = 40;
         this.config.daylight.white.delay = 50;
 
-        expect(collect(this.config, this.status).twilight.redLevel).toBeCloseTo(0.33, 0.01);
+        expect(twilight(this.config, this.status).redLevel).toBeCloseTo(0.33, 0.01);
     });
 });
 
@@ -155,14 +148,14 @@ describe('channels', () => {
     beforeEach(genericBeforeEach);
 
     it('returns 12 channels for a generic lamp model', function () {
-        expect(collect(this.config, this.status).channels.length).toBe(12);
+        expect(channels(this.config, this.status).length).toBe(12);
     });
 
     it('returns 6 channels for PlanetCompact', function () {
         this.status.productId = 16;
         this.status.firmwareVersion = 201;
 
-        expect(collect(this.config, this.status).channels.length).toBe(6);
+        expect(channels(this.config, this.status).length).toBe(6);
     });
 });
 
@@ -182,7 +175,7 @@ describe('features', () => {
             DEMO_MODE: true,
         };
 
-        const computedFeatures = collect(this.config, this.status).features;
+        const computedFeatures = features(this.config, this.status);
 
         expect(expectedFeatures).toEqual(jasmine.objectContaining(computedFeatures));
         expect(computedFeatures).toEqual(jasmine.objectContaining(expectedFeatures));
@@ -200,7 +193,7 @@ describe('features', () => {
             DEMO_MODE: true,
         };
 
-        const computedFeatures = collect(this.config, this.status).features;
+        const computedFeatures = features(this.config, this.status);
 
         expect(expectedFeatures).toEqual(jasmine.objectContaining(computedFeatures));
         expect(computedFeatures).toEqual(jasmine.objectContaining(expectedFeatures));
@@ -220,7 +213,7 @@ describe('features', () => {
             DEMO_MODE: true,
         };
 
-        const computedFeatures = collect(this.config, this.status).features;
+        const computedFeatures = features(this.config, this.status);
 
         expect(expectedFeatures).toEqual(jasmine.objectContaining(computedFeatures));
         expect(computedFeatures).toEqual(jasmine.objectContaining(expectedFeatures));
@@ -235,7 +228,7 @@ describe('features', () => {
             DEMO_MODE: true,
         };
 
-        const computedFeatures = collect(this.config, this.status).features;
+        const computedFeatures = features(this.config, this.status);
 
         expect(expectedFeatures).toEqual(jasmine.objectContaining(computedFeatures));
         expect(computedFeatures).toEqual(jasmine.objectContaining(expectedFeatures));

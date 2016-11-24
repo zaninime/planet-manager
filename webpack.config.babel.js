@@ -33,7 +33,11 @@ const makeBaseConfig = () => {
                 },
                 {
                     test: /\.(ico|jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2)(\?.*)?$/,
-                    loader: 'file',
+                    loader: 'file-loader',
+                    include: [
+                        path.resolve(__dirname, 'app'),
+                        path.resolve(__dirname, 'node_modules/react-native-vector-icons'),
+                    ],
                 },
             ],
         },
@@ -45,6 +49,10 @@ const makeBaseConfig = () => {
             new webpack.optimize.OccurrenceOrderPlugin(),
             new webpack.DefinePlugin({
                 __DEV__: process.env.NODE_ENV !== 'production',
+                'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+            }),
+            new webpack.optimize.CommonsChunkPlugin({
+                children: true,
             }),
             new HtmlWebpackPlugin({
                 title: 'Planet Manager',
