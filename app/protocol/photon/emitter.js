@@ -1,6 +1,6 @@
 /* @flow */
-import { twilightDuration, floorIntensity, compactChannels } from './constants';
 import clamp from 'app/utils/clamp';
+import { twilightDuration, floorIntensity, compactChannels } from './constants';
 import { supportOnSave } from './bugs';
 import type { HighLevelConfig, Features } from './types';
 
