@@ -4,8 +4,7 @@ import ChannelMap from 'app/components/connected/ChannelMap';
 import WifiSettings from 'app/components/connected/WifiSettings';
 import Misc from 'app/components/connected/Misc';
 
-const AdvancedPage = ({ params }) =>
-(
+const AdvancedPage = ({ params }) => (
     <div>
         <Section title="Wi-Fi">
             <WifiSettings lampId={params.lampId} />
