@@ -117,10 +117,12 @@ export const buildUpdate = (config: WifiConfig) => {
     } else {
         parts.push(config.dhcp ? '1' : '0', '1');
     }
-    if (config.channel === 'auto') {
-        parts.push('00');
+    const channel = config.channel;
+    if (typeof channel === 'number') {
+        parts.push(currifiedPad(2)(channel));
     } else {
-        parts.push(currifiedPad(2)(config.channel));
+        // if it's a string, it's auto
+        parts.push('00');
     }
     return parts.concat('\x03').join('');
 };

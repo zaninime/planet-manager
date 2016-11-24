@@ -1,6 +1,6 @@
 {
   "name": "planet-manager",
-  "version": "20161124.105602.0",
+  "version": "20161124.153943.0",
   "description": "",
   "private": true,
   "scripts": {
@@ -12,6 +12,7 @@
     "clean": "rimraf dist",
     "test": "jest --config jest.config.json --colors",
     "lint": "eslint --rulesdir eslint_rules --cache --color app",
+    "flow": "flow check",
     "ci:build": "rimraf dist && NODE_ENV=production webpack --config webpack.config.babel.js",
     "ci:test": "jest --config jest.config.json --colors --coverage",
     "ci:lint": "eslint --rulesdir eslint_rules --color app"
@@ -40,7 +41,7 @@
     "eslint-plugin-react": "^6.6.0",
     "events": "^1.1.1",
     "file-loader": "^0.9.0",
-    "flow-bin": "^0.34.0",
+    "flow-bin": "^0.36.0",
     "font-awesome": "^4.7.0",
     "gulp": "^3.9.1",
     "gulp-util": "^3.0.7",
