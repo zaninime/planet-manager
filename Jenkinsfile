@@ -146,6 +146,12 @@ node('master') {
             }
         }
 
+        if (BRANCH_NAME == 'staging') {
+            stage('Deploy (staging)') {
+                androidApkUpload apkFilesPattern: 'archive/android/apk/app-release.apk', googleCredentialsId: 'android-api', trackName: 'beta'
+            }
+        }
+
         authSlackSend message: 'succeeded', color: 'good'
     }
 }
