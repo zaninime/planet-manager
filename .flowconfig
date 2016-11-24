@@ -1,0 +1,6 @@
+[ignore]
+<PROJECT_ROOT>/node_modules/.*
+
+[version]
+0.36.0
+
