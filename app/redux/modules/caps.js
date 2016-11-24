@@ -18,3 +18,4 @@ export const isTemperatureConfigAvailable = state => state.features.TEMPERATURE_
 export const isClockSyncAvailable = state => state.features.CLOCK_SYNC;
 export const isMasterSwicthAvailable = state => state.features.MASTER_SWITCH;
 export const isDemoModeAvailable = state => state.features.DEMO_MODE;
+export const isFeatureAvailable = (state, feature) => !!state.features[feature];

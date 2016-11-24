@@ -2,6 +2,8 @@ import React from 'react';
 import Radium from 'radium';
 import FanMaxSpeedSlider from 'app/components/connected/FanMaxSpeedSlider';
 import FanStartTemperatureSlider from 'app/components/connected/FanStartTemperatureSlider';
+import OperationModeSwitch from 'app/components/connected/OperationModeSwitch';
+import ShowOnFeature from 'app/components/connected/ShowOnFeature';
 import Section from 'app/components/layout/Section';
 
 const styles = {
@@ -48,6 +50,9 @@ const Misc = ({ fanConfigAvailable, temperatureConfigAvailable, lampId }) => {
             <Section title="Misc">
                 {fanMaxSpeedSlider}
                 {fanStartTemperatureSlider}
+                <ShowOnFeature feature="MASTER_SWITCH" lampId={lampId}>
+                    <OperationModeSwitch lampId={lampId} />
+                </ShowOnFeature>
             </Section>
         );
     }
