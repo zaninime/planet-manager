@@ -12,6 +12,7 @@
     "clean": "rimraf dist",
     "test": "jest --config jest.config.json --colors",
     "lint": "eslint --rulesdir eslint_rules --cache --color app",
+    "flow": "flow check",
     "ci:build": "rimraf dist && NODE_ENV=production webpack --config webpack.config.babel.js",
     "ci:test": "jest --config jest.config.json --colors --coverage",
     "ci:lint": "eslint --rulesdir eslint_rules --color app"
