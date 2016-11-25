@@ -3,8 +3,7 @@ import NightColors from 'app/components/connected/NightColors';
 import NightColorIntensitySlider from 'app/components/connected/NightColorIntensitySlider';
 import Section from 'app/components/layout/Section';
 
-const NightPage = ({ params }) =>
-(
+const NightPage = ({ params }) => (
     <Section title="Night">
         <NightColors lampId={params.lampId} />
         <NightColorIntensitySlider
