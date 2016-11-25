@@ -21,8 +21,7 @@ const styles = {
     },
 };
 
-const ConnectPage = () =>
-(
+const ConnectPage = () => (
     <div style={styles.container}>
         <Header />
         <StyleRoot style={styles.cards}>

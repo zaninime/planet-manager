@@ -1,9 +1,8 @@
 import React from 'react';
 import { Route, IndexRoute } from 'react-router';
-import ConnectPage from 'app/components/layout/connect';
+import ConnectPage from 'app/components/layout/ConnectPage';
 
-export const makeRoutes = () =>
-(
+export const makeRoutes = () => (
     <Route path="/">
         <IndexRoute component={ConnectPage} />
         <Route
@@ -17,7 +16,7 @@ export const makeRoutes = () =>
             <Route
                 path="day/" getComponent={(location, cb) => {
                     require.ensure([], (require) => {
-                        const mod = require('app/components/layout/day');
+                        const mod = require('app/components/layout/DayPage');
                         cb(null, mod.default);
                     });
                 }}
@@ -25,7 +24,7 @@ export const makeRoutes = () =>
             <Route
                 path="night/" getComponent={(location, cb) => {
                     require.ensure([], (require) => {
-                        const mod = require('app/components/layout/night');
+                        const mod = require('app/components/layout/NightPage');
                         cb(null, mod.default);
                     });
                 }}
@@ -33,7 +32,7 @@ export const makeRoutes = () =>
             <Route
                 path="twilight/" getComponent={(location, cb) => {
                     require.ensure([], (require) => {
-                        const mod = require('app/components/layout/twilight');
+                        const mod = require('app/components/layout/TwilightPage');
                         cb(null, mod.default);
                     });
                 }}
@@ -41,7 +40,7 @@ export const makeRoutes = () =>
             <Route
                 path="advanced/" getComponent={(location, cb) => {
                     require.ensure([], (require) => {
-                        const mod = require('app/components/layout/advanced');
+                        const mod = require('app/components/layout/AdvancedPage');
                         cb(null, mod.default);
                     });
                 }}
