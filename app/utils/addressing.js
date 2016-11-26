@@ -77,7 +77,7 @@ export const wifiToProtocolFormat = (wifiState) => {
         channel: 'auto',
         dhcp,
         address: ipAddress,
-        port: 65535,
+        port: 5500,
         gateway,
         mask: netmask,
     };
