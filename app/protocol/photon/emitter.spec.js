@@ -392,15 +392,15 @@ describe('night', function () {
     });
 
     it('throws an error for out of range intensity values', function () {
-        this.config.night = { color: 'green', intensity: -0.05 };
+        this.config.night = { color: 'white', intensity: -0.05 };
         expect(night.bind(undefined, this.config, this.caps)).toThrow();
 
-        this.config.night = { color: 'green', intensity: 1.3 };
+        this.config.night = { color: 'white', intensity: 1.3 };
         expect(night.bind(undefined, this.config, this.caps)).toThrow();
     });
 
     it('rounds to the nearest integer', function () {
-        this.config.night = { color: 'green', intensity: 0.013 };
+        this.config.night = { color: 'white', intensity: 0.013 };
         expect(night(this.config, this.caps).intensity).toBe(1);
     });
 });

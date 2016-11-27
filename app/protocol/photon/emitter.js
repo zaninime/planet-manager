@@ -197,7 +197,7 @@ export const night = (config: HighLevelConfig) => {
         throw new RangeError(`Night intensity value ${intensity} is out of range`);
     }
 
-    const colors = ['green', 'blue'];
+    const colors = ['white', 'blue'];
     if (colors.indexOf(color) === -1) {
         throw new Error(`Invalid night color: '${color}'`);
     }
