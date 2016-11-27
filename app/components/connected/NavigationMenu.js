@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { push } from 'react-router-redux';
+import { goBack, replace } from 'react-router-redux';
 import NavigationMenu from 'app/components/presentational/NavigationMenu';
 import { isConfigSaved, getFieldError, isWifiConfigSaved } from 'app/redux/modules';
 import { setFieldError } from 'app/redux/modules/fieldError';
@@ -13,10 +13,11 @@ const mapStateToProps = (state, { lampId }) => ({
 });
 
 const mapDispatchToProps = (dispatch, { lampId }) => ({
-    redirect: path => dispatch(push(path)),
-    setFieldError: error => dispatch(setFieldError(error, lampId)),
-    setConfigSaved: () => dispatch(setConfigSaved(lampId)),
+    goBack: path => dispatch(goBack(path)),
+    replace: path => dispatch(replace(path)),
     saveConfig: () => dispatch(startSaving(lampId)),
+    setConfigSaved: () => dispatch(setConfigSaved(lampId)),
+    setFieldError: error => dispatch(setFieldError(error, lampId)),
 });
 
 export default connect(

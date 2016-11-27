@@ -54,14 +54,14 @@ class NavigationMenu extends Component {
         this.handleWifiChangedCloseRequest = this.handleWifiChangedCloseRequest.bind(this);
         this.handleSnackbarCloseRequest = this.handleSnackbarCloseRequest.bind(this);
 
-        const { lampId, redirect } = this.props;
+        const { lampId, replace } = this.props;
         const paths = ['day', 'twilight', 'night', 'advanced'].map(e => (`/${lampId}/${e}/`));
         this.onTouchTaps = paths.map((e, i) => () => {
             if (this.props.fieldError) {
                 this.setFieldErrorDialogOpen(true);
             } else {
                 this.setState({ selectedIndex: i });
-                redirect(e);
+                replace(e);
             }
         });
 
@@ -99,7 +99,7 @@ class NavigationMenu extends Component {
     }
 
     redirectToHome() {
-        this.props.redirect('/');
+        this.props.goBack();
     }
 
     handleHomeClick() {
@@ -247,13 +247,14 @@ class NavigationMenu extends Component {
 
 NavigationMenu.propTypes = {
     configSaved: React.PropTypes.bool.isRequired,
-    wifiConfigSaved: React.PropTypes.bool.isRequired,
     fieldError: React.PropTypes.bool.isRequired,
+    goBack: React.PropTypes.func.isRequired,
     lampId: React.PropTypes.string.isRequired,
-    redirect: React.PropTypes.func.isRequired,
+    replace: React.PropTypes.func.isRequired,
     saveConfig: React.PropTypes.func.isRequired,
-    setFieldError: React.PropTypes.func.isRequired,
     setConfigSaved: React.PropTypes.func.isRequired,
+    setFieldError: React.PropTypes.func.isRequired,
+    wifiConfigSaved: React.PropTypes.bool.isRequired,
 };
 
 export default Radium(NavigationMenu);

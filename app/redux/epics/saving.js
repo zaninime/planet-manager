@@ -1,4 +1,4 @@
-import { push } from 'react-router-redux';
+import { goBack } from 'react-router-redux';
 import { Observable } from 'rxjs/Observable';
 import { wifiToProtocolFormat } from 'app/protocol/photon/wifi';
 import emit from 'app/protocol/photon/emitter';
@@ -36,7 +36,7 @@ const startSavingEpic = (action$, store) =>
       .toArray()
       .mergeMap(x => [
           ...[setConfigSaved(action.payload.lampId)],
-          x[2] ? undefined : push('/'),
+          x[2] ? undefined : goBack(),
       ])
       .filter(x => x !== undefined)
       .catch((error) => Observable.of(setError(error))),
