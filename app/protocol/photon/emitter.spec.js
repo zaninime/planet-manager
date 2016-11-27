@@ -534,10 +534,10 @@ describe('temperature', function () {
     });
 
     it('maps fields to the right numerical space', function () {
-        this.config.temperature = { fanStart: 0.4, shutdown: 0.4 };
+        this.config.temperature = { fanStart: 40, shutdown: 40 };
         expect(temperature(this.config, this.caps).fanStart).toBe(40);
 
-        this.config.temperature = { fanStart: 0.4, shutdown: 0.5 };
+        this.config.temperature = { fanStart: 40, shutdown: 50 };
         expect(temperature(this.config, this.caps).shutdown).toBe(50);
     });
 
