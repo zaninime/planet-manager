@@ -1,6 +1,6 @@
 import { push } from 'react-router-redux';
 import Rx from 'rxjs/Rx';
-import { wifiToProtocolFormat } from 'app/utils/addressing';
+import { wifiToProtocolFormat } from 'app/protocol/photon/wifi';
 import emit from 'app/protocol/photon/emitter';
 import {
   saveConfig as apiSaveConfig,

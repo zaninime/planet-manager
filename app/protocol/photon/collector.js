@@ -30,7 +30,7 @@ export const daylight = (config: LowLevelConfig) => {
     mainColor = clamp(mainColor, -1, 1);
     intensity = clamp(intensity, 0, 1);
 
-    if (intensity === 0 || (w > r && w > b)) {
+    if (intensity === 0 || (w > r && w > b) || r === b) {
         // with non compatible values and 0 intensity, maincolor is NaN because of division by 0.
         mainColor = 0;
     }
@@ -74,9 +74,23 @@ export const channels = (config: LowLevelConfig, status: LampStatus) => {
     return config.channels.map(convert);
 };
 
-export const temperature = (config: LowLevelConfig) => ({ ...config.temperature });
+export const temperature = (config: LowLevelConfig) => {
+    const { fanStart, shutdown } = config.temperature;
+    return {
+        fanStart,
+        shutdown,
+    };
+};
 
-export const fan = (config: LowLevelConfig) => ({ ...config.fan });
+export const fan = (config: LowLevelConfig) => {
+    const { maxSpeed, minSpeed, speedRamp } = config.fan;
+
+    return {
+        maxSpeed: maxSpeed / 100,
+        minSpeed: minSpeed / 100,
+        speedRamp,
+    };
+};
 
 export const master = (config: LowLevelConfig) => config.mode === 'master';
 

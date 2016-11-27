@@ -113,6 +113,17 @@ export const channels = (config: HighLevelConfig, { features }: Caps) => {
             return convert(config.channels[idx]);
         });
     }
+
+    const expectedKeys = ['color', 'enabled'];
+    if (!config.channels.every(c => expectedKeys.every(e => e in c))) {
+        throw new Error("Every channel object must have a 'color' and an 'enabled' field");
+    }
+
+    const colors = ['white', 'red', 'green', 'blue'];
+    if (!config.channels.every(c => colors.indexOf(c.color) > -1)) {
+        throw new Error('Strip configuration contains an invalid color');
+    }
+
     return config.channels.map(convert);
 };
 
@@ -123,7 +134,24 @@ export const temperature = (config: HighLevelConfig, { features }: Caps) => {
             shutdown: 0,
         };
     }
-    return { ...config.temperature };
+
+    const expectedKeys = ['fanStart', 'shutdown'];
+    if (!expectedKeys.every(e => e in config.temperature)) {
+        throw new Error("Temperature configuration must have a 'fanStart' and a 'shutdown' field");
+    }
+
+    const { fanStart, shutdown } = config.temperature;
+
+    if (fanStart < 0 || fanStart > 999) {
+        throw new RangeError(`Fan start temperature value ${fanStart} is out of range`);
+    } else if (shutdown < 0 || shutdown > 999) {
+        throw new RangeError(`Shutdown temperature value ${shutdown} is out of range`);
+    }
+
+    return {
+        fanStart: Math.round(fanStart * 100),
+        shutdown: Math.round(shutdown * 100),
+    };
 };
 
 export const fan = (config: HighLevelConfig, { features }: Caps) => {
@@ -134,13 +162,51 @@ export const fan = (config: HighLevelConfig, { features }: Caps) => {
             maxSpeed: 0,
         };
     }
-    return { ...config.fan };
+
+    const expectedKeys = ['minSpeed', 'maxSpeed', 'speedRamp'];
+    if (!expectedKeys.every(e => e in config.fan)) {
+        throw new Error("Fan configuration must have a 'minSpeed', a 'maxSpeed' and a 'speedRamp' field");
+    }
+
+    const { minSpeed, speedRamp, maxSpeed } = config.fan;
+
+    if (maxSpeed < 0 || maxSpeed > 1) {
+        throw new RangeError(`Fan maximum speed value ${maxSpeed} is out of range`);
+    } else if (minSpeed < 0 || minSpeed > 1) {
+        throw new RangeError(`Fan minimum speed value ${minSpeed} is out of range`);
+    } else if (maxSpeed < minSpeed) {
+        throw new RangeError('Fan maximum speed is less than the minimum speed');
+    }
+
+    return {
+        maxSpeed: Math.round(maxSpeed * 100),
+        minSpeed: Math.round(minSpeed * 100),
+        speedRamp,
+    };
 };
 
-export const night = (config: HighLevelConfig) => ({
-    color: config.night.color,
-    intensity: Math.round(config.night.intensity * 100),
-});
+export const night = (config: HighLevelConfig) => {
+    const expectedKeys = ['color', 'intensity'];
+    if (!expectedKeys.every(e => e in config.night)) {
+        throw new Error("Fan configuration must have a 'color' and an 'intensity' field");
+    }
+
+    const { intensity, color } = config.night;
+
+    if (intensity < 0 || intensity > 1) {
+        throw new RangeError(`Night intensity value ${intensity} is out of range`);
+    }
+
+    const colors = ['green', 'blue'];
+    if (colors.indexOf(color) === -1) {
+        throw new Error(`Invalid night color: '${color}'`);
+    }
+
+    return {
+        color,
+        intensity: Math.round(config.night.intensity * 100),
+    };
+};
 
 export const mode = (config: HighLevelConfig) => (config.master ? 'master' : 'slave');
 

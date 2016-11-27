@@ -55,7 +55,7 @@ describe('buildUpdate', () => {
             address: '172.16.0.100',
             mask: '255.255.255.0',
             gateway: '172.16.0.254',
-            port: 5000,
+            port: 5500,
             dhcp: true,
             channel: 4,
             mode: 'ibss',
@@ -75,11 +75,11 @@ describe('buildUpdate', () => {
 
     it('encodes IP addresses with the right format', function () {
         const { encoded } = this;
-        expect(encoded).toMatch(/\x02WiFishSETLAN\d{12}.{64}\d{4}\d{12}\d{12}\d{12}2\d{4}\x03/);
+        expect(encoded).toMatch(/\x02WiFishSETLAN\d{12}.{64}\d{5}5500\d{12}\d{12}\d{12}2\d{2}00\d{2}\x03/);
     });
 
     it('outputs consistent DHCP/Wi-Fi mode', function () {
-        const re = /\x02WiFishSETLAN\d{12}.{64}\d{4}\d{12}\d{12}\d{12}2(\d)(\d)\d{2}\x03/;
+        const re = /\x02WiFishSETLAN\d{12}.{64}\d{5}5500\d{12}\d{12}\d{12}2(\d)00(\d)\d{2}\x03/;
         let encoded = buildUpdate(this.config);
         let match = encoded.match(re);
         expect(match[1]).toEqual('4');
@@ -93,7 +93,7 @@ describe('buildUpdate', () => {
     });
 
     it('outputs \'00\' for automatic channel selection', function () {
-        const re = /\x02WiFishSETLAN\d{12}.{64}\d{4}\d{12}\d{12}\d{12}2\d{2}00\x03/;
+        const re = /\x02WiFishSETLAN\d{12}.{64}\d{5}5500\d{12}\d{12}\d{12}2\d{2}0000\x03/;
         this.config.channel = 'auto';
         expect(buildUpdate(this.config)).toMatch(re);
     });

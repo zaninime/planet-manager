@@ -77,6 +77,13 @@ describe('daylight', () => {
 
         expect(daylight(this.config, this.status).intensity).toBe(0.5);
         expect(daylight(this.config, this.status).mainColor).toBe(0);
+
+        this.config.daylight.white.intensity = 75;   // Broken config, low light, should return white
+        this.config.daylight.red.intensity = 75;
+        this.config.daylight.blue.intensity = 75;
+
+        expect(daylight(this.config, this.status).intensity).toBe(0.71);
+        expect(daylight(this.config, this.status).mainColor).toBe(0);
     });
 });
 
