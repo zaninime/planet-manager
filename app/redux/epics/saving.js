@@ -39,14 +39,7 @@ const startSavingEpic = (action$, store) =>
           x[2] ? undefined : push('/'),
       ])
       .filter(x => x !== undefined)
-      .catch((error) => {
-          const e = error;
-          if (e.message !== undefined) {
-              e.message += '. Your configurations may not have been saved!';
-          }
-
-          return Rx.Observable.of(setError(e));
-      }),
+      .catch((error) => Rx.Observable.of(setError(error))),
     );
 
 export default startSavingEpic;

@@ -149,8 +149,8 @@ export const temperature = (config: HighLevelConfig, { features }: Caps) => {
     }
 
     return {
-        fanStart: Math.round(fanStart * 100),
-        shutdown: Math.round(shutdown * 100),
+        fanStart: Math.round(fanStart),
+        shutdown: Math.round(shutdown),
     };
 };
 
