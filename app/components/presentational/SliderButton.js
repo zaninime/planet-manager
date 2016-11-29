@@ -78,7 +78,7 @@ class SliderButton extends Component {
 
         this.updateFields(props);
         this.panStartedInside = false;
-        this.previousDeg = undefined;
+        this.previousDeg = null;
 
         this.state = {
             value: null,
@@ -133,7 +133,7 @@ class SliderButton extends Component {
         const firstExtr = 225 - this.buttonRadius;
         const secondExtr = 135 + this.buttonRadius;
         if (deg < firstExtr && deg > secondExtr) {
-            if (touchType.startsWith('pan') && this.previousDeg) {
+            if (touchType.startsWith('pan') && this.previousDeg !== null) {
                 if (this.previousDeg >= firstExtr && deg < firstExtr) adjustedDeg = 225;
                 else if (this.previousDeg <= secondExtr && deg > secondExtr) adjustedDeg = 135;
             } else return;
