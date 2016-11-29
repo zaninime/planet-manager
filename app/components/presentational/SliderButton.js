@@ -78,6 +78,7 @@ class SliderButton extends Component {
 
         this.updateFields(props);
         this.panStartedInside = false;
+        this.previousDeg = null;
 
         this.state = {
             value: null,
@@ -128,11 +129,17 @@ class SliderButton extends Component {
 
     setDegrees(deg, touchType) {
         let adjustedDeg = deg;
-        if (adjustedDeg < 225 && adjustedDeg > 225 - this.buttonRadius) {
-            adjustedDeg = 225;
-        } else if (adjustedDeg > 135 && adjustedDeg <= 180 - this.buttonRadius) {
-            adjustedDeg = 135;
+
+        const firstExtr = 225 - this.buttonRadius;
+        const secondExtr = 135 + this.buttonRadius;
+        if (deg < firstExtr && deg > secondExtr) {
+            if (touchType.startsWith('pan') && this.previousDeg !== null) {
+                if (this.previousDeg >= firstExtr && deg < firstExtr) adjustedDeg = 225;
+                else if (this.previousDeg <= secondExtr && deg > secondExtr) adjustedDeg = 135;
+            } else return;
         }
+
+        if (touchType !== 'none') this.previousDeg = adjustedDeg;
 
         if (adjustedDeg >= 225 || adjustedDeg <= 135) {
             const X = Math.round((this.radius - this.buttonRadius) * Math.sin((adjustedDeg * Math.PI) / 180));
@@ -164,11 +171,11 @@ class SliderButton extends Component {
                         onChange(valueProportion);
                     }
 
-                    if (onRelease && (touchType === 'tap' || touchType === 'button')) {
+                    if (onRelease && (['tap', 'button', 'panEnd'].indexOf(touchType) > -1)) {
                         onRelease(valueProportion);
                     }
                 }
-            } else if (onRelease && touchType === 'panEnd') {
+            } else if (onRelease && (touchType === 'panEnd')) {
                 // panEnd isn't detected since the value equals
                 // to the last one computed on the last pan
                 onRelease(valueProportion);
