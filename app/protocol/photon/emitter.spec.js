@@ -127,56 +127,64 @@ describe('daylight', () => {
         expect(daylight(this.config, this.caps).green.intensity).toBeCloseTo(15, 0);
     });
 
-    it('generates correct duration values', function () {
-        this.config.timings = { dawnBeginsAt: 300, duskEndsAt: 500 };
-        expect(daylight(this.config, this.caps).green.duration).toEqual(140);
-
-        this.config.timings = { dawnBeginsAt: 0, duskEndsAt: 1000 };
-        expect(daylight(this.config, this.caps).green.duration).toEqual(940);
-
-        this.config.timings = { dawnBeginsAt: 1400, duskEndsAt: 1500 };
-        expect(daylight(this.config, this.caps).green.duration).toEqual(0);
-
-        this.config.timings = { dawnBeginsAt: 300, duskEndsAt: 200 };
-        expect(daylight(this.config, this.caps).green.duration).toEqual(0);
+    describe('duration', function () {
+        it('calculates correct duration values in standard configurations', function () {
+            this.config.timings = { dawnBeginsAt: 300, duskEndsAt: 500 };
+            expect(daylight(this.config, this.caps).green.duration).toEqual(140);
+        });
+        it('Accecepts dawn at t = 0', function () {
+            this.config.timings = { dawnBeginsAt: 0, duskEndsAt: 1000 };
+            expect(daylight(this.config, this.caps).green.duration).toEqual(940);
+        });
     });
 
-    it('generates correct delay values', function () {
-        this.config.timings = { dawnBeginsAt: 300, duskEndsAt: 500 };
-        this.config.twilight = { redLevel: 0 };
+    describe('timings', function () {
+        it('throws an error if timings are not compatible', function () {
+            this.config.timings = { dawnBeginsAt: 1000, duskEndsAt: 1010 };
+            this.config.twilight = { redLevel: 0 };
 
-        expect(daylight(this.config, this.caps).red.delay).toEqual(300);
-        expect(daylight(this.config, this.caps).green.delay).toEqual(300);
-        expect(daylight(this.config, this.caps).blue.delay).toEqual(300);
-        expect(daylight(this.config, this.caps).white.delay).toEqual(300);
+            expect(daylight.bind(this.config, this.caps)).toThrow();
+        });
+        it('throws an error if timings are reversed', function () {
+            this.config.timings = { dawnBeginsAt: 1500, duskEndsAt: 0 };
+            this.config.twilight = { redLevel: 0 };
 
-        this.config.timings = { dawnBeginsAt: 0, duskEndsAt: 1000 };
-        this.config.twilight = { redLevel: 0.5 };
-        expect(daylight(this.config, this.caps).red.delay).toEqual(0);
-        expect(daylight(this.config, this.caps).green.delay).toEqual(15);
-        expect(daylight(this.config, this.caps).blue.delay).toEqual(15);
-        expect(daylight(this.config, this.caps).white.delay).toEqual(15);
+            expect(daylight.bind(this.config, this.caps)).toThrow();
+        });
+        it('throws an error if timings are out of range', function () {
+            this.config.timings = { dawnBeginsAt: 1500, duskEndsAt: 0 };
+            this.config.twilight = { redLevel: 0 };
 
-        this.config.timings = { dawnBeginsAt: 0, duskEndsAt: 1000 };
-        this.config.twilight = { redLevel: 0.2 };
-        expect(daylight(this.config, this.caps).red.delay).toEqual(0);
-        expect(daylight(this.config, this.caps).green.delay).toEqual(6);
-        expect(daylight(this.config, this.caps).blue.delay).toEqual(6);
-        expect(daylight(this.config, this.caps).white.delay).toEqual(6);
+            expect(daylight.bind(this.config, this.caps)).toThrow();
+        });
+    });
 
-        this.config.timings = { dawnBeginsAt: 1500, duskEndsAt: 1500 };
-        this.config.twilight = { redLevel: 0 };
-        expect(daylight(this.config, this.caps).red.delay).toEqual(1379);
-        expect(daylight(this.config, this.caps).green.delay).toEqual(1379);
-        expect(daylight(this.config, this.caps).blue.delay).toEqual(1379);
-        expect(daylight(this.config, this.caps).white.delay).toEqual(1379);
+    describe('delay', function () {
+        it('computes correctly a standard configuration', function () {
+            this.config.timings = { dawnBeginsAt: 300, duskEndsAt: 500 };
+            this.config.twilight = { redLevel: 0 };
 
-        this.config.timings = { dawnBeginsAt: 1500, duskEndsAt: 0 };
-        this.config.twilight = { redLevel: 0 };
-        expect(daylight(this.config, this.caps).red.delay).toEqual(1379);
-        expect(daylight(this.config, this.caps).green.delay).toEqual(1379);
-        expect(daylight(this.config, this.caps).blue.delay).toEqual(1379);
-        expect(daylight(this.config, this.caps).white.delay).toEqual(1379);
+            expect(daylight(this.config, this.caps).red.delay).toEqual(300);
+            expect(daylight(this.config, this.caps).green.delay).toEqual(300);
+            expect(daylight(this.config, this.caps).blue.delay).toEqual(300);
+            expect(daylight(this.config, this.caps).white.delay).toEqual(300);
+        });
+        it('computes correctly a standard  configuration with red twilight', function () {
+            this.config.timings = { dawnBeginsAt: 0, duskEndsAt: 1000 };
+            this.config.twilight = { redLevel: 0.5 };
+            expect(daylight(this.config, this.caps).red.delay).toEqual(0);
+            expect(daylight(this.config, this.caps).green.delay).toEqual(15);
+            expect(daylight(this.config, this.caps).blue.delay).toEqual(15);
+            expect(daylight(this.config, this.caps).white.delay).toEqual(15);
+        });
+        it('computes correctly a standard configuration with subtle red twilight', function () {
+            this.config.timings = { dawnBeginsAt: 0, duskEndsAt: 1000 };
+            this.config.twilight = { redLevel: 0.2 };
+            expect(daylight(this.config, this.caps).red.delay).toEqual(0);
+            expect(daylight(this.config, this.caps).green.delay).toEqual(6);
+            expect(daylight(this.config, this.caps).blue.delay).toEqual(6);
+            expect(daylight(this.config, this.caps).white.delay).toEqual(6);
+        });
     });
 
     it('generates correct slope values', function () {
