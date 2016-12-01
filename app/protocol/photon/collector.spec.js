@@ -140,14 +140,21 @@ describe('twilight', () => {
         expect(twilight(this.config, this.status).redLevel).toEqual(0);
 
         this.config.daylight.red.delay = 0;
-        this.config.daylight.white.delay = 30;
+        this.config.daylight.white.delay = 20;
 
         expect(twilight(this.config, this.status).redLevel).toEqual(1);
 
         this.config.daylight.red.delay = 40;
         this.config.daylight.white.delay = 50;
 
-        expect(twilight(this.config, this.status).redLevel).toBeCloseTo(0.33, 0.01);
+        expect(twilight(this.config, this.status).redLevel).toBeCloseTo(0.5, 0.01);
+    });
+
+    it('corrects too wide redLevel computedValues', function () {
+        this.config.daylight.red.delay = 0;
+        this.config.daylight.white.delay = 30;
+
+        expect(twilight(this.config, this.status).redLevel).toEqual(1);
     });
 });
 

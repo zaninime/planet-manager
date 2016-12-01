@@ -47,6 +47,7 @@ export const night = (config: LowLevelConfig) => ({
 });
 
 const lastMinuteOfDay = (60 * 24) - 1;
+const minimumSlopeTime = 10;
 
 export const timings = (config: LowLevelConfig) => ({
     dawnBeginsAt: Math.min(
@@ -56,7 +57,8 @@ export const timings = (config: LowLevelConfig) => ({
 });
 
 export const twilight = (config: LowLevelConfig) => ({
-    redLevel: Math.min(1, Math.max(0, (config.daylight.white.delay - config.daylight.red.delay) / twilightDuration)),
+    redLevel: Math.min(1, Math.max(0,
+        (config.daylight.white.delay - config.daylight.red.delay) / (twilightDuration - minimumSlopeTime))),
 });
 
 export const channels = (config: LowLevelConfig, status: LampStatus) => {
