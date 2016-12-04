@@ -21,17 +21,6 @@ const styles = {
 };
 
 class App extends React.Component {
-    static contextTypes = {
-        router: T.object,
-    }
-
-    static propTypes = {
-        history: T.object.isRequired,
-        routes: T.element.isRequired,
-        routerKey: T.number,
-        actions: T.object,
-    };
-
     constructor(props) {
         super(props);
 
@@ -106,7 +95,15 @@ class App extends React.Component {
     }
 }
 
+App.contextTypes = {
+    router: T.object,
+};
+
 App.propTypes = {
+    actions: T.object,
+    history: T.object.isRequired,
+    routerKey: T.number,
+    routes: T.element.isRequired,
     store: T.object.isRequired,
 };
 
