@@ -69,16 +69,10 @@ export const daylight = (config: HighLevelConfig) => {
     const dawn = config.timings.dawnBeginsAt;
     const dusk = config.timings.duskEndsAt;
     if (config.timings.dawnBeginsAt < 0 || config.timings.dawnBeginsAt > (lastMinuteOfDay - (2 * twilightDuration))) {
-        throw new Error(`Dawn value is out of range. It should be between
-            0 and
-            ${lastMinuteOfDay - (2 * twilightDuration)} (1h before last minute of day),
-            but is ${config.timings.dawnBeginsAt}.`);
+        throw new Error(`Dawn value ${config.timings.dawnBeginsAt} is out of range.`);
     }
     if (config.timings.duskEndsAt < dawn + (2 * twilightDuration) || config.timings.duskEndsAt > lastMinuteOfDay) {
-        throw new Error(`dusk value is out of range. It should be between
-            ${dawn + (2 * twilightDuration)} (1h after dawn) and
-            ${lastMinuteOfDay} (last minute of the day),
-            but is ${config.timings.duskEndsAt}.`);
+        throw new Error(`dusk value ${config.timings.duskEndsAt} is out of range.`);
     }
 
     const duration = (dusk - dawn) - (2 * twilightDuration);
