@@ -4,7 +4,7 @@
 
 import clamp from 'app/utils/clamp';
 import { blockOnFetch } from './bugs';
-import { twilightDuration, floorIntensity, compactChannels } from './constants';
+import { twilightDuration, floorIntensity, compactChannels, lastMinuteOfDay, minimumSlopeTime } from './constants';
 import * as lamps from './lamps';
 import type { LowLevelConfig, LampStatus, Features } from './types';
 
@@ -45,9 +45,6 @@ export const night = (config: LowLevelConfig) => ({
     color: config.night.color,
     intensity: Math.min(Math.max(config.night.intensity / 100, 0), 1),
 });
-
-const lastMinuteOfDay = (60 * 24) - 1;
-const minimumSlopeTime = 10;
 
 export const timings = (config: LowLevelConfig) => ({
     dawnBeginsAt: Math.min(

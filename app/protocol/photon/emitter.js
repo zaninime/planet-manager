@@ -1,5 +1,7 @@
 /* @flow */
-import { twilightDuration, floorIntensity, compactChannels } from './constants';
+
+import clamp from 'app/utils/clamp';
+import { twilightDuration, floorIntensity, compactChannels, lastMinuteOfDay, minimumSlopeTime } from './constants';
 import { supportOnSave } from './bugs';
 import type { HighLevelConfig, Features } from './types';
 
@@ -65,8 +67,6 @@ const daylightColor = (mainColor: number, intensity: number) => {
 };
 
 export const daylight = (config: HighLevelConfig) => {
-    const lastMinuteOfDay = (60 * 24) - 1;
-    const minimumSlopeTime = 10;
     const dawn = config.timings.dawnBeginsAt;
     const dusk = config.timings.duskEndsAt;
     if (config.timings.dawnBeginsAt < 0 || config.timings.dawnBeginsAt > (lastMinuteOfDay - (2 * twilightDuration))) {
