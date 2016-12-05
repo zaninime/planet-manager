@@ -21,7 +21,7 @@ const daylightColor = (mainColor: number, intensity: number) => {
         throw new Error(`MainColor value is out of range. It should be between -1 and 1, but is ${x}.`);
     }
     if (i < 0 || x > 1) {
-        throw new Error(`intensity value is out of range. It should be between 0 and 1, but is ${i}.`);
+        throw new Error(`Intensity value is out of range. It should be between 0 and 1, but is ${i}.`);
     }
 
     let red = 0;
@@ -72,7 +72,7 @@ export const daylight = (config: HighLevelConfig) => {
         throw new Error(`Dawn value ${config.timings.dawnBeginsAt} is out of range.`);
     }
     if (config.timings.duskEndsAt < dawn + (2 * twilightDuration) || config.timings.duskEndsAt > lastMinuteOfDay) {
-        throw new Error(`dusk value ${config.timings.duskEndsAt} is out of range.`);
+        throw new Error(`Dusk value ${config.timings.duskEndsAt} is out of range.`);
     }
 
     const duration = (dusk - dawn) - (2 * twilightDuration);
