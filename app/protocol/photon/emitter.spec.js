@@ -143,19 +143,19 @@ describe('daylight', () => {
             this.config.timings = { dawnBeginsAt: 1000, duskEndsAt: 1010 };
             this.config.twilight = { redLevel: 0 };
 
-            expect(daylight.bind(this.config, this.caps)).toThrow();
+            expect(daylight.bind(undefined, this.config, this.caps)).toThrow();
         });
         it('throws an error if timings are reversed', function () {
             this.config.timings = { dawnBeginsAt: 1500, duskEndsAt: 0 };
             this.config.twilight = { redLevel: 0 };
 
-            expect(daylight.bind(this.config, this.caps)).toThrow();
+            expect(daylight.bind(undefined, this.config, this.caps)).toThrow();
         });
         it('throws an error if timings are out of range', function () {
             this.config.timings = { dawnBeginsAt: 1500, duskEndsAt: 0 };
             this.config.twilight = { redLevel: 0 };
 
-            expect(daylight.bind(this.config, this.caps)).toThrow();
+            expect(daylight.bind(undefined, this.config, this.caps)).toThrow();
         });
     });
 
