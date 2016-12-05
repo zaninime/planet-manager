@@ -3,12 +3,12 @@
  */
 
 import clamp from 'app/utils/clamp';
-import { blockOnFetch } from './bugs';
+import { maskOnFetch } from './bugs';
 import { twilightDuration, floorIntensity, compactChannels } from './constants';
 import * as lamps from './lamps';
 import type { LowLevelConfig, LampStatus, Features } from './types';
 
-const collectTarget = target => (config: LowLevelConfig, status: LampStatus) =>
+const combineConverters = target => (config: LowLevelConfig, status: LampStatus) =>
     Object.keys(target).reduce((acc, key) => {
         const result = acc;
         result[key] = target[key](config, status);
@@ -130,9 +130,12 @@ export const features = (config: LowLevelConfig, status: LampStatus): Features =
 };
 
 const collect = (config: LowLevelConfig, status: LampStatus) => {
-    const convert = collectTarget({ daylight, night, timings, twilight, channels, temperature, fan, master, features });
-    const { config: bugFreeConfig, bugs } = blockOnFetch(config, status);
-    return { ...convert(bugFreeConfig, status), bugs };
+    const convertConfig = combineConverters({ daylight, night, timings, twilight, channels, temperature, fan, master });
+    return maskOnFetch((innerConfig, innerStatus) => ({
+        config: convertConfig(innerConfig, innerStatus),
+        features: features(innerConfig, innerStatus),
+        bugs: [],
+    }))(config, status);
 };
 
 export default collect;

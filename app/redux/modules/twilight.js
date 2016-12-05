@@ -6,7 +6,7 @@ export const SET_RED_LEVEL = 'config/twilight/SET_RED_LEVEL';
 const twilight = (state = { redLevel: 0 }, action) => {
     switch (action.type) {
     case LOAD_COMPLETED:
-        return action.payload.data.twilight;
+        return action.payload.config.twilight;
     case SET_RED_LEVEL:
         return { ...state, redLevel: action.payload.redLevel };
     default:

@@ -1,7 +1,7 @@
 /* @flow */
 import clamp from 'app/utils/clamp';
 import { twilightDuration, floorIntensity, compactChannels } from './constants';
-import { supportOnSave } from './bugs';
+// import { supportOnSave } from './bugs';
 import type { HighLevelConfig, Features } from './types';
 
 type Caps = { features: Features, bugs: string[] };
@@ -215,8 +215,8 @@ export const emitDemo = daylightColor;
 const emit = (config: HighLevelConfig, caps: { features: Features, bugs: string[] }) => {
     const emitter = emitTarget({ daylight, channels, temperature, fan, night, mode });
     const goodConfig = emitter(config, caps);
-    const brokenConfig = supportOnSave(goodConfig, caps.bugs);
-    return brokenConfig;
+    // const brokenConfig = supportOnSave(goodConfig, caps.bugs);
+    return goodConfig;
 };
 
 export default emit;

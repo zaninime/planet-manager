@@ -22,14 +22,22 @@ function genericBeforeEach() {
             white: {
                 intensity: 40,
                 delay: 50,
+                duration: 20,
             },
             red: {
                 intensity: 15,
                 delay: 50,
                 duration: 20,
             },
+            green: {
+                intensity: 100,
+                delay: 50,
+                duration: 20,
+            },
             blue: {
                 intensity: 100,
+                delay: 50,
+                duration: 20,
             },
         },
         channels: ['white', 'red', 'green', 'blue', 'white', 'red', 'green', 'blue', 'off', 'off', 'off', 'off'],

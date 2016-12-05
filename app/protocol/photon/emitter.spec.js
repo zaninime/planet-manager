@@ -1,12 +1,11 @@
 /* globals describe it expect beforeEach */
-import {
+import emit, {
     daylight,
     night,
     channels,
     mode,
     fan,
     temperature,
-    default as emit, // eslint-disable-line import/no-named-default
 } from './emitter';
 
 function genericBeforeEach() {
