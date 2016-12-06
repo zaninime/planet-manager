@@ -3,6 +3,7 @@ npm-debug.log
 /dist/
 /coverage/
 /node_modules/
+.tern-port
 
 /ios/web/
 # Created by https://www.gitignore.io/api/swift,xcode,objective-c,osx

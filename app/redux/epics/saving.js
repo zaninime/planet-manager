@@ -19,7 +19,7 @@ const startSavingEpic = (action$, store) =>
           const state = store.getState().lamps[action.payload.lampId];
           return {
               clock: new Date(),
-              emittedConfig: emit(state.config, state.caps),
+              emittedConfig: emit(state.config, state.caps.features, state.caps.bugs),
               wifi: !isWifiConfigSaved(state) ? wifiToProtocolFormat(state.wifi) : undefined,
           };
       })

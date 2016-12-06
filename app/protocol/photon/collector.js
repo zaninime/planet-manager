@@ -3,12 +3,12 @@
  */
 
 import clamp from 'app/utils/clamp';
-import { blockOnFetch } from './bugs';
-import { twilightDuration, floorIntensity, compactChannels } from './constants';
+import { maskOnFetch } from './bugs';
+import { twilightDuration, floorIntensity, compactChannels, lastMinuteOfDay, minimumSlopeTime } from './constants';
 import * as lamps from './lamps';
 import type { LowLevelConfig, LampStatus, Features } from './types';
 
-const collectTarget = target => (config: LowLevelConfig, status: LampStatus) =>
+const combineConverters = target => (config: LowLevelConfig, status: LampStatus) =>
     Object.keys(target).reduce((acc, key) => {
         const result = acc;
         result[key] = target[key](config, status);
@@ -46,8 +46,6 @@ export const night = (config: LowLevelConfig) => ({
     intensity: Math.min(Math.max(config.night.intensity / 100, 0), 1),
 });
 
-const lastMinuteOfDay = (60 * 24) - 1;
-
 export const timings = (config: LowLevelConfig) => ({
     dawnBeginsAt: Math.min(
         config.daylight.red.delay, lastMinuteOfDay - (config.daylight.red.duration + (2 * twilightDuration))),
@@ -56,7 +54,8 @@ export const timings = (config: LowLevelConfig) => ({
 });
 
 export const twilight = (config: LowLevelConfig) => ({
-    redLevel: Math.min(1, Math.max(0, (config.daylight.white.delay - config.daylight.red.delay) / twilightDuration)),
+    redLevel: Math.min(1, Math.max(0,
+        (config.daylight.white.delay - config.daylight.red.delay) / (twilightDuration - minimumSlopeTime))),
 });
 
 export const channels = (config: LowLevelConfig, status: LampStatus) => {
@@ -130,9 +129,12 @@ export const features = (config: LowLevelConfig, status: LampStatus): Features =
 };
 
 const collect = (config: LowLevelConfig, status: LampStatus) => {
-    const convert = collectTarget({ daylight, night, timings, twilight, channels, temperature, fan, master, features });
-    const { config: bugFreeConfig, bugs } = blockOnFetch(config, status);
-    return { ...convert(bugFreeConfig, status), bugs };
+    const convertConfig = combineConverters({ daylight, night, timings, twilight, channels, temperature, fan, master });
+    return maskOnFetch((innerConfig, innerStatus) => ({
+        config: convertConfig(innerConfig, innerStatus),
+        features: features(innerConfig, innerStatus),
+        bugs: [],
+    }))(config, status);
 };
 
 export default collect;

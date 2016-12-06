@@ -1,12 +1,10 @@
 /* @flow */
-import clamp from 'app/utils/clamp';
-import { twilightDuration, floorIntensity, compactChannels } from './constants';
+
+import { twilightDuration, floorIntensity, compactChannels, lastMinuteOfDay, minimumSlopeTime } from './constants';
 import { supportOnSave } from './bugs';
 import type { HighLevelConfig, Features } from './types';
 
-type Caps = { features: Features, bugs: string[] };
-
-const emitTarget = target => (config, caps) =>
+const combineConverters = target => (config, caps) =>
    Object.keys(target).reduce((nextTarget, key) => {
        const result = nextTarget;
        result[key] = target[key](config, caps);
@@ -15,8 +13,15 @@ const emitTarget = target => (config, caps) =>
 ;
 
 const daylightColor = (mainColor: number, intensity: number) => {
-    const x = clamp(mainColor, -1, 1);
-    const i = clamp(intensity, 0, 1);
+    const x = mainColor;
+    const i = intensity;
+
+    if (x < -1 || x > 1) {
+        throw new Error(`MainColor value is out of range. It should be between -1 and 1, but is ${x}.`);
+    }
+    if (i < 0 || x > 1) {
+        throw new Error(`Intensity value is out of range. It should be between 0 and 1, but is ${i}.`);
+    }
 
     let red = 0;
     let green = 0;
@@ -59,13 +64,21 @@ const daylightColor = (mainColor: number, intensity: number) => {
 };
 
 export const daylight = (config: HighLevelConfig) => {
-    const lastMinuteOfDay = (60 * 24) - 1;
-    const dawn = clamp(config.timings.dawnBeginsAt, 0, lastMinuteOfDay - (2 * twilightDuration));
-    const dusk = clamp(config.timings.duskEndsAt, dawn + (2 * twilightDuration), lastMinuteOfDay);
+    const dawn = config.timings.dawnBeginsAt;
+    const dusk = config.timings.duskEndsAt;
+    if (config.timings.dawnBeginsAt < 0 || config.timings.dawnBeginsAt > (lastMinuteOfDay - (2 * twilightDuration))) {
+        throw new Error(`Dawn value ${config.timings.dawnBeginsAt} is out of range.`);
+    }
+    if (config.timings.duskEndsAt < dawn + (2 * twilightDuration) || config.timings.duskEndsAt > lastMinuteOfDay) {
+        throw new Error(`Dusk value ${config.timings.duskEndsAt} is out of range.`);
+    }
 
     const duration = (dusk - dawn) - (2 * twilightDuration);
-    const delay = dawn + (config.twilight.redLevel * twilightDuration);
-    const slope = (1 - config.twilight.redLevel) * twilightDuration;
+    const delay = dawn + (((twilightDuration - minimumSlopeTime) / twilightDuration) *
+    (config.twilight.redLevel * twilightDuration));
+    const slope = minimumSlopeTime + (
+        ((1 - config.twilight.redLevel) * twilightDuration) * ((twilightDuration - minimumSlopeTime) / twilightDuration)
+    );
 
     const { white, red, green, blue } = daylightColor(config.daylight.mainColor, config.daylight.intensity);
 
@@ -97,7 +110,7 @@ export const daylight = (config: HighLevelConfig) => {
     };
 };
 
-export const channels = (config: HighLevelConfig, { features }: Caps) => {
+export const channels = (config: HighLevelConfig, features: Features) => {
     const convert = (ch) => {
         if (!ch.enabled) return 'off';
         return ch.color;
@@ -127,7 +140,7 @@ export const channels = (config: HighLevelConfig, { features }: Caps) => {
     return config.channels.map(convert);
 };
 
-export const temperature = (config: HighLevelConfig, { features }: Caps) => {
+export const temperature = (config: HighLevelConfig, features: Features) => {
     if (!features.TEMPERATURE_CONFIG) {
         return {
             fanStart: 0,
@@ -154,7 +167,7 @@ export const temperature = (config: HighLevelConfig, { features }: Caps) => {
     };
 };
 
-export const fan = (config: HighLevelConfig, { features }: Caps) => {
+export const fan = (config: HighLevelConfig, features: Features) => {
     if (!features.FAN_CONFIG) {
         return {
             minSpeed: 0,
@@ -212,11 +225,9 @@ export const mode = (config: HighLevelConfig) => (config.master ? 'master' : 'sl
 
 export const emitDemo = daylightColor;
 
-const emit = (config: HighLevelConfig, caps: { features: Features, bugs: string[] }) => {
-    const emitter = emitTarget({ daylight, channels, temperature, fan, night, mode });
-    const goodConfig = emitter(config, caps);
-    const brokenConfig = supportOnSave(goodConfig, caps.bugs);
-    return brokenConfig;
+const emit = (config: HighLevelConfig, features: Features, bugs: string[]) => {
+    const emitter = combineConverters({ daylight, channels, temperature, fan, night, mode });
+    return supportOnSave(emitter)(config, features, bugs);
 };
 
 export default emit;

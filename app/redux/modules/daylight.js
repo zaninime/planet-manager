@@ -7,7 +7,7 @@ export const SET_INTENSITY = 'config/daylight/SET_INTENSIY';
 const daylight = (state = { mainColor: 0, intensity: 0 }, action) => {
     switch (action.type) {
     case LOAD_COMPLETED:
-        return action.payload.data.daylight;
+        return action.payload.config.daylight;
     case SET_COLOR:
         return { ...state, mainColor: action.payload.mainColor };
     case SET_INTENSITY:
