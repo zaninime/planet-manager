@@ -212,9 +212,7 @@ export const emitDemo = daylightColor;
 
 const emit = (config: HighLevelConfig, features: Features, bugs: string[]) => {
     const emitter = combineConverters({ daylight, channels, temperature, fan, night, mode });
-    return supportOnSave(
-        (innerConfig, innerFeatures) => emitter(innerConfig, innerFeatures),
-    )(config, features, bugs);
+    return supportOnSave(emitter)(config, features, bugs);
 };
 
 export default emit;
