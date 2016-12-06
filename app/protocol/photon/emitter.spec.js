@@ -7,6 +7,7 @@ import emit, {
     fan,
     temperature,
 } from './emitter';
+import { BUG_EARLY_DUSK } from './bugs';
 
 function genericBeforeEach() {
     this.bugs = [];
@@ -28,8 +29,6 @@ function genericBeforeEach() {
         temperature: { },
         fan: { },
         master: undefined,
-        bugs: [],
-        features: [],
     };
 }
 
@@ -611,10 +610,74 @@ describe('emit', function () {
                 speedRamp: 30,
             },
             master: true,
-            bugs: ['EARLY_DUSK'],
-            features: ['MASTER_SWITCH', 'CHANNEL_MAPPING', 'FAN_CONFIG', 'TEMPERATURE_CONFIG'],
         };
 
         expect(Object.keys(emit(this.config, this.features, this.bugs)).sort()).toEqual(functions);
+    });
+});
+
+describe('bugs middleware', function () {
+    beforeEach(genericBeforeEach);
+
+    it('solves the early dusk problem', function () {
+        this.bugs = [BUG_EARLY_DUSK];
+
+        this.features = {
+            CHANNEL_MAPPING: true,
+            CLOCK_SYNC: true,
+            FAN_CONFIG: true,
+            TEMPERATURE_CONFIG: true,
+            MASTER_SWITCH: true,
+            DEMO_MODE: true,
+        };
+
+        this.config = {
+            daylight: {
+                mainColor: 1,
+                intensity: 1,
+            },
+            night: {
+                color: 'blue',
+                intensity: 0.1,
+            },
+            timings: {
+                dawnBeginsAt: 300,
+                duskEndsAt: 500,
+            },
+            twilight: {
+                redLevel: 0,
+            },
+            channels: [
+                { enabled: true, color: 'white' },
+                { enabled: false, color: 'red' },
+                { enabled: true, color: 'green' },
+                { enabled: false, color: 'blue' },
+                { enabled: false, color: 'white' },
+                { enabled: true, color: 'red' },
+                { enabled: false, color: 'green' },
+                { enabled: false, color: 'blue' },
+                { enabled: false, color: 'white' },
+                { enabled: false, color: 'red' },
+                { enabled: true, color: 'green' },
+                { enabled: false, color: 'blue' },
+            ],
+            temperature: {
+                fanStart: 0.4,
+                shutdown: 0.4,
+            },
+            fan: {
+                minSpeed: 0.5,
+                maxSpeed: 0.5,
+                speedRamp: 30,
+            },
+            master: true,
+        };
+
+        const result = emit(this.config, this.features, this.bugs);
+
+        expect(result.daylight.white.duration).toBe(170);   // 500 - 300 - 2 * 30 + 30
+        expect(result.daylight.red.duration).toBe(170);
+        expect(result.daylight.green.duration).toBe(170);
+        expect(result.daylight.blue.duration).toBe(170);
     });
 });

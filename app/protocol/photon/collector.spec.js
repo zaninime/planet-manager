@@ -1,5 +1,6 @@
 /* globals describe it expect beforeEach jasmine */
-import { daylight, night, timings, twilight, channels, features } from './collector';
+import collect, { daylight, night, timings, twilight, channels, features } from './collector';
+import { BUG_EARLY_DUSK } from './bugs';
 
 function genericBeforeEach() {
     this.status = {
@@ -247,5 +248,38 @@ describe('features', () => {
 
         expect(expectedFeatures).toEqual(computedFeatures);
         expect(computedFeatures).toEqual(expectedFeatures);
+    });
+});
+
+describe('bugs middleware', function () {
+    beforeEach(genericBeforeEach);
+
+    describe('solves the early dusk problem', function () {
+        beforeEach(function () {
+            this.config.daylight.white = { delay: 0, duration: 500, intensity: 10, slope: 30 };
+            this.config.daylight.red = { delay: 0, duration: 500, intensity: 10, slope: 30 };
+            this.config.daylight.green = { delay: 0, duration: 500, intensity: 10, slope: 30 };
+            this.config.daylight.blue = { delay: 0, duration: 500, intensity: 10, slope: 30 };
+        });
+
+        it('for Pro v1 lamps', function () {
+            this.status.productId = 16;
+            this.status.firmwareVersion = 114;
+
+            const result = collect(this.config, this.status);
+
+            expect(result.bugs.indexOf(BUG_EARLY_DUSK)).toBeGreaterThan(-1);
+            expect(result.config.timings.duskEndsAt).toBe(530);     // 500 + 2 * 30 - 30
+        });
+
+        it('for Compact lamps', function () {
+            this.status.productId = 16;
+            this.status.firmwareVersion = 115;
+
+            const result = collect(this.config, this.status);
+
+            expect(result.bugs.indexOf(BUG_EARLY_DUSK)).toBeGreaterThan(-1);
+            expect(result.config.timings.duskEndsAt).toBe(530);
+        });
     });
 });

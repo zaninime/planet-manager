@@ -1,7 +1,7 @@
 import { flowRight as compose } from 'lodash';
 import * as lamps from './lamps';
 
-const BUG_EARLY_DUSK = 'EARLY_DUSK';
+export const BUG_EARLY_DUSK = 'EARLY_DUSK';
 
 const maskEarlyDusk = next => (config, status) => {
     const model = lamps.detectModel(status);
@@ -26,7 +26,7 @@ const maskEarlyDusk = next => (config, status) => {
 
 
 const supportEarlyDusk = next => (config, features, bugs) => {
-    if (!bugs.indexOf(BUG_EARLY_DUSK) < 0) {
+    if (bugs.indexOf(BUG_EARLY_DUSK) < 0) {
         return next(config, features, bugs);
     }
 
@@ -42,7 +42,7 @@ const supportEarlyDusk = next => (config, features, bugs) => {
     return lowConfig;
 };
 
-// Signature: maskOnFetch :: next -> (lowConfig, status) -> { highConfig, features, bugs}
+// Signature: maskOnFetch :: next -> (lowConfig, status) -> { highConfig, features, bugs }
 export const maskOnFetch = compose(maskEarlyDusk);
 
 // Signature: supportOnSave :: next -> (highConfig, features, bugs) -> lowConfig
