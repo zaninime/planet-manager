@@ -1,12 +1,10 @@
 /* @flow */
 import clamp from 'app/utils/clamp';
 import { twilightDuration, floorIntensity, compactChannels } from './constants';
-// import { supportOnSave } from './bugs';
+import { supportOnSave } from './bugs';
 import type { HighLevelConfig, Features } from './types';
 
-type Caps = { features: Features, bugs: string[] };
-
-const emitTarget = target => (config, caps) =>
+const combineConverters = target => (config, caps) =>
    Object.keys(target).reduce((nextTarget, key) => {
        const result = nextTarget;
        result[key] = target[key](config, caps);
@@ -97,7 +95,7 @@ export const daylight = (config: HighLevelConfig) => {
     };
 };
 
-export const channels = (config: HighLevelConfig, { features }: Caps) => {
+export const channels = (config: HighLevelConfig, features: Features) => {
     const convert = (ch) => {
         if (!ch.enabled) return 'off';
         return ch.color;
@@ -127,7 +125,7 @@ export const channels = (config: HighLevelConfig, { features }: Caps) => {
     return config.channels.map(convert);
 };
 
-export const temperature = (config: HighLevelConfig, { features }: Caps) => {
+export const temperature = (config: HighLevelConfig, features: Features) => {
     if (!features.TEMPERATURE_CONFIG) {
         return {
             fanStart: 0,
@@ -154,7 +152,7 @@ export const temperature = (config: HighLevelConfig, { features }: Caps) => {
     };
 };
 
-export const fan = (config: HighLevelConfig, { features }: Caps) => {
+export const fan = (config: HighLevelConfig, features: Features) => {
     if (!features.FAN_CONFIG) {
         return {
             minSpeed: 0,
@@ -212,11 +210,11 @@ export const mode = (config: HighLevelConfig) => (config.master ? 'master' : 'sl
 
 export const emitDemo = daylightColor;
 
-const emit = (config: HighLevelConfig, caps: { features: Features, bugs: string[] }) => {
-    const emitter = emitTarget({ daylight, channels, temperature, fan, night, mode });
-    const goodConfig = emitter(config, caps);
-    // const brokenConfig = supportOnSave(goodConfig, caps.bugs);
-    return goodConfig;
+const emit = (config: HighLevelConfig, features: Features, bugs: string[]) => {
+    const emitter = combineConverters({ daylight, channels, temperature, fan, night, mode });
+    return supportOnSave(
+        (innerConfig, innerFeatures) => emitter(innerConfig, innerFeatures),
+    )(config, features, bugs);
 };
 
 export default emit;

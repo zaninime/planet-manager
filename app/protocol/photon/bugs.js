@@ -25,22 +25,25 @@ const maskEarlyDusk = next => (config, status) => {
 };
 
 
-const supportEarlyDusk = next => (config, bugs) => {
+const supportEarlyDusk = next => (config, features, bugs) => {
     if (!bugs.indexOf(BUG_EARLY_DUSK) < 0) {
-        return next(config, bugs);
+        return next(config, features, bugs);
     }
+
+    const lowConfig = next(config, features, bugs);
 
     // The lamp doesn't keep in consideration the duration of one slope value,
     // therefore we add one slope to every duration
-    const patchedConfig = config;
-    patchedConfig.daylight.white.duration += patchedConfig.daylight.white.slope;
-    patchedConfig.daylight.red.duration += patchedConfig.daylight.red.slope;
-    patchedConfig.daylight.green.duration += patchedConfig.daylight.green.slope;
-    patchedConfig.daylight.blue.duration += patchedConfig.daylight.blue.slope;
+    lowConfig.daylight.white.duration += lowConfig.daylight.white.slope;
+    lowConfig.daylight.red.duration += lowConfig.daylight.red.slope;
+    lowConfig.daylight.green.duration += lowConfig.daylight.green.slope;
+    lowConfig.daylight.blue.duration += lowConfig.daylight.blue.slope;
 
-    return next(patchedConfig, bugs);
+    return lowConfig;
 };
 
+// Signature: maskOnFetch :: next -> (lowConfig, status) -> { highConfig, features, bugs}
 export const maskOnFetch = compose(maskEarlyDusk);
 
+// Signature: supportOnSave :: next -> (highConfig, features, bugs) -> lowConfig
 export const supportOnSave = compose(supportEarlyDusk);
