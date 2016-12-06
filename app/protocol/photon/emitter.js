@@ -1,5 +1,6 @@
 /* @flow */
-import { twilightDuration, floorIntensity, compactChannels } from './constants';
+
+import { twilightDuration, floorIntensity, compactChannels, lastMinuteOfDay, minimumSlopeTime } from './constants';
 import { supportOnSave } from './bugs';
 import type { HighLevelConfig, Features } from './types';
 
@@ -65,7 +66,6 @@ const daylightColor = (mainColor: number, intensity: number) => {
 };
 
 export const daylight = (config: HighLevelConfig) => {
-    const lastMinuteOfDay = (60 * 24) - 1;
     const dawn = config.timings.dawnBeginsAt;
     const dusk = config.timings.duskEndsAt;
     if (config.timings.dawnBeginsAt < 0 || config.timings.dawnBeginsAt > (lastMinuteOfDay - (2 * twilightDuration))) {
@@ -76,8 +76,11 @@ export const daylight = (config: HighLevelConfig) => {
     }
 
     const duration = (dusk - dawn) - (2 * twilightDuration);
-    const delay = dawn + (config.twilight.redLevel * twilightDuration);
-    const slope = (1 - config.twilight.redLevel) * twilightDuration;
+    const delay = dawn + (((twilightDuration - minimumSlopeTime) / twilightDuration) *
+    (config.twilight.redLevel * twilightDuration));
+    const slope = minimumSlopeTime + (
+        ((1 - config.twilight.redLevel) * twilightDuration) * ((twilightDuration - minimumSlopeTime) / twilightDuration)
+    );
 
     const { white, red, green, blue } = daylightColor(config.daylight.mainColor, config.daylight.intensity);
 
