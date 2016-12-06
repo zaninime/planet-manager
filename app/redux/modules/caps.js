@@ -3,7 +3,7 @@ import { LOAD_COMPLETED } from './config';
 const caps = (state = {}, action) => {
     switch (action.type) {
     case LOAD_COMPLETED:
-        return { bugs: action.payload.data.bugs, features: action.payload.data.features };
+        return { bugs: action.payload.bugs, features: action.payload.features };
     default:
         return state;
     }

@@ -26,7 +26,7 @@ export default config;
 
 // action creators
 export const startLoading = lampId => ({ type: LOAD_START, payload: { lampId } });
-export const completeLoading = (lampId, data, wifi) => ({ type: LOAD_COMPLETED, payload: { lampId, data, wifi } });
+export const completeLoading = (lampId, data, wifi) => ({ type: LOAD_COMPLETED, payload: { ...data, lampId, wifi } });
 
 // selectors
 
