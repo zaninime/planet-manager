@@ -4,3 +4,4 @@ coverage
 dist
 ios
 node_modules
+yarn-*.js
