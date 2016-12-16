@@ -38,14 +38,12 @@ node('docker') {
             }
         }
 
-        docker.image('node:7.2.0').inside {
+        docker.image('node:7.2.1').inside {
             sh 'mkdir -p home'
             withEnv(["HOME=${pwd()}/home"]) {
                 stage('Fetch deps') {
                     try {
-                        sh "npm config set prefix ${pwd()}/home"
-                        sh 'npm install --loglevel error -g yarn@0.17.10'
-                        sh 'home/bin/yarn'
+                        sh 'node ./yarn-0.17.10.js install'
                     } catch (err) {
                         authSlackSend message: 'failed (JS bootstrap)', color: 'danger'
                         throw err
