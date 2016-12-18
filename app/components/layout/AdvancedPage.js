@@ -3,12 +3,12 @@ import Section from 'app/components/layout/Section';
 import ChannelMap from 'app/components/connected/ChannelMap';
 import WifiSettings from 'app/components/connected/WifiSettings';
 import Misc from 'app/components/connected/Misc';
-import LampInfo from 'app/components/presentational/LampInfo';
+import LampInfo from 'app/components/connected/LampInfo';
 
 const AdvancedPage = ({ params }) => (
     <div>
         <Section title="Info">
-            <LampInfo model="PlanetPRO mk.II" firmwareVersion={110} />
+            <LampInfo lampId={params.lampId} />
         </Section>
         <Section title="Wi-Fi">
             <WifiSettings lampId={params.lampId} />

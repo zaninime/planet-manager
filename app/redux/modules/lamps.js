@@ -3,6 +3,7 @@ import config, * as fromConfig from './config';
 import wifi, * as fromWifi from './wifi';
 import caps, * as fromCaps from './caps';
 import saved, * as fromSaved from './saved';
+import info from './info';
 import * as fromDaylight from './daylight';
 import * as fromTimings from './timings';
 import * as fromTwilight from './twilight';
@@ -14,15 +15,6 @@ import * as fromMaster from './master';
 import * as fromStation from './station';
 import * as fromAddressing from './addressing';
 import * as fromFieldError from './fieldError';
-
-const info = (state = {}, action) => {
-    switch (action.type) {
-    case fromConfig.LOAD_COMPLETED:
-        return action.payload.info;
-    default:
-        return state;
-    }
-};
 
 const singleLamp = combineReducers({
     caps,
