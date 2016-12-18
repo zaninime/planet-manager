@@ -6,12 +6,7 @@ import CopyWebpackPlugin from 'copy-webpack-plugin';
 const makeBaseConfig = ({ port }) => {
     const config = {
         context: __dirname,
-        entry: [
-            'react-hot-loader/patch',
-            `webpack-dev-server/client?http://localhost:${port}`,
-            'webpack/hot/only-dev-server',
-            'app/entrypoint',
-        ],
+        entry: ['app/entrypoint'],
         output: {
             filename: 'bundle.js',
         },
@@ -70,10 +65,17 @@ const makeBaseConfig = ({ port }) => {
 
     if (process.env.NODE_ENV !== 'production') {
         config.devtool = 'cheap-module-eval-source-map';
+
         config.plugins = config.plugins.concat([
             new webpack.HotModuleReplacementPlugin(),
             new webpack.NamedModulesPlugin(),
         ]);
+
+        config.entry = [
+            'react-hot-loader/patch',
+            `webpack-dev-server/client?http://localhost:${port}`,
+            'webpack/hot/only-dev-server',
+        ].concat(config.entry);
     } else {
         config.devtool = 'sourcemap';
         config.plugins = config.plugins.concat([
