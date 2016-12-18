@@ -1,4 +1,4 @@
-import Rx from 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
 import { applyTempColor } from 'app/protocol/api';
 import { getDayColor, getDayColorIntensity } from 'app/redux/modules';
 import { emitDemo } from 'app/protocol/photon/emitter';
@@ -15,8 +15,8 @@ const demoEpic = (action$, store) =>
         .map(({ lampId, color, intensity }) => ({ lampId, ...emitDemo(color, intensity) }))
         .throttleTime(1000)
         .mergeMap(({ white, red, green, blue, lampId }) =>
-            Rx.Observable.from(applyTempColor(lampId, { white, red, green, blue })),
+            Observable.from(applyTempColor(lampId, { white, red, green, blue })),
         )
-        .mergeMap(() => Rx.Observable.empty());
+        .mergeMap(() => Observable.empty());
 
 export default demoEpic;

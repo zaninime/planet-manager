@@ -1,5 +1,5 @@
 import { push } from 'react-router-redux';
-import Rx from 'rxjs/Rx';
+import { Observable } from 'rxjs/Observable';
 
 import { wifiToReducerFormat } from 'app/protocol/photon/wifi';
 import collect from 'app/protocol/photon/collector';
@@ -15,15 +15,15 @@ import { LOAD_START, LOAD_COMPLETED, completeLoading } from 'app/redux/modules/c
 export const startLoadingEpic = action$ =>
   action$.ofType(LOAD_START)
   .mergeMap(action =>
-    Rx.Observable.from([
-        Rx.Observable.of(action.payload.lampId).mergeMap(lampId => fetchStatus(lampId)).delay(1000),
-        Rx.Observable.of(action.payload.lampId).mergeMap(lampId => fetchConfig(lampId)).delay(1000),
-        Rx.Observable.of(action.payload.lampId).mergeMap(lampId => fetchWifiConfig(lampId)),
+    Observable.from([
+        Observable.of(action.payload.lampId).mergeMap(lampId => fetchStatus(lampId)).delay(1000),
+        Observable.of(action.payload.lampId).mergeMap(lampId => fetchConfig(lampId)).delay(1000),
+        Observable.of(action.payload.lampId).mergeMap(lampId => fetchWifiConfig(lampId)),
     ])
     .concatAll()
     .toArray()
     .map(x => completeLoading(action.payload.lampId, collect(x[1], x[0]), wifiToReducerFormat(x[2])))
-    .catch(error => Rx.Observable.of(setError(error))),
+    .catch(error => Observable.of(setError(error))),
   );
 
 export const completeLoadingEpic = action$ =>

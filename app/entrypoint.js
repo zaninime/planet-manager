@@ -14,12 +14,24 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 
-
 import configureStore from 'app/redux/configureStore';
 
 import platformInit from 'app/init';
 
 import { blue500, blue800, orangeA400 } from 'material-ui/styles/colors';
+
+// RxJS operators
+import 'rxjs/add/observable/empty';
+import 'rxjs/add/observable/from';
+import 'rxjs/add/observable/of';
+import 'rxjs/add/operator/catch';
+import 'rxjs/add/operator/concatAll';
+import 'rxjs/add/operator/delay';
+import 'rxjs/add/operator/filter';
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/mergeMap';
+import 'rxjs/add/operator/throttleTime';
+import 'rxjs/add/operator/toArray';
 
 const initialState = {};
 const { store, history } = configureStore({ initialState, historyType: hashHistory });
@@ -38,24 +50,33 @@ const muiTheme = getMuiTheme({
 });
 
 let render = (routerKey = null) => {
-    const match = window.location.hash.match(/#(.+)/);
-    if (match && match[1] !== '/') {
-        window.location = window.location.origin + window.location.pathname;
-        throw new Error('You should not get here');
-    }
+    let mountNode = document.querySelector('#root');
 
-    // ensure viewport is correctly sized
-    const viewportTag = document.createElement('meta');
-    viewportTag.name = 'viewport';
-    viewportTag.content = 'width=device-width, initial-scale=1';
-    document.head.appendChild(viewportTag);
+    if (mountNode === null) {
+        // fresh load of the application
+
+        // before proceeding, check that we start from the connect page
+        const match = window.location.hash.match(/#(.+)/);
+        if (match && match[1] !== '/') {
+            window.location = window.location.origin + window.location.pathname;
+            return;
+        }
+
+        // create the root node
+        mountNode = document.createElement('div');
+        mountNode.id = 'root';
+        document.body.appendChild(mountNode);
+
+        // ensure viewport is correctly sized
+        const viewportTag = document.createElement('meta');
+        viewportTag.name = 'viewport';
+        viewportTag.content = 'width=device-width, initial-scale=1';
+        document.head.appendChild(viewportTag);
+    }
 
     const makeRoutes = require('./routes').default;
     const routes = makeRoutes(store);
 
-    const mountNode = document.createElement('div');
-    document.body.appendChild(mountNode);
-    // const mountNode = document.querySelector('#root');
     ReactDOM.render(
         <MuiThemeProvider muiTheme={muiTheme}>
             <App
