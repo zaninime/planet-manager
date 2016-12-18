@@ -3,33 +3,33 @@ import webpack from 'webpack';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import CopyWebpackPlugin from 'copy-webpack-plugin';
 
-const makeBaseConfig = () => {
+const makeBaseConfig = ({ port }) => {
     const config = {
         context: __dirname,
-        entry: 'app/entrypoint',
+        entry: [
+            'react-hot-loader/patch',
+            `webpack-dev-server/client?http://localhost:${port}`,
+            'webpack/hot/only-dev-server',
+            'app/entrypoint',
+        ],
         output: {
             filename: 'bundle.js',
         },
         module: {
-            preLoaders: [
-                {
-                    test: /\.js$/,
-                    loader: 'eslint',
-                    include: 'app',
-                },
-            ],
-            loaders: [
+            rules: [
                 {
                     test: /\.js$/,
                     exclude: /(node_modules|bower_components)/,
-                    loader: 'babel',
-                    query: {
-                        cacheDirectory: true,
+                    use: {
+                        loader: 'babel-loader',
+                        options: {
+                            cacheDirectory: true,
+                        },
                     },
                 },
                 {
                     test: /\.json$/,
-                    loader: 'json',
+                    loader: 'json-loader',
                 },
                 {
                     test: /\.(ico|jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2)(\?.*)?$/,
@@ -42,38 +42,42 @@ const makeBaseConfig = () => {
             ],
         },
         resolve: {
-            root: __dirname,
-            extensions: ['', '.js'],
+            modules: [
+                __dirname,
+                'node_modules',
+            ],
+            extensions: ['.js'],
         },
         plugins: [
-            new webpack.optimize.OccurrenceOrderPlugin(),
             new webpack.DefinePlugin({
                 __DEV__: process.env.NODE_ENV !== 'production',
                 'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
-            }),
-            new webpack.optimize.CommonsChunkPlugin({
-                children: true,
             }),
             new HtmlWebpackPlugin({
                 title: 'Planet Manager',
             }),
         ],
-        eslint: {
-            cache: true,
-        },
         devServer: {
             host: '0.0.0.0',
+            hot: true,
             inline: true,
+            port,
+        },
+        performance: {
+            hints: false,
         },
     };
 
     if (process.env.NODE_ENV !== 'production') {
-        config.devtool = 'eval';
+        config.devtool = 'cheap-module-eval-source-map';
+        config.plugins = config.plugins.concat([
+            new webpack.HotModuleReplacementPlugin(),
+            new webpack.NamedModulesPlugin(),
+        ]);
     } else {
         config.devtool = 'sourcemap';
         config.plugins = config.plugins.concat([
-            new webpack.optimize.DedupePlugin(),
-            new webpack.optimize.UglifyJsPlugin({ comments: false }),
+            new webpack.optimize.UglifyJsPlugin({ sourceMap: true, comments: false }),
         ]);
     }
 
@@ -81,7 +85,7 @@ const makeBaseConfig = () => {
 };
 
 const makeElectronConfig = () => {
-    const config = makeBaseConfig();
+    const config = makeBaseConfig({ port: 3000 });
     const staticFilesPath = path.resolve(__dirname, 'electron');
 
     config.output.path = path.resolve(__dirname, 'dist', 'electron');
@@ -90,27 +94,24 @@ const makeElectronConfig = () => {
         { from: path.join(staticFilesPath, 'package.json'), to: '' },
     ]));
     config.resolve.extensions.push('.desktop.js');
-    config.devServer.port = 3000;
 
     return config;
 };
 
 const makeAndroidConfig = () => {
-    const config = makeBaseConfig();
+    const config = makeBaseConfig({ port: 3001 });
 
     config.output.path = path.resolve(__dirname, 'dist', 'android');
     config.resolve.extensions.push('.android.js');
-    config.devServer.port = 3001;
 
     return config;
 };
 
 const makeiOSConfig = () => {
-    const config = makeBaseConfig();
+    const config = makeBaseConfig({ port: 3002 });
 
     config.output.path = path.resolve(__dirname, 'dist', 'ios');
     config.resolve.extensions.push('.ios.js');
-    config.devServer.port = 3002;
 
     return config;
 };
