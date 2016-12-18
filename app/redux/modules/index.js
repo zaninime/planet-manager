@@ -61,4 +61,7 @@ export const getErrorContent = state => fromError.getErrorContent(state.error);
 export const getFieldError = state => fromUi.getFieldError(state.ui);
 export const isLoadingDialogOpen = state => fromUi.isLoadingDialogOpen(state.ui);
 
+// info
+export const getLampInfo = (state, lampId) => state.lamps[lampId].info;
+
 /* eslint-enable max-len */

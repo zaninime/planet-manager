@@ -2,11 +2,11 @@
 import type { LampStatus } from './types';
 
 export const PRO = 'PlanetPRO';
-export const PRO_V2 = 'PlanetPRO mkII';
+export const PRO_V2 = 'PlanetPRO mk.II';
 export const COMPACT = 'PlanetCompact';
 export const STELLA = 'PlanetStella';
 
-type LampModel = 'PlanetPRO' | 'PlanetPRO mkII' | 'PlanetCompact' | 'PlanetStella';
+type LampModel = 'PlanetPRO' | 'PlanetPRO mk.II' | 'PlanetCompact' | 'PlanetStella';
 
 export const detectModel = (status: LampStatus): LampModel => {
     switch (status.productId) {

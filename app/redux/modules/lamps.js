@@ -3,6 +3,7 @@ import config, * as fromConfig from './config';
 import wifi, * as fromWifi from './wifi';
 import caps, * as fromCaps from './caps';
 import saved, * as fromSaved from './saved';
+import info from './info';
 import * as fromDaylight from './daylight';
 import * as fromTimings from './timings';
 import * as fromTwilight from './twilight';
@@ -16,10 +17,11 @@ import * as fromAddressing from './addressing';
 import * as fromFieldError from './fieldError';
 
 const singleLamp = combineReducers({
-    config,
-    wifi,
     caps,
+    config,
+    info,
     saved,
+    wifi,
 });
 
 const lamps = (state = { }, action) => {
