@@ -38,7 +38,7 @@ const muiTheme = getMuiTheme({
 });
 
 let render = (routerKey = null) => {
-    const match = window.location.hash.match(/#(.+)\?/);
+    const match = window.location.hash.match(/#(.+)/);
     if (match && match[1] !== '/') {
         window.location = window.location.origin + window.location.pathname;
         throw new Error('You should not get here');
