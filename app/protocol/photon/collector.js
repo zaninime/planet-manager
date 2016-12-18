@@ -130,7 +130,7 @@ export const features = (config: LowLevelConfig, status: LampStatus): Features =
 
 const lampInfo = (status: LampStatus) => ({
     model: lamps.detectModel(status),
-    firmwareVersion: status.firmwareVersion
+    firmwareVersion: status.firmwareVersion,
 });
 
 const collect = (config: LowLevelConfig, status: LampStatus) => {
