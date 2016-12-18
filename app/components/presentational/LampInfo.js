@@ -4,6 +4,11 @@ import Radium from 'radium';
 const styles = {
     table: {
         margin: 'auto',
+        textAlign: 'left',
+        borderSpacing: '1em 0.5em',
+    },
+    headerCell: {
+        textAlign: 'right',
     },
 };
 
@@ -11,11 +16,11 @@ const LampInfo = ({ model, firmwareVersion }) => (
     <table style={styles.table}>
         <tbody>
             <tr>
-                <th>Model</th>
+                <th style={styles.headerCell}>Lamp Model</th>
                 <td>{model}</td>
             </tr>
             <tr>
-                <th>Firmware Version</th>
+                <th style={styles.headerCell}>Firmware Version</th>
                 <td>{firmwareVersion}</td>
             </tr>
         </tbody>
