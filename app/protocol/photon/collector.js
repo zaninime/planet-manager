@@ -128,12 +128,18 @@ export const features = (config: LowLevelConfig, status: LampStatus): Features =
     return featureMap[model];
 };
 
+const lampInfo = (status: LampStatus) => ({
+    model: lamps.detectModel(status),
+    firmwareVersion: status.firmwareVersion
+});
+
 const collect = (config: LowLevelConfig, status: LampStatus) => {
     const convertConfig = combineConverters({ daylight, night, timings, twilight, channels, temperature, fan, master });
     return maskOnFetch((innerConfig, innerStatus) => ({
+        bugs: [],
         config: convertConfig(innerConfig, innerStatus),
         features: features(innerConfig, innerStatus),
-        bugs: [],
+        info: lampInfo(status),
     }))(config, status);
 };
 

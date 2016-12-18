@@ -15,11 +15,21 @@ import * as fromStation from './station';
 import * as fromAddressing from './addressing';
 import * as fromFieldError from './fieldError';
 
+const info = (state = {}, action) => {
+    switch (action.type) {
+    case fromConfig.LOAD_COMPLETED:
+        return action.payload.info;
+    default:
+        return state;
+    }
+};
+
 const singleLamp = combineReducers({
-    config,
-    wifi,
     caps,
+    config,
+    info,
     saved,
+    wifi,
 });
 
 const lamps = (state = { }, action) => {
