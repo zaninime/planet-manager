@@ -6,8 +6,12 @@ export const BUG_EARLY_DUSK = 'EARLY_DUSK';
 const maskEarlyDusk = next => (config, status) => {
     const model = lamps.detectModel(status);
 
-    // This problem appears on first generation Pro and Compact lamps with firmware version < 200
-    const isLampAffected = model === lamps.PRO || model === lamps.COMPACT;
+    // This problem appears on all firmware versions < 200 (Pro, Compact and v2 models)
+    const isLampAffected =
+        model === lamps.PRO ||
+        model === lamps.COMPACT ||
+        model === lamps.PRO_V2 ||
+        model === lamps.COMPACT_V2;
     const isFirmwareAffected = status.firmwareVersion < 200;
     const isBugPresent = isLampAffected && isFirmwareAffected;
 

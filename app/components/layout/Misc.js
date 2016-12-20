@@ -4,6 +4,7 @@ import FanMaxSpeedSlider from 'app/components/connected/FanMaxSpeedSlider';
 import FanStartTemperatureSlider from 'app/components/connected/FanStartTemperatureSlider';
 import OperationModeSwitch from 'app/components/connected/OperationModeSwitch';
 import ShowOnFeature from 'app/components/connected/ShowOnFeature';
+import NfcOnly from 'app/components/connected/NfcOnly';
 import Section from 'app/components/layout/Section';
 
 const styles = {
@@ -51,7 +52,9 @@ const Misc = ({ fanConfigAvailable, temperatureConfigAvailable, lampId }) => {
                 {fanMaxSpeedSlider}
                 {fanStartTemperatureSlider}
                 <ShowOnFeature feature="MASTER_SWITCH" lampId={lampId}>
-                    <OperationModeSwitch lampId={lampId} />
+                    <NfcOnly lampId={lampId}>
+                        <OperationModeSwitch lampId={lampId} />
+                    </NfcOnly>
                 </ShowOnFeature>
             </Section>
         );
