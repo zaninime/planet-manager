@@ -67,7 +67,7 @@ export const channels = (config: LowLevelConfig, status: LampStatus) => {
     };
     const model = lamps.detectModel(status);
 
-    if (model === lamps.COMPACT) {
+    if (model === lamps.COMPACT || model === lamps.COMPACT_V2) {
         return compactChannels.map(idx => convert(config.channels[idx]));
     }
     return config.channels.map(convert);
@@ -99,18 +99,26 @@ export const features = (config: LowLevelConfig, status: LampStatus): Features =
         [lamps.PRO]: {
             CHANNEL_MAPPING: true,
             CLOCK_SYNC: true,
-            FAN_CONFIG: true,
-            TEMPERATURE_CONFIG: true,
-            MASTER_SWITCH: true,
             DEMO_MODE: true,
+            FAN_CONFIG: true,
+            MASTER_SWITCH: true,
+            TEMPERATURE_CONFIG: true,
         },
         [lamps.COMPACT]: {
             CHANNEL_MAPPING: true,
             CHANNEL_MAPPING_COMPACT: true,
             CLOCK_SYNC: true,
+            DEMO_MODE: true,
+            FAN_CONFIG: true,
+            MASTER_SWITCH: true,
+            TEMPERATURE_CONFIG: true,
+        },
+        [lamps.COMPACT_V2]: {
+            CHANNEL_MAPPING: true,
+            CHANNEL_MAPPING_COMPACT: true,
+            CLOCK_SYNC: true,
             FAN_CONFIG: true,
             TEMPERATURE_CONFIG: true,
-            MASTER_SWITCH: true,
             DEMO_MODE: true,
         },
         [lamps.PRO_V2]: {

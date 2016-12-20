@@ -176,7 +176,14 @@ describe('channels', () => {
 
     it('returns 6 channels for PlanetCompact', function () {
         this.status.productId = 16;
-        this.status.firmwareVersion = 201;
+        this.status.firmwareVersion = 115;
+
+        expect(channels(this.config, this.status).length).toBe(6);
+    });
+
+    it('returns 6 channels for PlanetCompact v2', function () {
+        this.status.productId = 16;
+        this.status.firmwareVersion = 119;
 
         expect(channels(this.config, this.status).length).toBe(6);
     });
@@ -186,60 +193,88 @@ describe('features', () => {
     beforeEach(genericBeforeEach);
 
     it('recognizes a PlanetPRO v1', function () {
-        this.status.productId = 16;
-        this.status.firmwareVersion = 40 + (Math.floor((Math.random() * 20)) * 2); // even version means compact
+        this.status.firmwareVersion = 100 + (Math.floor((Math.random() * 9)) * 2); // even version < 119 means pro
 
         const expectedFeatures = {
             CHANNEL_MAPPING: true,
             CLOCK_SYNC: true,
-            FAN_CONFIG: true,
-            TEMPERATURE_CONFIG: true,
-            MASTER_SWITCH: true,
             DEMO_MODE: true,
+            FAN_CONFIG: true,
+            MASTER_SWITCH: true,
+            TEMPERATURE_CONFIG: true,
         };
 
-        const computedFeatures = features(this.config, this.status);
+        for (const pId of [16, 101]) {
+            this.status.productId = pId;
+            const computedFeatures = features(this.config, this.status);
 
-        expect(expectedFeatures).toEqual(computedFeatures);
-        expect(computedFeatures).toEqual(expectedFeatures);
+            expect(expectedFeatures).toEqual(computedFeatures);
+            expect(computedFeatures).toEqual(expectedFeatures);
+        }
     });
 
     it('recognizes a PlanetPRO v2', function () {
-        this.status.productId = 101;
-        this.status.firmwareVersion = Math.floor(Math.random() * 300);
+        this.status.firmwareVersion = 118 + (Math.floor(Math.random() * 100) * 2); // even version > 117 means pro v2
 
         const expectedFeatures = {
             CHANNEL_MAPPING: true,
             CLOCK_SYNC: true,
+            DEMO_MODE: true,
             FAN_CONFIG: true,
             TEMPERATURE_CONFIG: true,
-            DEMO_MODE: true,
         };
 
-        const computedFeatures = features(this.config, this.status);
+        for (const pId of [16, 101]) {
+            this.status.productId = pId;
+            const computedFeatures = features(this.config, this.status);
 
-        expect(expectedFeatures).toEqual(computedFeatures);
-        expect(computedFeatures).toEqual(expectedFeatures);
+            expect(expectedFeatures).toEqual(computedFeatures);
+            expect(computedFeatures).toEqual(expectedFeatures);
+        }
     });
 
     it('recognizes a PlanetCompact', function () {
-        this.status.productId = 16;
-        this.status.firmwareVersion = 40 + (Math.floor((Math.random() * 20)) * 2) + 1; // odd version means compact
+        this.status.firmwareVersion = 100 + (Math.floor((Math.random() * 9)) * 2) + 1; // odd version < 118 means pro
 
         const expectedFeatures = {
             CHANNEL_MAPPING: true,
             CHANNEL_MAPPING_COMPACT: true,
             CLOCK_SYNC: true,
-            FAN_CONFIG: true,
-            TEMPERATURE_CONFIG: true,
-            MASTER_SWITCH: true,
             DEMO_MODE: true,
+            FAN_CONFIG: true,
+            MASTER_SWITCH: true,
+            TEMPERATURE_CONFIG: true,
         };
 
-        const computedFeatures = features(this.config, this.status);
+        for (const pId of [16, 101]) {
+            this.status.productId = pId;
+            const computedFeatures = features(this.config, this.status);
 
-        expect(expectedFeatures).toEqual(computedFeatures);
-        expect(computedFeatures).toEqual(expectedFeatures);
+            expect(expectedFeatures).toEqual(computedFeatures);
+            expect(computedFeatures).toEqual(expectedFeatures);
+        }
+    });
+
+    it('recognizes a PlanetCompact v2', function () {
+        // odd version > 118 means compact v2
+        this.status.firmwareVersion = 118 + (Math.floor(Math.random() * 100) * 2) + 1;
+
+        const expectedFeatures = {
+            CHANNEL_MAPPING: true,
+            CHANNEL_MAPPING_COMPACT: true,
+            CLOCK_SYNC: true,
+            DEMO_MODE: true,
+            FAN_CONFIG: true,
+            TEMPERATURE_CONFIG: true,
+        };
+
+        for (const pId of [16, 101]) {
+            this.status.productId = pId;
+            const computedFeatures = features(this.config, this.status);
+
+            expect(expectedFeatures).toEqual(computedFeatures);
+            expect(computedFeatures).toEqual(expectedFeatures);
+        }
     });
 
     it('recognizes a PlanetStella', function () {
@@ -261,7 +296,7 @@ describe('features', () => {
 describe('bugs middleware', function () {
     beforeEach(genericBeforeEach);
 
-    describe('solves the early dusk problem', function () {
+    describe('solves the early dusk problem present on firmware versions < 200', function () {
         beforeEach(function () {
             this.config.daylight.white = { delay: 0, duration: 500, intensity: 10, slope: 30 };
             this.config.daylight.red = { delay: 0, duration: 500, intensity: 10, slope: 30 };
@@ -269,9 +304,19 @@ describe('bugs middleware', function () {
             this.config.daylight.blue = { delay: 0, duration: 500, intensity: 10, slope: 30 };
         });
 
-        it('for Pro v1 lamps', function () {
+        it('for Pro lamps', function () {
             this.status.productId = 16;
             this.status.firmwareVersion = 114;
+
+            const result = collect(this.config, this.status);
+
+            expect(result.bugs.indexOf(BUG_EARLY_DUSK)).toBeGreaterThan(-1);
+            expect(result.config.timings.duskEndsAt).toBe(530);     // 500 + 2 * 30 - 30
+        });
+
+        it('for Pro v2 lamps', function () {
+            this.status.productId = 16;
+            this.status.firmwareVersion = 118;
 
             const result = collect(this.config, this.status);
 
@@ -282,6 +327,16 @@ describe('bugs middleware', function () {
         it('for Compact lamps', function () {
             this.status.productId = 16;
             this.status.firmwareVersion = 115;
+
+            const result = collect(this.config, this.status);
+
+            expect(result.bugs.indexOf(BUG_EARLY_DUSK)).toBeGreaterThan(-1);
+            expect(result.config.timings.duskEndsAt).toBe(530);
+        });
+
+        it('for Compact v2 lamps', function () {
+            this.status.productId = 16;
+            this.status.firmwareVersion = 119;
 
             const result = collect(this.config, this.status);
 
