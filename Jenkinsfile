@@ -43,7 +43,7 @@ node('docker') {
             withEnv(["HOME=${pwd()}/home"]) {
                 stage('Fetch deps') {
                     try {
-                        sh 'node ./yarn-0.17.10.js install'
+                        sh 'node ./yarn install'
                     } catch (err) {
                         authSlackSend message: 'failed (JS bootstrap)', color: 'danger'
                         throw err
