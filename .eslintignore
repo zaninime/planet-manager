@@ -1,7 +1,10 @@
 android
+archive
 codemod
 coverage
 dist
+dist
 ios
 node_modules
+yarn
 yarn-*.js

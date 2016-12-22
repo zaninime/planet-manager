@@ -76,7 +76,7 @@ const makeBaseConfig = ({ port }) => {
             `webpack-dev-server/client?http://localhost:${port}`,
             'webpack/hot/only-dev-server',
         ].concat(config.entry);
-    } else {
+    } else if (!process.env.WP_FASTBUILD) {
         config.devtool = 'sourcemap';
         config.plugins = config.plugins.concat([
             new webpack.optimize.UglifyJsPlugin({ sourceMap: true, comments: false }),
