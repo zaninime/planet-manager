@@ -88,11 +88,13 @@ node(buildRunner) {
 
                     def cliPath = sentry.init('Linux-x86_64')
                     withCredentials([[$class: 'StringBinding', credentialsId: 'sentry-auth-token', variable: 'token']]) {
-                        parallel(
-                            'Electron': { sentry.execute(cliPath, token, 'Electron', 'dist/electron') },
-                            'Android': { sentry.execute(cliPath, token, 'Android', 'dist/android') },
-                            'iOS': { sentry.execute(cliPath, token, 'iOS', 'dist/ios') }
-                        )
+                        withNodeJS(nodeVersion) {
+                            parallel(
+                                'Electron': { sentry.execute(cliPath, token, 'Electron', 'dist/electron') },
+                                'Android': { sentry.execute(cliPath, token, 'Android', 'dist/android') },
+                                'iOS': { sentry.execute(cliPath, token, 'iOS', 'dist/ios') }
+                            )
+                        }
                     }
                 }
             }
