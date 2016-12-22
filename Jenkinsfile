@@ -112,6 +112,8 @@ node(buildRunner) {
                         find dist/android -name "*.map" -type f -delete && \
                         cp -r dist/android android/app/src/main/assets/web'
 
+                    sh 'rm -rf android/app/build'
+
                     dir('android') {
                         withEnv(["PATH=${gradleHome}/bin:${env.PATH}", 'ANDROID_HOME=/home/jenkins/android-sdk-linux', "UNIVERSAL_BUILD_NUMBER=${universalBuildNumber}"]) {
                             withCredentials([
@@ -133,7 +135,8 @@ node(buildRunner) {
     stage('Archive artifacts') {
         unstash 'js'
         unstash 'android'
-        sh 'mkdir archive'
+
+        sh 'rm -rf archive && mkdir archive'
 
         sh 'cp -r dist archive/js-bundles'
         sh 'cp -r android/app/build/outputs/apk archive/android'
