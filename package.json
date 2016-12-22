@@ -11,10 +11,11 @@
     "precommit": "eslint --rulesdir eslint_rules .",
     "clean": "rimraf dist",
     "test": "jest --config jest.config.json --colors",
-    "lint": "eslint --rulesdir eslint_rules --cache --color .",
+    "lint": "eslint --rulesdir eslint_rules --cache --color --format codeframe .",
     "flow": "flow check",
     "ci:build": "rimraf dist && NODE_ENV=production webpack --config webpack.config.babel.js",
-    "ci:test": "jest --config jest.config.json --colors --coverage",
+    "ci:build-fast": "rimraf dist && NODE_ENV=production WP_FASTBUILD=1 webpack --config webpack.config.babel.js",
+    "ci:test": "jest --config jest.config.json --colors",
     "ci:lint": "eslint --rulesdir eslint_rules --color ."
   },
   "author": "Francesco Zanini, Patrick Predella, Omar Mahili <support@zanini.me>",
