@@ -8,15 +8,14 @@
     "start-android": "cross-env NODE_ENV=development WP_TARGET=android webpack-dev-server --config webpack.config.babel.js --progress --inline",
     "start-ios": "cross-env NODE_ENV=development WP_TARGET=ios webpack-dev-server --config webpack.config.babel.js --progress --inline",
     "build": "rimraf dist && cross-env NODE_ENV=production webpack --config webpack.config.babel.js --progress",
-    "precommit": "eslint --rulesdir eslint_rules .",
     "clean": "rimraf dist",
     "test": "jest --config jest.config.json --colors",
-    "lint": "eslint --rulesdir eslint_rules --cache --color --format codeframe .",
+    "lint": "eslint --cache --color --format codeframe .",
     "flow": "flow check",
     "ci:build": "rimraf dist && NODE_ENV=production webpack --config webpack.config.babel.js",
     "ci:build-fast": "rimraf dist && NODE_ENV=production WP_FASTBUILD=1 webpack --config webpack.config.babel.js",
     "ci:test": "jest --config jest.config.json --colors",
-    "ci:lint": "eslint --rulesdir eslint_rules --color ."
+    "ci:lint": "eslint --color ."
   },
   "author": "Francesco Zanini, Patrick Predella, Omar Mahili <support@zanini.me>",
   "license": "GPL-3.0",
