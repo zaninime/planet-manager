@@ -65,7 +65,7 @@ node('master') {
         }
 
         stage('JavaScript Bundles') {
-            node('nodejs') {
+            node('master') {
                 checkout scm
                 withNodeJS(nodeVersion) {
                     sh 'node ./yarn install --offline --cache-folder ./yarn-cache'
