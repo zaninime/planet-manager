@@ -47,7 +47,7 @@ node(buildRunner) {
                         node(buildRunner) {
                             checkout scm
                             withNodeJS(nodeVersion) {
-                                sh 'node ./yarn install --offline'
+                                sh 'node ./yarn install --offline --cache-folder ./ycache'
                                 sh 'node ./yarn ci:lint'
                             }
                         }
@@ -56,7 +56,7 @@ node(buildRunner) {
                         node(buildRunner) {
                             checkout scm
                             withNodeJS(nodeVersion) {
-                                sh 'node ./yarn install --offline'
+                                sh 'node ./yarn install --offline --cache-folder ./ycache'
                                 sh 'node ./yarn ci:test'
                             }
                         }
@@ -69,7 +69,7 @@ node(buildRunner) {
             node(buildRunner) {
                 checkout scm
                 withNodeJS(nodeVersion) {
-                    sh 'node ./yarn install --offline'
+                    sh 'node ./yarn install --offline --cache-folder ./ycache'
                     if (slowBuildBranches[BRANCH_NAME]) {
                         sh 'node ./yarn ci:build'
                     } else {
