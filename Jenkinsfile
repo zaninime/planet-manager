@@ -1,7 +1,6 @@
 #!groovy
 
 def nodeVersion = '7.3.0'
-def buildRunner = 'master'
 
 def slowBuildBranches = [
     master: true,
@@ -17,7 +16,7 @@ def getAndIncrementBuildNumber() {
 
 def getNodePath(nodeVersion) {
     def nodeCommand
-    withEnv(['N_PREFIX=/home/jenkins']) {
+    withEnv(['N_PREFIX=/var/lib/jenkins']) {
         sh "n -d ${nodeVersion}"
         nodeCommand = sh returnStdout: true, script: "n bin ${nodeVersion}"
     }
@@ -35,7 +34,7 @@ def universalBuildNumber
 
 def sentry = evaluate readTrusted('pipeline/sentry.groovy')
 
-node(buildRunner) {
+node('master') {
     ansiColor('xterm') {
         stage('Init') {
             universalBuildNumber = getAndIncrementBuildNumber()
@@ -44,7 +43,7 @@ node(buildRunner) {
         stage('Fast QA') {
             parallel(
                     'Linter': {
-                        node(buildRunner) {
+                        node('nodejs') {
                             checkout scm
                             withNodeJS(nodeVersion) {
                                 sh 'node ./yarn install --offline --cache-folder ./yarn-cache'
@@ -53,7 +52,7 @@ node(buildRunner) {
                         }
                     },
                     'Tests': {
-                        node(buildRunner) {
+                        node('nodejs') {
                             checkout scm
                             withNodeJS(nodeVersion) {
                                 sh 'node ./yarn install --offline --cache-folder ./yarn-cache'
@@ -66,7 +65,7 @@ node(buildRunner) {
         }
 
         stage('JavaScript Bundles') {
-            node(buildRunner) {
+            node('nodejs') {
                 checkout scm
                 withNodeJS(nodeVersion) {
                     sh 'node ./yarn install --offline --cache-folder ./yarn-cache'
@@ -83,7 +82,7 @@ node(buildRunner) {
 
         if (BRANCH_NAME == 'staging') {
             stage('Source Maps Upload') {
-                node(buildRunner) {
+                node('nodejs') {
                     unstash 'js'
 
                     def cliPath = sentry.init('Linux-x86_64')
@@ -104,7 +103,7 @@ node(buildRunner) {
     stage('Apps') {
         parallel(
             'Android': {
-                node(buildRunner) {
+                node('android-sdk') {
                     checkout scm
                     unstash 'js'
 
