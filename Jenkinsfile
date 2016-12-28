@@ -77,6 +77,7 @@ node('master') {
                 }
 
                 stash name: 'js', includes: 'dist/'
+		sh 'rm -rf dist'
             }
         }
 
@@ -116,7 +117,7 @@ node('master') {
                     sh 'rm -rf android/app/build'
 
                     dir('android') {
-                        withEnv(["PATH=${gradleHome}/bin:${env.PATH}", 'ANDROID_HOME=/home/jenkins/android-sdk-linux', "UNIVERSAL_BUILD_NUMBER=${universalBuildNumber}"]) {
+                        withEnv(["PATH=${gradleHome}/bin:${env.PATH}", 'ANDROID_HOME=/var/lib/jenkins/android-sdk-linux', "UNIVERSAL_BUILD_NUMBER=${universalBuildNumber}"]) {
                             withCredentials([
                                 [$class: 'StringBinding', credentialsId: 'android-keystore-password', variable: 'KEYSTORE_PASSWORD'],
                                 [$class: 'UsernamePasswordMultiBinding', credentialsId: 'android-keystore-key', passwordVariable: 'KEY_PASSWORD', usernameVariable: 'KEY_ALIAS'],
