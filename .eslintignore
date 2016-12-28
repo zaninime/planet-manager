@@ -8,3 +8,4 @@ ios
 node_modules
 yarn
 yarn-*.js
+yarn-cache
