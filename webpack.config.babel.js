@@ -27,6 +27,13 @@ const makeBaseConfig = ({ port }) => {
                     loader: 'json-loader',
                 },
                 {
+                    test: new RegExp(),
+                    loader: 'raw-loader',
+                    include: [
+                        path.resolve(__dirname, 'app/components/layout/AboutPage/license-disclaimer.txt'),
+                    ],
+                },
+                {
                     test: /\.(ico|jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2)(\?.*)?$/,
                     loader: 'file-loader',
                     include: [

@@ -1,6 +1,7 @@
 import React from 'react';
 import Radium from 'radium';
 import { standard } from 'release.json';
+import { Link } from 'react-router';
 
 const styles = {
     version: {
@@ -13,7 +14,7 @@ const styles = {
 
 const VersionNumber = () =>
 (
-    <p style={styles.version}>v{standard}</p>
+    <p style={styles.version}>v{standard} <Link to="/about/">About</Link></p>
 );
 
 export default Radium(VersionNumber);

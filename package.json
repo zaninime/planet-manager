@@ -57,6 +57,7 @@
     "node-uuid": "^1.4.7",
     "radium": "^0.18.1",
     "raven-js": "^3.8.1",
+    "raw-loader": "^0.5.1",
     "react": "^15.4.1",
     "react-addons-shallow-compare": "^15.4.1",
     "react-dom": "^15.4.1",

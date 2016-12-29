@@ -6,6 +6,14 @@ export const makeRoutes = () => (
     <Route path="/">
         <IndexRoute component={ConnectPage} />
         <Route
+            path="about/" getComponent={(location, cb) => {
+                require.ensure([], (require) => {
+                    const mod = require('app/components/layout/AboutPage');
+                    cb(null, mod.default);
+                });
+            }}
+        />
+        <Route
             path="(:lampId)/" getComponent={(location, cb) => {
                 require.ensure([], (require) => {
                     const mod = require('app/components/layout/Container');
