@@ -1,7 +1,7 @@
 {
   "name": "planet-manager",
   "version": "20161222.161956.0",
-  "description": "",
+  "description": "ELOS Planet Manager application for Android, iOS and Electron",
   "private": true,
   "scripts": {
     "start": "cross-env NODE_ENV=development WP_TARGET=electron webpack-dev-server --config webpack.config.babel.js --progress --inline",
@@ -17,7 +17,6 @@
     "ci:test": "jest --config jest.config.json --colors",
     "ci:lint": "eslint --color ."
   },
-  "author": "Francesco Zanini, Patrick Predella, Omar Mahili <support@zanini.me>",
   "license": "GPL-2.0",
   "dependencies": {
     "babel-cli": "^6.18.0",
