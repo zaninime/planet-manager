@@ -1,10 +1,29 @@
-*.iml
-/gradle
-.gradle
-/local.properties
-/.idea/workspace.xml
-/.idea/libraries
+# Ant
+build/
+
+# Buck
+/buck-out/
+local.properties
+
+# Compiled Python
+*.pyc
+*py.class
+
+# IntelliJ, based on http://devnet.jetbrains.net/docs/DOC-1186
+.idea/ant.xml
+.idea/dictionaries
+.idea/inspectionProfiles
+.idea/tasks.xml
+.idea/uiDesigner.xml
+.idea/workspace.xml
+.idea/misc.xml
+
+# From building Emma with Ant.
+/third-party/java/emma-2.0.5312/out/
+
+# OS X
 .DS_Store
-/build
-/captures
-/secret.json
+
+
+# Buck daemon.
+.buckd

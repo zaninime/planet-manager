@@ -77,7 +77,7 @@ node('master') {
                 }
 
                 stash name: 'js', includes: 'dist/'
-		sh 'rm -rf dist'
+                sh 'rm -rf dist'
             }
         }
 
@@ -104,31 +104,31 @@ node('master') {
     stage('Apps') {
         parallel(
             'Android': {
-                node('android-sdk') {
+                node('android-sdk && buck') {
                     checkout scm
                     unstash 'js'
 
-                    def gradleHome = tool 'gradle-elos.planet-manager'
-
-                    sh 'rm -rf android/app/src/main/assets/web && \
-                        find dist/android -name "*.map" -type f -delete && \
-                        cp -r dist/android android/app/src/main/assets/web'
-
-                    sh 'rm -rf android/app/build'
+                    sh 'rm -rf android/src/main/assets/web && \
+                    find dist/android -name "*.map" -type f -delete && \
+                    cp -r dist/android android/src/main/assets/web'
 
                     dir('android') {
-                        withEnv(["PATH=${gradleHome}/bin:${env.PATH}", 'ANDROID_HOME=/var/lib/jenkins/android-sdk-linux', "UNIVERSAL_BUILD_NUMBER=${universalBuildNumber}"]) {
+                        withEnv(["UNIVERSAL_BUILD_NUMBER=${universalBuildNumber}"]) {
                             withCredentials([
-                                [$class: 'StringBinding', credentialsId: 'android-keystore-password', variable: 'KEYSTORE_PASSWORD'],
-                                [$class: 'UsernamePasswordMultiBinding', credentialsId: 'android-keystore-key', passwordVariable: 'KEY_PASSWORD', usernameVariable: 'KEY_ALIAS'],
-                                [$class: 'FileBinding', credentialsId: 'android-keystore', variable: 'KEYSTORE']
+                                [$class: 'FileBinding', credentialsId: 'android-keystore', variable: 'KEYSTORE_FILE'],
+                                [$class: 'FileBinding', credentialsId: 'android-keystore-properties', variable: 'KEYSTORE_PROPERTIES']
                             ]) {
-                                sh 'gradle build assembleDebug assembleRelease'
+                                try {
+                                    sh "cp ${KEYSTORE_FILE} release.keystore && cp ${KEYSTORE_PROPERTIES} release.keystore.properties"
+                                    sh 'buck build :app-release :app-debug'
+                                } finally {
+                                    sh 'rm -f release.keystore release.keystore.properties'
+                                }
                             }
                         }
                     }
 
-                    stash name: 'android', includes: 'android/app/build/'
+                    stash name: 'android', includes: 'android/buck-out/gen/*.signed.apk'
                 }
             }
         )
@@ -141,7 +141,7 @@ node('master') {
         sh 'rm -rf archive && mkdir archive'
 
         sh 'cp -r dist archive/js-bundles'
-        sh 'cp -r android/app/build/outputs/apk archive/android'
+        sh 'mkdir archive/android && cp android/buck-out/gen/*.apk archive/android'
 
         dir('archive') {
             archiveArtifacts artifacts: '**'
@@ -153,7 +153,7 @@ node('master') {
 
     if (BRANCH_NAME == 'staging') {
         stage('Deploy') {
-            androidApkUpload apkFilesPattern: 'archive/android/apk/app-release.apk', googleCredentialsId: 'android-api', trackName: 'beta'
+            androidApkUpload apkFilesPattern: 'archive/android/apk/app-release.signed.apk', googleCredentialsId: 'android-api', trackName: 'beta'
         }
     }
 }

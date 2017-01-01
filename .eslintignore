@@ -1,5 +1,6 @@
 android
 archive
+buck-out
 codemod
 coverage
 dist
