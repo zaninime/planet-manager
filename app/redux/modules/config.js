@@ -6,7 +6,7 @@ import night, * as fromNight from './night';
 import temperature, * as fromTemperature from './temperature';
 import fan, * as fromFan from './fan';
 import channels, * as fromChannels from './channels';
-import master from './master';
+import master, * as fromMaster from './master';
 
 export const LOAD_START = 'config/LOAD_START';
 export const LOAD_COMPLETED = 'config/LOAD_COMPLETED';
@@ -26,7 +26,7 @@ export default config;
 
 // action creators
 export const startLoading = lampId => ({ type: LOAD_START, payload: { lampId } });
-export const completeLoading = (lampId, data, wifi) => ({ type: LOAD_COMPLETED, payload: { lampId, data, wifi } });
+export const completeLoading = (lampId, data, wifi) => ({ type: LOAD_COMPLETED, payload: { ...data, lampId, wifi } });
 
 // selectors
 
@@ -57,5 +57,8 @@ export const getFanStartTemperature = state => fromTemperature.getFanStartTemper
 
 // fan
 export const getFanMaxSpeed = state => fromFan.getFanMaxSpeed(state.fan);
+
+// master
+export const getOperationMode = state => fromMaster.getOperationMode(state.master);
 
 /* eslint-enable max-len */

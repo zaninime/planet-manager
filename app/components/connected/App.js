@@ -2,6 +2,8 @@ import React, { PropTypes as T } from 'react';
 import { Router } from 'react-router';
 import { Provider } from 'react-redux';
 import Radium, { Style } from 'radium';
+import { gray800 } from 'material-ui/styles/colors';
+import materialIcons from 'react-native-vector-icons/Fonts/MaterialIcons.ttf';
 
 const styles = {
     body: {
@@ -9,7 +11,7 @@ const styles = {
         fontSmoothing: 'antialiased',
         padding: '0',
         margin: '0',
-        color: '#404040',
+        color: gray800,
         backgroundColor: '#EFEFEF',
         WebkitFontSmoothing: 'antialiased',
         MozOsxFontSmoothing: 'grayscale',
@@ -19,16 +21,30 @@ const styles = {
 };
 
 class App extends React.Component {
-    static contextTypes = {
-        router: T.object,
-    }
+    constructor(props) {
+        super(props);
 
-    static propTypes = {
-        history: T.object.isRequired,
-        routes: T.element.isRequired,
-        routerKey: T.number,
-        actions: T.object,
-    };
+        const fontFaceMaterialIcons = `@font-face {
+            font-family: 'Material Icons';
+            font-style: normal;
+            font-weight: 400;
+            src: local('Material Icons'),
+                 local('MaterialIcons-Regular'),
+                 url(${materialIcons});
+        }`;
+
+        // create stylesheet
+        const style = document.createElement('style');
+        style.type = 'text/css';
+        if (style.styleSheet) {
+            style.styleSheet.cssText = fontFaceMaterialIcons;
+        } else {
+            style.appendChild(document.createTextNode(fontFaceMaterialIcons));
+        }
+
+        // inject stylesheet
+        document.head.appendChild(style);
+    }
 
     /* eslint-disable class-methods-use-this */
     get devTools() {
@@ -79,7 +95,15 @@ class App extends React.Component {
     }
 }
 
+App.contextTypes = {
+    router: T.object,
+};
+
 App.propTypes = {
+    actions: T.object,
+    history: T.object.isRequired,
+    routerKey: T.number,
+    routes: T.element.isRequired,
     store: T.object.isRequired,
 };
 

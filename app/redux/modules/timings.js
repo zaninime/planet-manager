@@ -7,7 +7,7 @@ export const SET_TIMER_END = 'config/timings/SET_TIMER_END';
 const timings = (state = { dawnBeginsAt: 8 * 60, duskEndsAt: 18 * 60 }, action) => {
     switch (action.type) {
     case LOAD_COMPLETED:
-        return action.payload.data.timings;
+        return action.payload.config.timings;
     case SET_TIMER_START:
         return { ...state, dawnBeginsAt: action.payload.dawnBeginsAt };
     case SET_TIMER_END:

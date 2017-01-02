@@ -1,4 +1,19 @@
 {
-    "presets": ["latest", "react", "stage-2"],
-    "plugins": ["transform-flow-strip-types"]
+    "presets": [["latest", { modules: false }], "react", "stage-3"],
+    "plugins": ["transform-flow-strip-types"],
+    "env": {
+        "development": {
+            "plugins": [
+                "transform-react-jsx-source",
+                "transform-react-jsx-self",
+		"react-hot-loader/babel"
+            ]
+        },
+        "production": {
+            "plugins": [
+                "closure-elimination",
+                "transform-react-inline-elements"
+            ]
+        }
+    }
 }

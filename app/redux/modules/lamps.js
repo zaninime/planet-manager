@@ -3,6 +3,7 @@ import config, * as fromConfig from './config';
 import wifi, * as fromWifi from './wifi';
 import caps, * as fromCaps from './caps';
 import saved, * as fromSaved from './saved';
+import info from './info';
 import * as fromDaylight from './daylight';
 import * as fromTimings from './timings';
 import * as fromTwilight from './twilight';
@@ -10,15 +11,17 @@ import * as fromNight from './night';
 import * as fromTemperature from './temperature';
 import * as fromFan from './fan';
 import * as fromChannels from './channels';
+import * as fromMaster from './master';
 import * as fromStation from './station';
 import * as fromAddressing from './addressing';
 import * as fromFieldError from './fieldError';
 
 const singleLamp = combineReducers({
-    config,
-    wifi,
     caps,
+    config,
+    info,
     saved,
+    wifi,
 });
 
 const lamps = (state = { }, action) => {
@@ -37,6 +40,7 @@ const lamps = (state = { }, action) => {
     case fromChannels.NEXT_COLOR:
     case fromChannels.TOGGLE_ENABLE:
     case fromChannels.TOGGLE_DISABLE:
+    case fromMaster.SWITCH_MODE:
     case fromWifi.SET_MODE:
     case fromWifi.SET_SSID:
     case fromStation.SET_PASSWORD:
@@ -81,10 +85,15 @@ export const getFanStartTemperature = state => fromConfig.getFanStartTemperature
 // fan
 export const getFanMaxSpeed = state => fromConfig.getFanMaxSpeed(state.config);
 
+// master mode
+export const getOperationMode = state => fromConfig.getOperationMode(state.config);
+
 // caps
 export const isChannelMappingAvailable = state => fromCaps.isChannelMappingAvailable(state.caps);
 export const isFanConfigAvailable = state => fromCaps.isFanConfigAvailable(state.caps);
 export const isTemperatureConfigAvailable = state => fromCaps.isTemperatureConfigAvailable(state.caps);
+export const isMasterSwitchAvailable = state => fromCaps.isMasterSwitchAvailable(state.caps);
+export const isFeatureAvailable = (state, feature) => fromCaps.isFeatureAvailable(state.caps, feature);
 
 // wifi
 export const getMode = state => fromWifi.getMode(state.wifi);

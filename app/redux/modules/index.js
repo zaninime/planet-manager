@@ -35,7 +35,9 @@ export const getFanStartTemperature = (state, lampId) => fromLamps.getFanStartTe
 export const getFanMaxSpeed = (state, lampId) => fromLamps.getFanMaxSpeed(state.lamps[lampId]);
 export const isChannelMappingAvailable = (state, lampId) => fromLamps.isChannelMappingAvailable(state.lamps[lampId]);
 export const isFanConfigAvailable = (state, lampId) => fromLamps.isFanConfigAvailable(state.lamps[lampId]);
+export const isMasterSwitchAvailable = (state, lampId) => fromLamps.isMasterSwitchAvailable(state.lamps[lampId]);
 export const isTemperatureConfigAvailable = (state, lampId) => fromLamps.isTemperatureConfigAvailable(state.lamps[lampId]);
+export const isFeatureAvailable = (state, feature, lampId) => fromLamps.isFeatureAvailable(state.lamps[lampId], feature);
 export const getMode = (state, lampId) => fromLamps.getMode(state.lamps[lampId]);
 export const getSsid = (state, lampId) => fromLamps.getSsid(state.lamps[lampId]);
 export const getPassword = (state, lampId) => fromLamps.getPassword(state.lamps[lampId]);
@@ -46,6 +48,7 @@ export const getGateway = (state, lampId) => fromLamps.getGateway(state.lamps[la
 export const isConfigSaved = (state, lampId) => fromLamps.isConfigSaved(state.lamps[lampId]);
 export const isLampConfigSaved = (state, lampId) => fromLamps.isLampConfigSaved(state.lamps[lampId]);
 export const isWifiConfigSaved = (state, lampId) => fromLamps.isWifiConfigSaved(state.lamps[lampId]);
+export const getOperationMode = (state, lampId) => fromLamps.getOperationMode(state.lamps[lampId]);
 
 // discovery
 export const getRecentLamps = (state, now) => fromDiscovery.getRecentLamps(state.discovery, now);
@@ -57,5 +60,8 @@ export const getErrorContent = state => fromError.getErrorContent(state.error);
 // ui
 export const getFieldError = state => fromUi.getFieldError(state.ui);
 export const isLoadingDialogOpen = state => fromUi.isLoadingDialogOpen(state.ui);
+
+// info
+export const getLampInfo = (state, lampId) => state.lamps[lampId].info;
 
 /* eslint-enable max-len */

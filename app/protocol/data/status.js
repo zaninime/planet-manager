@@ -1,4 +1,4 @@
-import { currifiedPad } from './utils';
+import currifiedPad from './currifiedPad';
 import { ProtocolError } from '../errors';
 
 const pad3 = currifiedPad(3);

@@ -1,5 +1,5 @@
 import { ProtocolError } from '../errors';
-import { currifiedPad } from './utils';
+import currifiedPad from './currifiedPad';
 
 const int = x => parseInt(x, 10);
 const toInt = x => Math.round(x);
@@ -144,7 +144,12 @@ export const buildUpdate = (config) => {
         pad3(toInt(config.daylight.blue.intensity)));
     const modeMap = { master: '1', slave: '0' };
     parts.push(modeMap[config.mode]);
-    return `\x02PLANETSETPARAM01${parts.join('')}\x03`;
+    const re = /^\x02PLANETSETPARAM01\d{18}\d{18}\d{18}\d{18}\d{12}\d{15}\d{4}\d{3}\d{3}\d{3}\d{3}\d\x03$/;
+    const result = `\x02PLANETSETPARAM01${parts.join('')}\x03`;
+    if (!re.test(result)) {
+        throw new ProtocolError('Cannot serialize configuration correctly', { config, result });
+    }
+    return result;
 };
 
 export const validate = () => {

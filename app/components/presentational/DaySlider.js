@@ -3,7 +3,9 @@ import Radium from 'radium';
 import CircleGradientIcon from 'app/components/presentational/CircleGradientIcon';
 import SliderButton from 'app/components/presentational/SliderButton';
 import { GradientReader } from 'app/utils/gradient';
+import { minimumIntensity } from 'app/protocol/photon/constants';
 import shallowCompare from 'react-addons-shallow-compare';
+import { shadeRgb, contrastColor } from 'app/utils/rgb';
 import DayGradientIcon from './DayGradientIcon';
 
 const styles = {
@@ -71,21 +73,35 @@ class DaySlider extends Component {
     }
 
     initState(props) {
-        const color = this.gr.getColor(props.color * 100);
+        const adjColor = ((props.color + 1) / 2);
+        const color = this.gr.getColor(adjColor * 100);
         return {
+            firstColor: shadeRgb(color[0], color[1], color[2], -0.8),
             secondColor: `rgb(${color[0]},${color[1]},${color[2]})`,
-            color: props.color,
+            secondContrastColor: contrastColor(color[0], color[1], color[2], 'white', 'black'),
+            // the lamp mainColor gives values in a [-1, 1] range
+            // while the slider accepts values in a [0, 1] range
+            color: adjColor,
             intensity: props.intensity,
         };
     }
 
     handleColorChange(value) {
-        const color = this.gr.getColor(value * 100);
-        this.setState({ secondColor: `rgb(${color[0]},${color[1]},${color[2]})` });
+        // rounding the color avoids stressing the ui
+        // since the responsivness is set to 0.01
+        // increase this value to decrease the number of state changes
+        const color = this.gr.getColor(Math.round(value * 100));
+        this.setState({
+            firstColor: shadeRgb(color[0], color[1], color[2], -0.8),
+            secondColor: `rgb(${color[0]},${color[1]},${color[2]})`,
+            secondContrastColor: contrastColor(color[0], color[1], color[2], 'white', 'black'),
+        });
     }
 
     handleColorRelease(value) {
-        this.props.setColor(value);
+        // the slider gives values in a [0, 1] range
+        // while the lamp mainColor accepts values in a [-1, 1] range
+        this.props.setColor((value * 2) - 1);
     }
 
     handleIntensityRelease(value) {
@@ -114,18 +130,21 @@ class DaySlider extends Component {
                         style={styles.intensitySlider}
                         radius={this.intensityRadius}
                         borderWidth={this.buttonRadius * 2}
-                        firstColor="black"
+                        firstColor={this.state.firstColor}
                         secondColor={this.state.secondColor}
                     />
                     <SliderButton
                         value={this.state.intensity}
+                        minValue={minimumIntensity}
                         radius={this.intensityRadius}
                         buttonRadius={this.buttonRadius - 2}
                         onChange={this.handleIntensityChange}
                         onRelease={this.handleIntensityRelease}
-                        auxiliaryButtonsEnabled
-                        auxiliaryRemoveButtonColor="black"
-                        auxiliaryAddButtonColor={this.state.secondColor}
+                        buttonsEnabled
+                        removeButtonColor={this.state.firstColor}
+                        removeButtonIconColor="white"
+                        addButtonColor={this.state.secondColor}
+                        addButtonIconColor={this.state.secondContrastColor}
                         valueLabelEnabled
                     />
                 </div>

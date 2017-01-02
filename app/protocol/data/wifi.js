@@ -1,5 +1,5 @@
 /* @flow */
-import { currifiedPad } from './utils';
+import currifiedPad from './currifiedPad';
 import { ProtocolError } from '../errors';
 
 export type WifiConfig = {|
@@ -77,16 +77,16 @@ export const parseResponse = (str: string): WifiConfig => {
     let mode;
     switch (parts[8]) {
     case '0':
-        mode = 'station';
+        mode = 'ibss';
         break;
     case '1':
-        mode = 'ibss';
+        mode = 'station';
         break;
     default:
         throw new ProtocolError('Invalid Wi-Fi mode', parts[8]);
     }
     return {
-        ssid: parts[0],
+        ssid: parts[0].replace(/\$/g, ' '),
         password: parts[1],
         address: reformatIPAddress(parts[2]),
         port: parseInt(parts[3], 10),
@@ -100,25 +100,32 @@ export const parseResponse = (str: string): WifiConfig => {
 
 export const buildUpdate = (config: WifiConfig) => {
     const strPad32 = zeroedStringPad(32);
-    const pad4 = currifiedPad(4);
+    const pad5 = currifiedPad(5);
     const parts = [
         '\x02WiFishSETLAN',
         fixedLengthIPAddress(config.address),
         strPad32(config.ssid),
         strPad32(config.password),
-        pad4(config.port),
+        pad5(config.port),
+        '5500',
         fixedLengthIPAddress(config.gateway),
         '192168000123',
         fixedLengthIPAddress(config.mask),
         '2',
     ];
     if (config.mode === 'ibss') {
-        parts.push('4', '1');
+        parts.push('4', '00', '0');
     } else {
-        parts.push(config.dhcp ? '1' : '0', '0');
+        parts.push(config.dhcp ? '1' : '0', '00', '1');
     }
-    parts.push(currifiedPad(2)(config.channel), '\x03');
-    return parts.join('');
+    const channel = config.channel;
+    if (typeof channel === 'number') {
+        parts.push(currifiedPad(2)(channel));
+    } else {
+        // if it's a string, it's auto
+        parts.push('00');
+    }
+    return parts.concat('\x03').join('');
 };
 
 export const buildRequest = () => '\x02WiFishGETLAN\x03';

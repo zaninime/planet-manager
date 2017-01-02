@@ -1,135 +1,159 @@
 #!groovy
 
-// keep .git, home/.yarn, home/.yarn-cache folders (cache)
-// see http://stackoverflow.com/questions/4210042/exclude-directory-from-find-command
-// see http://www.linuxquestions.org/questions/linux-general-1/find-with-prune-and-delete-902604/
-def cleanWorkspace() {
-    sh 'find . -mindepth 1 -maxdepth 1 \\( -path ./.git -o -path ./home/.yarn -o -path ./home/.yarn-cache \\) -prune -o -print0 | xargs -0 rm -rf'
+def nodeVersion = '7.3.0'
+
+def slowBuildBranches = [
+    master: true,
+    staging: true,
+]
+
+def getAndIncrementBuildNumber() {
+    def project = 'elos.planet-manager/build-number'
+    build project
+    step([$class: 'CopyArtifact', fingerprintArtifacts: true, projectName: project, selector: [$class: 'StatusBuildSelector', stable: false]])
+    return readFile('build_number.txt')
 }
 
-def authSlackSend(Map args) {
-    withCredentials([[$class: 'StringBinding', credentialsId: 'slack-token', variable: 'token']]) {
-        slackSend channel: 'planet-manager', color: args.color, message: "Build <${env.BUILD_URL}|#${env.BUILD_NUMBER}> ${args.message}", teamDomain: 'elos-srl', token: token
+def getNodePath(nodeVersion) {
+    def nodeCommand
+    withEnv(['N_PREFIX=/var/lib/jenkins']) {
+        sh "n -d ${nodeVersion}"
+        nodeCommand = sh returnStdout: true, script: "n bin ${nodeVersion}"
+    }
+    return nodeCommand.trim()
+}
+
+def withNodeJS(nodeVersion, cl) {
+    def nodePath = getNodePath(nodeVersion)[0..-5]
+    withEnv(["PATH=${nodePath}:${PATH}"]) {
+        cl()
     }
 }
 
+def universalBuildNumber
+
 def sentry = evaluate readTrusted('pipeline/sentry.groovy')
 
-node('docker') {
-    docker.image('node:6.7.0').inside {
-        sh 'mkdir -p home'
-        withEnv(["HOME=${pwd()}/home"]) {
-            stage('Fetch deps') {
-                try {
-                    wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm']) {
-                        sh "npm config set prefix ${pwd()}/home"
-                        sh 'npm install --loglevel error -g yarn'
-                        sh 'home/bin/yarn'
-                    }
-                } catch (err) {
-                    authSlackSend message: "failed (JS bootstrap)", color: 'danger'
-                    throw err
-                }
-            }
-            stage('Fast QA') {
-                parallel (
+node('master') {
+    ansiColor('xterm') {
+        stage('Init') {
+            universalBuildNumber = getAndIncrementBuildNumber()
+        }
+
+        stage('Fast QA') {
+            parallel(
                     'Linter': {
-                        try {
-                            wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm']) {
-                                sh 'npm run ci:lint'
+                        node('nodejs') {
+                            checkout scm
+                            withNodeJS(nodeVersion) {
+                                sh 'node ./yarn install --offline --cache-folder ./yarn-cache'
+                                sh 'node ./yarn ci:lint'
                             }
-                        } catch (err) {
-                            authSlackSend message: "aborted. Code not linted!", color: 'danger'
-                            throw err
                         }
                     },
                     'Tests': {
-                        try {
-                            wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm']) {
-                                sh 'npm run ci:test'
+                        node('nodejs') {
+                            checkout scm
+                            withNodeJS(nodeVersion) {
+                                sh 'node ./yarn install --offline --cache-folder ./yarn-cache'
+                                sh 'node ./yarn ci:test'
                             }
-                        } catch (err) {
-                            authSlackSend message: "aborted. Tests did not pass!", color: 'danger'
-                            throw err
                         }
+                    },
+                    failFast: true
+            )
+        }
+
+        stage('JavaScript Bundles') {
+            node('master') {
+                checkout scm
+                withNodeJS(nodeVersion) {
+                    sh 'node ./yarn install --offline --cache-folder ./yarn-cache'
+                    if (slowBuildBranches[BRANCH_NAME]) {
+                        sh 'node ./yarn ci:build'
+                    } else {
+                        sh 'node ./yarn ci:build-fast'
                     }
-                )
-            }
-            stage('Build JS bundles') {
-                try {
-                    wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'XTerm']) {
-                        sh 'npm run build'
-                    }
-                } catch (err) {
-                    authSlackSend message: "failed. Webpack returned an error.", color: 'danger'
-                    throw err
                 }
+
+                stash name: 'js', includes: 'dist/'
+                sh 'rm -rf dist'
             }
-            stage('Sentry') {
-                try {
-                    if (env['RELEASE']) {
-                        def cliPath = sentry.init('Linux-x86_64')
-                        withCredentials([[$class: 'StringBinding', credentialsId: 'sentry-auth-token', variable: 'token']]) {
+        }
+
+        if (BRANCH_NAME == 'staging') {
+            stage('Source Maps Upload') {
+                node('nodejs') {
+                    unstash 'js'
+
+                    def cliPath = sentry.init('Linux-x86_64')
+                    withCredentials([[$class: 'StringBinding', credentialsId: 'sentry-auth-token', variable: 'token']]) {
+                        withNodeJS(nodeVersion) {
                             parallel(
                                 'Electron': { sentry.execute(cliPath, token, 'Electron', 'dist/electron') },
                                 'Android': { sentry.execute(cliPath, token, 'Android', 'dist/android') },
                                 'iOS': { sentry.execute(cliPath, token, 'iOS', 'dist/ios') }
                             )
                         }
-                    } else {
-                        echo 'Skipping sourcemap upload (happens only on release builds)'
                     }
-                } catch (err) {
-                    authSlackSend message: "failed. Error while uploading source maps.", color: 'danger'
-                    throw err
                 }
-            }
-            stage('Strip sourcemaps') {
-                sh 'find dist -name "*.map" -type f -delete'
-            }
-            stage('Pack desktop') {
-                sh 'mkdir -p archive/electron; cp -r dist/electron archive/electron/src'
             }
         }
     }
-    stash name: 'js', includes: 'archive/,android/,ios/,electron/,dist/,package.json,release.json'
-    authSlackSend message: "is going well, JS bundles are ready"
-}
 
-node('master') {
-    cleanWorkspace()
-    unstash 'js'
+    stage('Apps') {
+        parallel(
+            'Android': {
+                node('android-sdk && buck') {
+                    checkout scm
+                    unstash 'js'
 
-    stage('Build Android') {
-        try {
-            def gradleHome = tool 'gradle-elos.planet-manager'
+                    sh 'rm -rf android/src/main/assets/web && \
+                    find dist/android -name "*.map" -type f -delete && \
+                    cp -r dist/android android/src/main/assets/web'
 
-            sh 'rm -rf android/app/src/main/assets/web; cp -r dist/android android/app/src/main/assets/web'
-            dir('android') {
-                withEnv(["PATH=${gradleHome}/bin:${env.PATH}", 'ANDROID_HOME=/home/jenkins/android-sdk-linux']) {
-                    withCredentials([
-                        [$class: 'StringBinding', credentialsId: 'android-keystore-password', variable: 'KEYSTORE_PASSWORD'],
-                        [$class: 'UsernamePasswordMultiBinding', credentialsId: 'android-keystore-key', passwordVariable: 'KEY_PASSWORD', usernameVariable: 'KEY_ALIAS'],
-                        [$class: 'FileBinding', credentialsId: 'android-keystore', variable: 'KEYSTORE']
-                    ]) {
-                        sh 'gradle build assembleDebug assembleRelease'
+                    dir('android') {
+                        withEnv(["UNIVERSAL_BUILD_NUMBER=${universalBuildNumber}"]) {
+                            withCredentials([
+                                [$class: 'FileBinding', credentialsId: 'android-keystore', variable: 'KEYSTORE_FILE'],
+                                [$class: 'FileBinding', credentialsId: 'android-keystore-properties', variable: 'KEYSTORE_PROPERTIES']
+                            ]) {
+                                try {
+                                    sh "cp ${KEYSTORE_FILE} release.keystore && cp ${KEYSTORE_PROPERTIES} release.keystore.properties"
+                                    sh 'buck build :app-release :app-debug'
+                                } finally {
+                                    sh 'rm -f release.keystore release.keystore.properties'
+                                }
+                            }
+                        }
                     }
+
+                    stash name: 'android', includes: 'android/buck-out/gen/*.signed.apk'
                 }
             }
-
-            sh 'mkdir archive/android'
-            sh 'cp -r dist/android archive/android/js; cp -r android/app/build/outputs/apk archive/android/apk'
-        } catch (err) {
-            authSlackSend message: "failed. Cannot build Android app.", color: 'danger'
-            throw err
-        }
+        )
     }
 
     stage('Archive artifacts') {
+        unstash 'js'
+        unstash 'android'
+
+        sh 'rm -rf archive && mkdir archive'
+
+        sh 'cp -r dist archive/js-bundles'
+        sh 'mkdir archive/android && cp android/buck-out/gen/*.apk archive/android'
+
         dir('archive') {
-            archiveArtifacts artifacts: '**', fingerprint: true
+            archiveArtifacts artifacts: '**'
         }
+
+        sh 'rm -rf archive'
     }
 
-    authSlackSend message: "succeeded", color: 'good'
+
+    if (BRANCH_NAME == 'staging') {
+        stage('Deploy') {
+            androidApkUpload apkFilesPattern: 'archive/android/apk/app-release.signed.apk', googleCredentialsId: 'android-api', trackName: 'beta'
+        }
+    }
 }

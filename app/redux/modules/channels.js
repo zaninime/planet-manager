@@ -24,7 +24,7 @@ const channel = (state = { color: 'white', enabled: true }, action) => {
 const channels = (state = [], action) => {
     switch (action.type) {
     case LOAD_COMPLETED:
-        return action.payload.data.channels;
+        return action.payload.config.channels;
     case NEXT_COLOR:
     case TOGGLE_ENABLE:
     case TOGGLE_DISABLE:

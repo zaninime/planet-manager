@@ -1,0 +1,129 @@
+import copy
+import json
+import os
+import re
+
+# functions
+def calculate_version_code():
+    build_number = os.environ.get('UNIVERSAL_BUILD_NUMBER')
+    if build_number is not None:
+        return base_version_code + int(build_number)
+    else:
+        return base_version_code
+
+def generate_release_keystore():
+    return {
+        'store': os.environ.get('KEYSTORE_FILE', debug_keystore['store']),
+        'properties': os.environ.get('KEYSTORE_PROPERTIES', debug_keystore['properties'])
+    }
+
+with open('../release.json', 'r') as f:
+    version_name = json.load(f)['standard']
+
+is_release_build_possible = all(os.environ.get(x) is not None for x in ['KEYSTORE_FILE', 'KEYSTORE_PROPERTIES', 'UNIVERSAL_BUILD_NUMBER'])
+
+# constants
+base_version_code = 400000
+
+debug_keystore = {
+    'store': 'debug.keystore',
+    'properties': 'debug.keystore.properties',
+}
+
+binary_debug = {
+    'name': 'app-debug',
+    'manifest': 'src/main/AndroidManifest.xml',
+    'keystore': ':debug_keystore',
+    'deps': [
+        ':native-code',
+        ':res',
+        ':all-aars',
+        ':all-jars',
+    ],
+    'includes_vector_drawables': True,
+    'manifest_entries': {
+        'version_code': calculate_version_code(),
+        'version_name': version_name,
+        'min_sdk_version': 19,
+        'target_sdk_version': 24,
+        'debug_mode': True,
+    }
+}
+
+
+# target definitions
+android_binary(**binary_debug)
+
+android_resource(
+    name = 'res',
+    res = 'src/main/res',
+    assets = 'src/main/assets',
+    manifest = 'src/main/AndroidManifest.xml',
+    deps = [
+        ':all-aars',
+    ]
+)
+
+android_library(
+    name = 'native-code',
+    srcs = glob(['src/main/java/**/*.java']),
+    deps = [
+        ':all-jars',
+        ':all-aars',
+        ':res',
+    ],
+    visibility = [ 'PUBLIC' ],
+)
+
+jar_deps = []
+for jarfile in glob(['libs/*.jar']):
+    name = 'jars__' + re.sub(r'^.*/([^/]+)\.jar$', r'\1', jarfile)
+    jar_deps.append(':' + name)
+    prebuilt_jar(
+        name = name,
+        binary_jar = jarfile,
+    )
+
+aar_deps = []
+for aarfile in glob(['libs/*.aar']):
+    name = 'aars__' + re.sub(r'^.*/([^/]+)\.aar$', r'\1', aarfile)
+    aar_deps.append(':' + name)
+    android_prebuilt_aar(
+        name = name,
+        aar = aarfile,
+    )
+
+android_library(
+    name = 'all-jars',
+    exported_deps = jar_deps,
+)
+
+android_library(
+    name = 'all-aars',
+    exported_deps = aar_deps,
+)
+
+keystore(
+    name = 'debug_keystore',
+    store = 'debug.keystore',
+    properties = 'debug.keystore.properties',
+)
+
+project_config(
+    src_target = ':app',
+)
+
+if is_release_build_possible:
+    keystore(
+        name = 'release_keystore',
+        store = 'release.keystore',
+        properties = 'release.keystore.properties',
+    )
+
+    binary_release = copy.deepcopy(binary_debug)
+    binary_release['name'] = 'app-release'
+    binary_release['keystore'] = ':release_keystore'
+    binary_release['manifest_entries']['debug_mode'] = False
+
+    android_binary(**binary_release)
+

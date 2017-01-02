@@ -1,60 +1,37 @@
 /*
- * eslint-disable no-unused-vars
  * @flow
  */
 
-import EError from 'app/utils/error';
-import { blockOnFetch } from './bugs';
-import { twilightDuration, floorIntensity, compactChannels } from './constants';
+import clamp from 'app/utils/clamp';
+import { maskOnFetch } from './bugs';
+import { twilightDuration, floorIntensity, compactChannels, lastMinuteOfDay, minimumSlopeTime } from './constants';
 import * as lamps from './lamps';
 import type { LowLevelConfig, LampStatus, Features } from './types';
 
-class IncompatibleConfigError extends EError {
-    constructor(message, failingData = null) {
-        super(message);
-        this.failingData = JSON.stringify(failingData);
-    }
-
-    getRavenExtra() {
-        return { failingData: this.failingData };
-    }
-}
-
-const clamp = (value, minValue, maxValue) => Math.min(Math.max(value, minValue), maxValue);
-
-const collectTarget = target => (config: LowLevelConfig, status: LampStatus) =>
+const combineConverters = target => (config: LowLevelConfig, status: LampStatus) =>
     Object.keys(target).reduce((acc, key) => {
         const result = acc;
         result[key] = target[key](config, status);
         return result;
     }, {});
 
-const daylight = (config: LowLevelConfig) => {
+export const daylight = (config: LowLevelConfig) => {
     const r = config.daylight.red.intensity / 100;
     const b = config.daylight.blue.intensity / 100;
     const w = config.daylight.white.intensity / 100;
 
-    const intensity = Math.round(
-        clamp(Math.max(
-          (((r + w) - (2 * floorIntensity)) / (1 - floorIntensity)),
-          (((b + w) - (2 * floorIntensity)) / (1 - floorIntensity)),
-        ), 0, 1) * 100,
-    ) / 100;
+    let intensity = Math.round(((Math.max(r, b) - floorIntensity) / (1 - floorIntensity)) * 100) / 100;
 
     let mainColor;
-    if (b > r) {
-        mainColor = (b - floorIntensity) / ((1 - floorIntensity) * intensity);
-    } else if (r > b) {
-        mainColor = -(r - floorIntensity) / ((1 - floorIntensity) * intensity);
-    } else if (r === b) {
-        mainColor = 0;
-    } else {
-        throw new IncompatibleConfigError('Invalid daylight configuration', config);
-    }
+
+    mainColor = (-85 / 60) * (((w - floorIntensity) / (intensity * (1 - floorIntensity))) - 1);
+    mainColor = Math.round(((r > b) ? (-mainColor) : mainColor) * 100) / 100;
 
     mainColor = clamp(mainColor, -1, 1);
+    intensity = clamp(intensity, 0, 1);
 
-    if (intensity === 0) { // with non compatible values and 0 intensity, maincolor is NaN because of division by 0.
+    if (intensity === 0 || (w > r && w > b) || r === b) {
+        // with non compatible values and 0 intensity, maincolor is NaN because of division by 0.
         mainColor = 0;
     }
 
@@ -64,25 +41,24 @@ const daylight = (config: LowLevelConfig) => {
     };
 };
 
-const night = (config: LowLevelConfig) => ({
+export const night = (config: LowLevelConfig) => ({
     color: config.night.color,
     intensity: Math.min(Math.max(config.night.intensity / 100, 0), 1),
 });
 
-const lastMinuteOfDay = (60 * 24) - 1;
-
-const timings = (config: LowLevelConfig) => ({
+export const timings = (config: LowLevelConfig) => ({
     dawnBeginsAt: Math.min(
         config.daylight.red.delay, lastMinuteOfDay - (config.daylight.red.duration + (2 * twilightDuration))),
     duskEndsAt: Math.min(
         (config.daylight.red.delay + config.daylight.red.duration + (2 * twilightDuration)), lastMinuteOfDay),
 });
 
-const twilight = (config: LowLevelConfig) => ({
-    redLevel: Math.min(1, Math.max(0, (config.daylight.white.delay - config.daylight.red.delay) / twilightDuration)),
+export const twilight = (config: LowLevelConfig) => ({
+    redLevel: Math.min(1, Math.max(0,
+        (config.daylight.white.delay - config.daylight.red.delay) / (twilightDuration - minimumSlopeTime))),
 });
 
-const channels = (config: LowLevelConfig, status: LampStatus) => {
+export const channels = (config: LowLevelConfig, status: LampStatus) => {
     const convert = channel => {
         if (channel === 'off') {
             return { color: 'white', enabled: false };
@@ -91,36 +67,58 @@ const channels = (config: LowLevelConfig, status: LampStatus) => {
     };
     const model = lamps.detectModel(status);
 
-    if (model === lamps.COMPACT) {
+    if (model === lamps.COMPACT || model === lamps.COMPACT_V2) {
         return compactChannels.map(idx => convert(config.channels[idx]));
     }
     return config.channels.map(convert);
 };
 
-const temperature = (config: LowLevelConfig) => ({ ...config.temperature });
+export const temperature = (config: LowLevelConfig) => {
+    const { fanStart, shutdown } = config.temperature;
+    return {
+        fanStart,
+        shutdown,
+    };
+};
 
-const fan = (config: LowLevelConfig) => ({ ...config.fan });
+export const fan = (config: LowLevelConfig) => {
+    const { maxSpeed, minSpeed, speedRamp } = config.fan;
 
-const master = (config: LowLevelConfig) => config.mode === 'master';
+    return {
+        maxSpeed: maxSpeed / 100,
+        minSpeed: minSpeed / 100,
+        speedRamp,
+    };
+};
 
-const features = (config: LowLevelConfig, status: LampStatus): Features => {
+export const master = (config: LowLevelConfig) => config.mode === 'master';
+
+export const features = (config: LowLevelConfig, status: LampStatus): Features => {
     const model = lamps.detectModel(status);
     const featureMap = {
         [lamps.PRO]: {
             CHANNEL_MAPPING: true,
             CLOCK_SYNC: true,
-            FAN_CONFIG: true,
-            TEMPERATURE_CONFIG: true,
-            MASTER_SWITCH: true,
             DEMO_MODE: true,
+            FAN_CONFIG: true,
+            MASTER_SWITCH: true,
+            TEMPERATURE_CONFIG: true,
         },
         [lamps.COMPACT]: {
             CHANNEL_MAPPING: true,
             CHANNEL_MAPPING_COMPACT: true,
             CLOCK_SYNC: true,
+            DEMO_MODE: true,
+            FAN_CONFIG: true,
+            MASTER_SWITCH: true,
+            TEMPERATURE_CONFIG: true,
+        },
+        [lamps.COMPACT_V2]: {
+            CHANNEL_MAPPING: true,
+            CHANNEL_MAPPING_COMPACT: true,
+            CLOCK_SYNC: true,
             FAN_CONFIG: true,
             TEMPERATURE_CONFIG: true,
-            MASTER_SWITCH: true,
             DEMO_MODE: true,
         },
         [lamps.PRO_V2]: {
@@ -138,10 +136,19 @@ const features = (config: LowLevelConfig, status: LampStatus): Features => {
     return featureMap[model];
 };
 
+const lampInfo = (status: LampStatus) => ({
+    model: lamps.detectModel(status),
+    firmwareVersion: status.firmwareVersion,
+});
+
 const collect = (config: LowLevelConfig, status: LampStatus) => {
-    const convert = collectTarget({ daylight, night, timings, twilight, channels, temperature, fan, master, features });
-    const { config: bugFreeConfig, bugs } = blockOnFetch(config, status);
-    return { ...convert(bugFreeConfig, status), bugs };
+    const convertConfig = combineConverters({ daylight, night, timings, twilight, channels, temperature, fan, master });
+    return maskOnFetch((innerConfig, innerStatus) => ({
+        bugs: [],
+        config: convertConfig(innerConfig, innerStatus),
+        features: features(innerConfig, innerStatus),
+        info: lampInfo(status),
+    }))(config, status);
 };
 
 export default collect;

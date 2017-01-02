@@ -7,7 +7,7 @@ export const SET_INTENSITY = 'config/night/SET_INTENSITY';
 const night = (state = { color: 'blue', intensity: 0 }, action) => {
     switch (action.type) {
     case LOAD_COMPLETED:
-        return action.payload.data.night;
+        return action.payload.config.night;
     case SET_COLOR:
         return { ...state, color: action.payload.color };
     case SET_INTENSITY:
