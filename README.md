@@ -1,4 +1,4 @@
-# # Planet Manager
+# Planet Manager
 
 This repo contains the unified code for the ELOS app. All the UI code is shared across all the platforms, mobiles and desktops. We currently target:
 
