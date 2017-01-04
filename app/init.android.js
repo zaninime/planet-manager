@@ -3,6 +3,8 @@ import { receiveBeacon } from 'app/redux/modules/discovery';
 import Raven from 'raven-js';
 import ravenInit from 'app/raven-plugin';
 
+const BACK_BUTTON_CALLBACK_NAME = 'cb_backbtn';
+
 if (!__DEV__) {
     ravenInit(Raven);
     const { standard } = require('release.json');
@@ -13,7 +15,13 @@ const discoveryListenerCreator = store => (address, port) => {
     store.dispatch(receiveBeacon(address, port));
 };
 
+const onBackPress = () => {
+    window.history.back();
+    return true;
+};
+
 const init = (store) => {
+    window[BACK_BUTTON_CALLBACK_NAME] = onBackPress;
     discoveryInit();
     createDiscoveryListener().then(
     binder => binder(discoveryListenerCreator(store)),
