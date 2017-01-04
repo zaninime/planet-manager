@@ -110,7 +110,7 @@ keystore(
 )
 
 project_config(
-    src_target = ':app',
+    src_target = ':app-debug',
 )
 
 if is_release_build_possible:
