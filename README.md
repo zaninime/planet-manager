@@ -1,6 +1,17 @@
 ![ELOS Planet Manager](http://i.imgur.com/rE93ihu.png)
 ---
-[![Get it on Google Play](http://i.imgur.com/ZRuMmTe.png)](https://play.google.com/store/apps/details?id=eu.elos.planetmgr.app) [![Download on the App Store](http://i.imgur.com/285bQeQ.png)](https://itunes.apple.com/it/app/planet-manager/id1031067585)
+<p align="center">
+Customize your lamps with ease.
+</p>
+
+<p align="center">
+  <a href="https://play.google.com/store/apps/details?id=eu.elos.planetmgr.app">
+    <img src="http://i.imgur.com/ZRuMmTe.png" alt="Get it on Google Play"/>
+  </a>
+  <a href="https://itunes.apple.com/it/app/planet-manager/id1031067585">
+    <img src="http://i.imgur.com/285bQeQ.png" alt="Download on the App Store"/>
+  </a>
+</p>
 
 This repo contains the unified code for the ELOS app. All the UI code is shared across all the platforms, mobiles and desktops.
 
