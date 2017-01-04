@@ -1,10 +1,8 @@
-# Planet Manager
+![ELOS Planet Manager](http://i.imgur.com/rE93ihu.png)
+---
+[![Get it on Google Play](http://i.imgur.com/ZRuMmTe.png)](https://play.google.com/store/apps/details?id=eu.elos.planetmgr.app) [![Download on the App Store](http://i.imgur.com/285bQeQ.png)](https://itunes.apple.com/it/app/planet-manager/id1031067585)
 
-This repo contains the unified code for the ELOS app. All the UI code is shared across all the platforms, mobiles and desktops. We currently target:
-
-* Android
-* iOS
-* Electron (desktop version)
+This repo contains the unified code for the ELOS app. All the UI code is shared across all the platforms, mobiles and desktops.
 
 ## Getting started
 
