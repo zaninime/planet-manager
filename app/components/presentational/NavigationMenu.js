@@ -55,8 +55,8 @@ class NavigationMenu extends Component {
         this.handleSnackbarCloseRequest = this.handleSnackbarCloseRequest.bind(this);
 
         const { lampId, replace } = this.props;
-        const paths = ['day', 'twilight', 'night', 'advanced'].map(e => (`/${lampId}/${e}/`));
-        this.onTouchTaps = paths.map((e, i) => () => {
+        this.paths = ['day', 'twilight', 'night', 'advanced'].map(e => (`/${lampId}/${e}/`));
+        this.onTouchTaps = this.paths.map((e, i) => () => {
             if (this.props.fieldError) {
                 this.setFieldErrorDialogOpen(true);
             } else {
@@ -76,6 +76,17 @@ class NavigationMenu extends Component {
 
     shouldComponentUpdate(nextProps, nextState) {
         return shallowCompare(this, nextProps, nextState);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        // the Android back button fires window.back(),
+        // so the last route stored in the history is popped and
+        // the user is redirected to the previous page,
+        // but since no TouchTap occured the navigation menu is not updated
+        const i = this.paths.indexOf(nextProps.location.pathname);
+        if (i > -1) {
+            this.setState({ selectedIndex: i });
+        }
     }
 
     setFieldErrorDialogOpen(open) {
@@ -144,7 +155,7 @@ class NavigationMenu extends Component {
     handleTouchTapYes() {
         this.setFieldErrorDialogOpen(false);
         this.redirectToHome();
-    // undo changes
+        // undo changes
         this.props.setFieldError(false);
         this.props.setConfigSaved();
     }
@@ -250,6 +261,7 @@ NavigationMenu.propTypes = {
     fieldError: React.PropTypes.bool.isRequired,
     goBack: React.PropTypes.func.isRequired,
     lampId: React.PropTypes.string.isRequired,
+    location: React.PropTypes.object.isRequired,
     replace: React.PropTypes.func.isRequired,
     saveConfig: React.PropTypes.func.isRequired,
     setConfigSaved: React.PropTypes.func.isRequired,

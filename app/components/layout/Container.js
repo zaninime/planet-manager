@@ -27,13 +27,14 @@ export class Container extends React.Component {
         return React.Children.map(children, c => React.cloneElement(c, childProps));
     }
     render() {
+        const { params, location } = this.props;
         return (
             <div style={styles.wrapper}>
                 <Style rules={{ body: styles.body }} />
                 <div style={styles.content}>
                     {this.renderChildren()}
                 </div>
-                <NavigationMenu lampId={this.props.params.lampId} />
+                <NavigationMenu lampId={params.lampId} location={location} />
             </div>
         );
     }

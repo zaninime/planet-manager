@@ -6,7 +6,6 @@ import { setFieldError } from 'app/redux/modules/fieldError';
 import { setConfigSaved, startSaving } from 'app/redux/modules/saved';
 
 const mapStateToProps = (state, { lampId }) => ({
-    state,
     configSaved: isConfigSaved(state, lampId),
     wifiConfigSaved: isWifiConfigSaved(state, lampId),
     fieldError: getFieldError(state, lampId),
