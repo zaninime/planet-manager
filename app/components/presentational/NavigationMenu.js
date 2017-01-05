@@ -8,14 +8,14 @@ import DayIcon from 'material-ui/svg-icons/image/wb-sunny';
 import TwilightIcon from 'material-ui/svg-icons/image/brightness-4';
 import FloatingActionButton from 'material-ui/FloatingActionButton';
 import CheckIcon from 'material-ui/svg-icons/navigation/check';
-import ChevronCheckIcon from 'material-ui/svg-icons/navigation/chevron-left';
 import Snackbar from 'material-ui/Snackbar';
 import Section from 'app/components/layout/Section';
 import DecisionDialog from 'app/components/layout/DecisionDialog';
 import WarningDialog from 'app/components/layout/WarningDialog';
 import LoadingDialog from 'app/components/connected/LoadingDialog';
 import SaveErrorDialog from 'app/components/connected/ErrorDialog';
-import { grey400, orange500 } from 'material-ui/styles/colors';
+import BackButton from 'app/components/presentational/BackButton';
+import { orange500 } from 'material-ui/styles/colors';
 import shallowCompare from 'react-addons-shallow-compare';
 
 const styles = {
@@ -171,14 +171,10 @@ class NavigationMenu extends Component {
                     >
                         <CheckIcon />
                     </FloatingActionButton>
-                    <FloatingActionButton
+                    <BackButton
                         style={styles.backButton}
-                        mini
-                        backgroundColor={grey400}
                         onClick={this.handleHomeClick}
-                    >
-                        <ChevronCheckIcon />
-                    </FloatingActionButton>
+                    />
                 </Section>
 
                 <Paper zDepth={1} style={styles.content}>
