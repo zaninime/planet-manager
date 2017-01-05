@@ -46,7 +46,7 @@ $ npm run start-android
 ```java
 public class MainActivity extends AppCompatActivity {
     static final String PAGE = "file:///android_asset/web/index.html";
-    //                          ^ http://YOUR_IP:3001/index.html
+    //                          ^ http://localhost:3001/index.html
 
     // ...
 }
@@ -57,12 +57,14 @@ public class MainActivity extends AppCompatActivity {
 $ buck install :app-debug
 ```
 
+4. Enable port forwarding of port 3001 in chrome://inspect.
+
 You can also run `buck build :app-debug` to build the APK without installing.
 
 ### Development for iOS
 You need to be on a Mac with Xcode 7. As for Android, a change in `FILENAME` is required in order to connect to the development server.
 
-1. Run the development server for Android:
+1. Run the development server for iOS:
 ```
 $ npm run start-ios
 ```
