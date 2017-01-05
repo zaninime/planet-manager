@@ -5,7 +5,7 @@ import NavigationMenu from 'app/components/connected/NavigationMenu';
 const styles = {
     body: {
         backgroundColor: 'white',
-        userSelect: 'none',
+        WebkitUserSelect: 'none',
     },
     wrapper: { },
     content: {

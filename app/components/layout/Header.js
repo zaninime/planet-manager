@@ -14,7 +14,7 @@ const styles = {
         color: '#fff',
         backgroundColor: blue500,
         padding: '30px',
-        userSelect: 'none',
+        WebkitUserSelect: 'none',
         pointerEvents: 'none',
     },
     elosLogo: {

@@ -7,7 +7,7 @@ import DialogTitle from '../presentational/DialogTitle';
 
 const styles = {
     unselectableDialog: {
-        userSelect: 'none',
+        WebkitUserSelect: 'none',
     },
 };
 

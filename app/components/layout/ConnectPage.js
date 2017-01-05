@@ -3,11 +3,11 @@ import Radium, { StyleRoot } from 'radium';
 import Header from 'app/components/layout/Header';
 import ConnectCard from 'app/components/layout/ConnectCard';
 import ConnectErrorDialog from 'app/components/connected/ErrorDialog';
-import VersionNumber from 'app/components/layout/VersionNumber';
+import Footer from 'app/components/layout/Footer';
 
 const styles = {
     container: {
-        userSelect: 'none',
+        WebkitUserSelect: 'none',
     },
     cards: {
         maxWidth: '700px',
@@ -29,7 +29,7 @@ const ConnectPage = () => (
             {/* <NfcCard /> */}
         </StyleRoot>
         <ConnectErrorDialog />
-        <VersionNumber />
+        <Footer />
     </div>
 );
 

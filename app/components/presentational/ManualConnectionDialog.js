@@ -7,7 +7,7 @@ import shallowCompare from 'react-addons-shallow-compare';
 
 const styles = {
     unselectableDialog: {
-        userSelect: 'none',
+        WebkitUserSelect: 'none',
     },
     dialogContent: {
         textAlign: 'center',

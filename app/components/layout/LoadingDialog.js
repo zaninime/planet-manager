@@ -10,7 +10,7 @@ const styles = {
         textAlign: 'center',
     },
     unselectableDialog: {
-        userSelect: 'none',
+        WebkitUserSelect: 'none',
     },
 };
 
