@@ -74,10 +74,6 @@ class NavigationMenu extends Component {
         };
     }
 
-    shouldComponentUpdate(nextProps, nextState) {
-        return shallowCompare(this, nextProps, nextState);
-    }
-
     componentWillReceiveProps(nextProps) {
         // the Android back button fires window.back(),
         // so the last route stored in the history is popped and
@@ -87,6 +83,10 @@ class NavigationMenu extends Component {
         if (i > -1) {
             this.setState({ selectedIndex: i });
         }
+    }
+
+    shouldComponentUpdate(nextProps, nextState) {
+        return shallowCompare(this, nextProps, nextState);
     }
 
     setFieldErrorDialogOpen(open) {
@@ -261,7 +261,6 @@ NavigationMenu.propTypes = {
     fieldError: React.PropTypes.bool.isRequired,
     goBack: React.PropTypes.func.isRequired,
     lampId: React.PropTypes.string.isRequired,
-    location: React.PropTypes.object.isRequired,
     replace: React.PropTypes.func.isRequired,
     saveConfig: React.PropTypes.func.isRequired,
     setConfigSaved: React.PropTypes.func.isRequired,

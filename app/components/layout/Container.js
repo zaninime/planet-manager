@@ -49,6 +49,7 @@ Container.propTypes = {
     params: T.shape({
         lampId: T.string.isRequired,
     }),
+    location: T.object.isRequired,
 };
 
 export default Radium(Container);
