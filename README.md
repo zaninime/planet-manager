@@ -38,24 +38,24 @@ The development server has hot reloading and live reloading enabled. Save your c
 Android SDK is required (O RLY?). If you want to enjoy the full power of the development server running on your machine, you need to change the assets URL in `MainActivity.java`.
 
 1. Run the development server for Android:
-```
+ ```
 $ npm run start-android
-```
+ ```
 
 2. Change the following line (don't commit it):
-```java
+ ```java
 public class MainActivity extends AppCompatActivity {
     static final String PAGE = "file:///android_asset/web/index.html";
     //                          ^ http://localhost:3001/index.html
 
     // ...
 }
-```
+ ```
 
 3. Recompile and install to your device:
-```
+ ```
 $ buck install :app-debug
-```
+ ```
 
 4. Enable port forwarding of port 3001 in chrome://inspect.
 
@@ -65,12 +65,12 @@ You can also run `buck build :app-debug` to build the APK without installing.
 You need to be on a Mac with Xcode 7. As for Android, a change in `FILENAME` is required in order to connect to the development server.
 
 1. Run the development server for iOS:
-```
+ ```
 $ npm run start-ios
-```
+ ```
 
 2. Uncomment `devURL` and `webView.load(devURL)` (don’t commit it):
-```swift
+ ```swift
 class ViewController: UIViewController {
     override func viewDidLoad() {
         // ...
@@ -87,12 +87,12 @@ class ViewController: UIViewController {
     // ...
 
 }
-```
+ ```
 
 3. Recompile and install to your device (you need [Fastlane Tools](https://fastlane.tools/)) :
-```
+ ```
 $ gym
-```
+ ```
 
 ## Interface with the lamp
 The lamp speaks a proprietary, inefficient and badly designed protocol that requires a TCP connection. Furthermore, there's an unofficial and unadvertised discovery protocol using UDP broadcast messages. The sockets are created differently based on the target class, mobile or Electron.
