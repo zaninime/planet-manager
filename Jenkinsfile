@@ -16,10 +16,8 @@ def getAndIncrementBuildNumber() {
 
 def getNodePath(nodeVersion) {
     def nodeCommand
-    withEnv(['N_PREFIX=/var/lib/jenkins']) {
-        sh "n -d ${nodeVersion}"
-        nodeCommand = sh returnStdout: true, script: "n bin ${nodeVersion}"
-    }
+    sh "n -d ${nodeVersion}"
+    nodeCommand = sh returnStdout: true, script: "n bin ${nodeVersion}"
     return nodeCommand.trim()
 }
 
@@ -83,16 +81,17 @@ node('master') {
 
         if (BRANCH_NAME == 'staging') {
             stage('Source Maps Upload') {
-                node('nodejs') {
+                node('nodejs && sentry-cli') {
                     unstash 'js'
 
-                    def cliPath = sentry.init('Linux-x86_64')
+                    def commandName = 'sentry-cli'
                     withCredentials([[$class: 'StringBinding', credentialsId: 'sentry-auth-token', variable: 'token']]) {
                         withNodeJS(nodeVersion) {
+                            sh "${commandName} --auth-token ${token} info"
                             parallel(
-                                'Electron': { sentry.execute(cliPath, token, 'Electron', 'dist/electron') },
-                                'Android': { sentry.execute(cliPath, token, 'Android', 'dist/android') },
-                                'iOS': { sentry.execute(cliPath, token, 'iOS', 'dist/ios') }
+                                'Electron': { sentry.execute(commandName, token, 'Electron', 'dist/electron') },
+                                'Android': { sentry.execute(commandName, token, 'Android', 'dist/android') },
+                                'iOS': { sentry.execute(commandName, token, 'iOS', 'dist/ios') }
                             )
                         }
                     }
