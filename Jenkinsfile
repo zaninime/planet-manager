@@ -146,7 +146,6 @@ node('master') {
             archiveArtifacts artifacts: '**'
         }
 
-        sh 'rm -rf archive'
     }
 
 
@@ -155,4 +154,6 @@ node('master') {
             androidApkUpload apkFilesPattern: 'archive/android/apk/app-release.signed.apk', googleCredentialsId: 'android-api', trackName: 'beta'
         }
     }
+
+    sh 'rm -rf archive'
 }
