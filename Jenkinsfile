@@ -151,7 +151,7 @@ node('master') {
 
     if (BRANCH_NAME == 'staging') {
         stage('Deploy') {
-            androidApkUpload apkFilesPattern: 'archive/android/apk/app-release.signed.apk', googleCredentialsId: 'android-api', trackName: 'beta'
+            androidApkUpload apkFilesPattern: 'archive/android/app-release.signed.apk', googleCredentialsId: 'android-api', trackName: 'beta'
         }
     }
 
