@@ -2,11 +2,11 @@ import { createDiscoveryListener } from 'app/protocol/discovery';
 import { receiveBeacon } from 'app/redux/modules/discovery';
 import Raven from 'raven-js';
 import ravenInit from 'app/raven-plugin';
+import version from 'app/version';
 
 if (!__DEV__) {
     ravenInit(Raven);
-    const { standard } = require('release.json');
-    Raven.config('https://f850a2c7562843caa6389f3a3fca71a1@sentry.io/104808', { release: standard }).install();
+    Raven.config('https://f850a2c7562843caa6389f3a3fca71a1@sentry.io/104808', { release: version() }).install();
 }
 
 const discoveryListenerCreator = store => (msg, { address, port }) => {

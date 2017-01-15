@@ -1,5 +1,5 @@
 import { ProtocolError } from '../errors';
-import { currifiedPad } from './utils';
+import currifiedPad from './currifiedPad';
 
 const int = x => parseInt(x, 10);
 const toInt = x => Math.round(x);

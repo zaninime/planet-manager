@@ -1,4 +1,4 @@
-import { pad } from './utils';
+import leftPad from 'left-pad';
 import { ProtocolError } from '../errors';
 
 export const parseResponse = (str) => {
@@ -20,7 +20,7 @@ export const buildUpdate = (clock) => {
         throw new TypeError(`Clock value ${clock} is invalid. It must be a valid date object.`);
     }
     const secondsClock = (clock.getHours() * 3600) + (clock.getMinutes() * 60) + clock.getSeconds();
-    const strSecondsClock = pad(parseInt(secondsClock, 10).toString(16).toUpperCase(), 5);
+    const strSecondsClock = leftPad(parseInt(secondsClock, 10).toString(16).toUpperCase(), 5, '0');
     return `\x02SETCOUNTER${strSecondsClock}\x03`;
 };
 

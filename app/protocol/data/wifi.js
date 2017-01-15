@@ -1,5 +1,5 @@
 /* @flow */
-import { currifiedPad } from './utils';
+import currifiedPad from './currifiedPad';
 import { ProtocolError } from '../errors';
 
 export type WifiConfig = {|

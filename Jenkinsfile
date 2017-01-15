@@ -1,7 +1,6 @@
 #!groovy
 
 def nodeVersion = '7.3.0'
-def buildRunner = 'master'
 
 def slowBuildBranches = [
     master: true,
@@ -17,10 +16,8 @@ def getAndIncrementBuildNumber() {
 
 def getNodePath(nodeVersion) {
     def nodeCommand
-    withEnv(['N_PREFIX=/home/jenkins']) {
-        sh "n -d ${nodeVersion}"
-        nodeCommand = sh returnStdout: true, script: "n bin ${nodeVersion}"
-    }
+    sh "n -d ${nodeVersion}"
+    nodeCommand = sh returnStdout: true, script: "n bin ${nodeVersion}"
     return nodeCommand.trim()
 }
 
@@ -35,7 +32,7 @@ def universalBuildNumber
 
 def sentry = evaluate readTrusted('pipeline/sentry.groovy')
 
-node(buildRunner) {
+node('master') {
     ansiColor('xterm') {
         stage('Init') {
             universalBuildNumber = getAndIncrementBuildNumber()
@@ -44,19 +41,19 @@ node(buildRunner) {
         stage('Fast QA') {
             parallel(
                     'Linter': {
-                        node(buildRunner) {
+                        node('nodejs') {
                             checkout scm
                             withNodeJS(nodeVersion) {
-                                sh 'node ./yarn install --offline'
+                                sh 'node ./yarn install --offline --cache-folder ./yarn-cache'
                                 sh 'node ./yarn ci:lint'
                             }
                         }
                     },
                     'Tests': {
-                        node(buildRunner) {
+                        node('nodejs') {
                             checkout scm
                             withNodeJS(nodeVersion) {
-                                sh 'node ./yarn install --offline'
+                                sh 'node ./yarn install --offline --cache-folder ./yarn-cache'
                                 sh 'node ./yarn ci:test'
                             }
                         }
@@ -66,10 +63,10 @@ node(buildRunner) {
         }
 
         stage('JavaScript Bundles') {
-            node(buildRunner) {
+            node('master') {
                 checkout scm
                 withNodeJS(nodeVersion) {
-                    sh 'node ./yarn install --offline'
+                    sh 'node ./yarn install --offline --cache-folder ./yarn-cache'
                     if (slowBuildBranches[BRANCH_NAME]) {
                         sh 'node ./yarn ci:build'
                     } else {
@@ -78,21 +75,23 @@ node(buildRunner) {
                 }
 
                 stash name: 'js', includes: 'dist/'
+                sh 'rm -rf dist'
             }
         }
 
         if (BRANCH_NAME == 'staging') {
             stage('Source Maps Upload') {
-                node(buildRunner) {
+                node('nodejs && sentry-cli') {
                     unstash 'js'
 
-                    def cliPath = sentry.init('Linux-x86_64')
+                    def commandName = 'sentry-cli'
                     withCredentials([[$class: 'StringBinding', credentialsId: 'sentry-auth-token', variable: 'token']]) {
                         withNodeJS(nodeVersion) {
+                            sh "${commandName} --auth-token ${token} info"
                             parallel(
-                                'Electron': { sentry.execute(cliPath, token, 'Electron', 'dist/electron') },
-                                'Android': { sentry.execute(cliPath, token, 'Android', 'dist/android') },
-                                'iOS': { sentry.execute(cliPath, token, 'iOS', 'dist/ios') }
+                                'Electron': { sentry.execute(commandName, token, 'Electron', 'dist/electron') },
+                                'Android': { sentry.execute(commandName, token, 'Android', 'dist/android') },
+                                'iOS': { sentry.execute(commandName, token, 'iOS', 'dist/ios') }
                             )
                         }
                     }
@@ -104,31 +103,31 @@ node(buildRunner) {
     stage('Apps') {
         parallel(
             'Android': {
-                node(buildRunner) {
+                node('android-sdk && buck') {
                     checkout scm
                     unstash 'js'
 
-                    def gradleHome = tool 'gradle-elos.planet-manager'
-
-                    sh 'rm -rf android/app/src/main/assets/web && \
-                        find dist/android -name "*.map" -type f -delete && \
-                        cp -r dist/android android/app/src/main/assets/web'
-
-                    sh 'rm -rf android/app/build'
+                    sh 'rm -rf android/src/main/assets/web && \
+                    find dist/android -name "*.map" -type f -delete && \
+                    cp -r dist/android android/src/main/assets/web'
 
                     dir('android') {
-                        withEnv(["PATH=${gradleHome}/bin:${env.PATH}", 'ANDROID_HOME=/home/jenkins/android-sdk-linux', "UNIVERSAL_BUILD_NUMBER=${universalBuildNumber}"]) {
+                        withEnv(["UNIVERSAL_BUILD_NUMBER=${universalBuildNumber}"]) {
                             withCredentials([
-                                [$class: 'StringBinding', credentialsId: 'android-keystore-password', variable: 'KEYSTORE_PASSWORD'],
-                                [$class: 'UsernamePasswordMultiBinding', credentialsId: 'android-keystore-key', passwordVariable: 'KEY_PASSWORD', usernameVariable: 'KEY_ALIAS'],
-                                [$class: 'FileBinding', credentialsId: 'android-keystore', variable: 'KEYSTORE']
+                                [$class: 'FileBinding', credentialsId: 'android-keystore', variable: 'KEYSTORE_FILE'],
+                                [$class: 'FileBinding', credentialsId: 'android-keystore-properties', variable: 'KEYSTORE_PROPERTIES']
                             ]) {
-                                sh 'gradle build assembleDebug assembleRelease'
+                                try {
+                                    sh "cp ${KEYSTORE_FILE} release.keystore && cp ${KEYSTORE_PROPERTIES} release.keystore.properties"
+                                    sh 'buck build :app-release :app-debug'
+                                } finally {
+                                    sh 'rm -f release.keystore release.keystore.properties'
+                                }
                             }
                         }
                     }
 
-                    stash name: 'android', includes: 'android/app/build/'
+                    stash name: 'android', includes: 'android/buck-out/gen/*.signed.apk'
                 }
             }
         )
@@ -141,7 +140,7 @@ node(buildRunner) {
         sh 'rm -rf archive && mkdir archive'
 
         sh 'cp -r dist archive/js-bundles'
-        sh 'cp -r android/app/build/outputs/apk archive/android'
+        sh 'mkdir archive/android && cp android/buck-out/gen/*.apk archive/android'
 
         dir('archive') {
             archiveArtifacts artifacts: '**'
@@ -153,7 +152,7 @@ node(buildRunner) {
 
     if (BRANCH_NAME == 'staging') {
         stage('Deploy') {
-            androidApkUpload apkFilesPattern: 'archive/android/apk/app-release.apk', googleCredentialsId: 'android-api', trackName: 'beta'
+            androidApkUpload apkFilesPattern: 'archive/android/apk/app-release.signed.apk', googleCredentialsId: 'android-api', trackName: 'beta'
         }
     }
 }
