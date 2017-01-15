@@ -9,7 +9,7 @@ void uploadSourceMaps(String cliPath, String platform, String sourcePath) {
 }
 
 def execute(String cliPath, String token, String platform, String sourcePath) {
-	def cliRun = "./${cliPath} --auth-token ${token}"
+	def cliRun = "${cliPath} --auth-token ${token}"
 	createRelease(cliRun, platform.toLowerCase())
 	uploadSourceMaps(cliRun, platform.toLowerCase(), sourcePath)
 }
