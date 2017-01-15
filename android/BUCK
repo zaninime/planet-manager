@@ -18,7 +18,7 @@ def generate_release_keystore():
     }
 
 with open('../release.json', 'r') as f:
-    version_name = json.load(f)['standard']
+    version_name = json.load(f)['name']
 
 is_release_build_possible = all(os.environ.get(x) is not None for x in ['KEYSTORE_FILE', 'KEYSTORE_PROPERTIES', 'UNIVERSAL_BUILD_NUMBER'])
 
