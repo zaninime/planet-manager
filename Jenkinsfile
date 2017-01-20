@@ -32,68 +32,68 @@ def universalBuildNumber
 
 def sentry = evaluate readTrusted('pipeline/sentry.groovy')
 
-node('master') {
-    ansiColor('xterm') {
-        stage('Init') {
+ansiColor('xterm') {
+    stage('Init') {
+        node {
             universalBuildNumber = getAndIncrementBuildNumber()
         }
+    }
 
-        stage('Fast QA') {
-            parallel(
-                    'Linter': {
-                        node('nodejs') {
-                            checkout scm
-                            withNodeJS(nodeVersion) {
-                                sh 'node ./yarn install --offline --cache-folder ./yarn-cache'
-                                sh 'node ./yarn ci:lint'
-                            }
-                        }
-                    },
-                    'Tests': {
-                        node('nodejs') {
-                            checkout scm
-                            withNodeJS(nodeVersion) {
-                                sh 'node ./yarn install --offline --cache-folder ./yarn-cache'
-                                sh 'node ./yarn ci:test'
-                            }
-                        }
-                    },
-                    failFast: true
-            )
-        }
-
-        stage('JavaScript Bundles') {
-            node('master') {
-                checkout scm
-                withNodeJS(nodeVersion) {
-                    sh 'node ./yarn install --offline --cache-folder ./yarn-cache'
-                    if (slowBuildBranches[BRANCH_NAME]) {
-                        sh 'node ./yarn ci:build'
-                    } else {
-                        sh 'node ./yarn ci:build-fast'
+    stage('Fast QA') {
+        parallel(
+            'Linter': {
+                node('nodejs') {
+                    checkout scm
+                    withNodeJS(nodeVersion) {
+                        sh 'node ./yarn install --offline --cache-folder ./yarn-cache'
+                        sh 'node ./yarn ci:lint'
                     }
                 }
+            },
+            'Tests': {
+                node('nodejs') {
+                    checkout scm
+                    withNodeJS(nodeVersion) {
+                        sh 'node ./yarn install --offline --cache-folder ./yarn-cache'
+                        sh 'node ./yarn ci:test'
+                    }
+                }
+            },
+            failFast: true
+        )
+    }
 
-                stash name: 'js', includes: 'dist/'
-                sh 'rm -rf dist'
+    stage('JavaScript Bundles') {
+        node('master') {
+            checkout scm
+            withNodeJS(nodeVersion) {
+                sh 'node ./yarn install --offline --cache-folder ./yarn-cache'
+                if (slowBuildBranches[BRANCH_NAME]) {
+                    sh 'node ./yarn ci:build'
+                } else {
+                    sh 'node ./yarn ci:build-fast'
+                }
             }
+
+            stash name: 'js', includes: 'dist/'
+            sh 'rm -rf dist'
         }
+    }
 
-        if (BRANCH_NAME == 'staging') {
-            stage('Source Maps Upload') {
-                node('nodejs && sentry-cli') {
-                    unstash 'js'
+    if (BRANCH_NAME == 'staging') {
+        stage('Source Maps Upload') {
+            node('nodejs && sentry-cli') {
+                unstash 'js'
 
-                    def commandName = 'sentry-cli'
-                    withCredentials([[$class: 'StringBinding', credentialsId: 'sentry-auth-token', variable: 'token']]) {
-                        withNodeJS(nodeVersion) {
-                            sh "${commandName} --auth-token ${token} info"
-                            parallel(
-                                'Electron': { sentry.execute(commandName, token, 'Electron', 'dist/electron') },
-                                'Android': { sentry.execute(commandName, token, 'Android', 'dist/android') },
-                                'iOS': { sentry.execute(commandName, token, 'iOS', 'dist/ios') }
-                            )
-                        }
+                def commandName = 'sentry-cli'
+                withCredentials([[$class: 'StringBinding', credentialsId: 'sentry-auth-token', variable: 'token']]) {
+                    withNodeJS(nodeVersion) {
+                        sh "${commandName} --auth-token ${token} info"
+                        parallel(
+                            'Electron': { sentry.execute(commandName, token, 'Electron', 'dist/electron') },
+                            'Android': { sentry.execute(commandName, token, 'Android', 'dist/android') },
+                            'iOS': { sentry.execute(commandName, token, 'iOS', 'dist/ios') }
+                        )
                     }
                 }
             }
@@ -119,41 +119,46 @@ node('master') {
                             ]) {
                                 try {
                                     sh "cp ${KEYSTORE_FILE} release.keystore && cp ${KEYSTORE_PROPERTIES} release.keystore.properties"
-                                    sh 'buck build :app-release :app-debug'
+                                    sh 'buck build :app-release-aligned :app-debug'
                                 } finally {
                                     sh 'rm -f release.keystore release.keystore.properties'
                                 }
                             }
                         }
+                        sh 'mv buck-out/gen/app-release-aligned/*.apk buck-out/gen/'
                     }
 
-                    stash name: 'android', includes: 'android/buck-out/gen/*.signed.apk'
+                    stash name: 'android', includes: 'android/buck-out/gen/*.apk'
                 }
             }
         )
     }
 
     stage('Archive artifacts') {
-        unstash 'js'
-        unstash 'android'
+        node('linux') {
+            unstash 'js'
+            unstash 'android'
 
-        sh 'rm -rf archive && mkdir archive'
+            sh 'rm -rf archive && mkdir archive'
 
-        sh 'cp -r dist archive/js-bundles'
-        sh 'mkdir archive/android && cp android/buck-out/gen/*.apk archive/android'
+            sh 'cp -r dist archive/js-bundles'
+            sh 'mkdir archive/android && cp android/buck-out/gen/*.apk archive/android'
 
-        dir('archive') {
-            archiveArtifacts artifacts: '**'
+            dir('archive') {
+                archiveArtifacts artifacts: '**'
+            }
+
+            sh 'rm -rf archive'
         }
-
     }
 
 
     if (BRANCH_NAME == 'staging') {
         stage('Deploy') {
-            androidApkUpload apkFilesPattern: 'archive/android/app-release.signed.apk', googleCredentialsId: 'android-api', trackName: 'beta'
+            node('linux') {
+                unstash 'android'
+                androidApkUpload apkFilesPattern: 'android/buck-out/gen/app-release-aligned.apk', googleCredentialsId: 'android-api', trackName: 'beta'
+            }
         }
     }
-
-    sh 'rm -rf archive'
 }
