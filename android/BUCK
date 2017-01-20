@@ -127,3 +127,11 @@ if is_release_build_possible:
 
     android_binary(**binary_release)
 
+    apk_genrule(
+        name = 'app-release-aligned',
+        apk = ':app-release',
+        bash = '$ANDROID_HOME/build-tools/25.0.0/zipalign -f 4 $APK $OUT',
+        cmd_exe = '%ANDROID_HOME%\\build-tools\\25.0.0\\zipalign -f 4 %APK% %OUT%',
+        out = 'app-release-aligned.apk',
+    )
+

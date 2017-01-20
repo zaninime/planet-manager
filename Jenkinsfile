@@ -119,15 +119,16 @@ ansiColor('xterm') {
                             ]) {
                                 try {
                                     sh "cp ${KEYSTORE_FILE} release.keystore && cp ${KEYSTORE_PROPERTIES} release.keystore.properties"
-                                    sh 'buck build :app-release :app-debug'
+                                    sh 'buck build :app-release-aligned :app-debug'
                                 } finally {
                                     sh 'rm -f release.keystore release.keystore.properties'
                                 }
                             }
                         }
+                        sh 'mv buck-out/gen/app-release-aligned/*.apk buck-out/gen/'
                     }
 
-                    stash name: 'android', includes: 'android/buck-out/gen/*.signed.apk'
+                    stash name: 'android', includes: 'android/buck-out/gen/*.apk'
                 }
             }
         )
@@ -156,7 +157,7 @@ ansiColor('xterm') {
         stage('Deploy') {
             node('linux') {
                 unstash 'android'
-                androidApkUpload apkFilesPattern: 'android/buck-out/gen/app-release.signed.apk', googleCredentialsId: 'android-api', trackName: 'beta'
+                androidApkUpload apkFilesPattern: 'android/buck-out/gen/app-release-aligned.apk', googleCredentialsId: 'android-api', trackName: 'beta'
             }
         }
     }
