@@ -5,6 +5,7 @@ def nodeVersion = '7.3.0'
 def slowBuildBranches = [
     master: true,
     staging: true,
+    production: true,
 ]
 
 def getAndIncrementBuildNumber() {
@@ -158,6 +159,15 @@ ansiColor('xterm') {
             node('linux') {
                 unstash 'android'
                 androidApkUpload apkFilesPattern: 'android/buck-out/gen/app-release-aligned.apk', googleCredentialsId: 'android-api', trackName: 'beta'
+            }
+        }
+    }
+
+    if (BRANCH_NAME == 'production') {
+        stage('Deploy') {
+            node('linux') {
+                unstash 'android'
+                androidApkUpload apkFilesPattern: 'android/buck-out/gen/app-release-aligned.apk', googleCredentialsId: 'android-api', trackName: 'production'
             }
         }
     }
