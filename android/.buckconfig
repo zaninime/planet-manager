@@ -1,0 +1,5 @@
+[httpserver]
+    port = 0
+
+[android]
+    target = android-24

@@ -1,69 +1,101 @@
-# Planet Manager
+![ELOS Planet Manager](http://i.imgur.com/rE93ihu.png)
+---
+<p align="center">
+Customize your lamps with ease.
+</p>
 
-This repo contains the unified code for the ELOS app. All the UI code is shared across all the platforms, mobiles and desktops. We currently target:
+<p align="center">
+  <a href="https://play.google.com/store/apps/details?id=eu.elos.planetmgr.app">
+    <img src="http://i.imgur.com/ZRuMmTe.png" alt="Get it on Google Play"/>
+  </a>
+  <a href="https://itunes.apple.com/it/app/planet-manager/id1031067585">
+    <img src="http://i.imgur.com/285bQeQ.png" alt="Download on the App Store"/>
+  </a>
+</p>
 
-* Android
-* iOS
-* Desktop (using Electron)
+This repo contains the unified code for the ELOS app. All the UI code is shared across all the platforms, mobiles and desktops.
 
 ## Getting started
 
 ### Development for Desktop
-Development is done using [Electron](http://electron.atom.io/) directly. Please follow [their docs](http://electron.atom.io/docs/) to setup Electron on your platform.
+Development is done directly through [Electron](http://electron.atom.io/). Please follow [their docs](http://electron.atom.io/docs/) to setup Electron on your platform.
 
-To run the development version, spawn two terminals and in the first type:
+To run the development version, run the Webpack development server:
 
 ```
-$ gulp electron:dev
+$ npm run start
 ```
 
-while in the second:
+and simultaneously:
 
 ```
 $ electron electron/dev.js
 ```
 
-### Development for Android
-Android SDK is required. You need to compile the app changing a variable in `MainActivity.java`, in order to load the remote bundle served by Webpack.
+The development server has hot reloading and live reloading enabled. Save your changes and you’re going to see them immediately shipped to your local instance of Electron.
 
-First change the following line (please don't commit it):
-```java
+### Development for Android
+Android SDK is required (O RLY?). If you want to enjoy the full power of the development server running on your machine, you need to change the assets URL in `MainActivity.java`.
+
+1. Run the development server for Android:
+ ```
+$ npm run start-android
+ ```
+
+2. Change the following line (don't commit it):
+ ```java
 public class MainActivity extends AppCompatActivity {
     static final String PAGE = "file:///android_asset/web/index.html";
-    //                          ^ http://YOUR_IP:3000/index.html
+    //                          ^ http://localhost:3001/index.html
 
     // ...
 }
-```
+ ```
 
-Recompile:
-```
-$ gradle assembleDebug
-```
+3. Recompile and install to your device:
+ ```
+$ buck install :app-debug
+ ```
 
-Install to your emulator or device and start the Webpack development server:
+4. Enable port forwarding of port 3001 in chrome://inspect.
 
-```
-$ gulp android:dev
-```
+You can also run `buck build :app-debug` to build the APK without installing.
 
 ### Development for iOS
-You need to be on a Mac with Xcode 7. Instructions of what to edit in order to use the dev server are coming soon.
+You need to be on a Mac with Xcode 7. As for Android, a change in `FILENAME` is required in order to connect to the development server.
 
-Recompile (you need [Fastlane Tools](https://fastlane.tools/)):
-```
+1. Run the development server for iOS:
+ ```
+$ npm run start-ios
+ ```
+
+2. Uncomment `devURL` and `webView.load(devURL)` (don’t commit it):
+ ```swift
+class ViewController: UIViewController {
+    override func viewDidLoad() {
+        // ...
+
+        let url = Bundle.main.url(forResource: "index", withExtension: "html", subdirectory: "web")
+        //let devURL = URLRequest(url: URL(string: "http://YOUR_IP:3002/")!)
+
+        webView.loadFileURL(url!, allowingReadAccessTo: (url?.deletingLastPathComponent())!)
+        //webView.load(devURL)
+
+        self.view = webView
+    }
+
+    // ...
+
+}
+ ```
+
+3. Recompile and install to your device (you need [Fastlane Tools](https://fastlane.tools/)) :
+ ```
 $ gym
-```
-
-Install to your emulator or device and start the Webpack development server:
-
-```
-$ gulp ios:dev
-```
-
+ ```
 
 ## Interface with the lamp
-The lamp speaks a proprietary, inefficient and badly designed protocol that requires a TCP connection. Furthermore, there's an unofficial and unadvertised discovery protocol using UDP broadcast messages. The sockets are created differently based on the target class, mobile or Chrome.
+The lamp speaks a proprietary, inefficient and badly designed protocol that requires a TCP connection. Furthermore, there's an unofficial and unadvertised discovery protocol using UDP broadcast messages. The sockets are created differently based on the target class, mobile or Electron.
 
 * Mobile apps use native classes bridged into the WebView using the native API exposed by Android and iOS
 * Desktop app takes advantage of the `dgram` and `net` modules natively compiled into Electron

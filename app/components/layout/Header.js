@@ -16,6 +16,7 @@ const styles = {
         padding: '30px',
         userSelect: 'none',
         pointerEvents: 'none',
+        borderRadius: null,
     },
     elosLogo: {
         width: '240px',

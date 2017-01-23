@@ -1,7 +1,12 @@
 android
+archive
+buck-out
 codemod
 coverage
 dist
+dist
 ios
 node_modules
+yarn
 yarn-*.js
+yarn-cache
