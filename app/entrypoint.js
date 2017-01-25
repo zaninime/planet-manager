@@ -3,12 +3,9 @@ import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-// import 'font-awesome/css/font-awesome.css';
-
 import App from 'app/components/connected/App';
 
 import { hashHistory } from 'react-router';
-// import makeRoutes from './routes';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
@@ -19,6 +16,8 @@ import configureStore from 'app/redux/configureStore';
 import platformInit from 'app/init';
 
 import { blue500, blue800, orangeA400 } from 'material-ui/styles/colors';
+
+import routes from 'app/routes';
 
 // RxJS operators
 import 'rxjs/add/observable/empty';
@@ -49,7 +48,7 @@ const muiTheme = getMuiTheme({
     },
 });
 
-let render = (routerKey = null) => {
+const render = (routerKey = null) => {
     let mountNode = document.querySelector('#root');
 
     if (mountNode === null) {
@@ -74,9 +73,6 @@ let render = (routerKey = null) => {
         document.head.appendChild(viewportTag);
     }
 
-    const makeRoutes = require('./routes').default;
-    const routes = makeRoutes(store);
-
     ReactDOM.render(
         <MuiThemeProvider muiTheme={muiTheme}>
             <App
@@ -87,12 +83,5 @@ let render = (routerKey = null) => {
             />
         </MuiThemeProvider>, mountNode);
 };
-
-if (__DEV__ && module.hot) {
-    const renderApp = render;
-    render = () => renderApp(Math.random());
-
-    module.hot.accept('./routes', () => render());
-}
 
 render();

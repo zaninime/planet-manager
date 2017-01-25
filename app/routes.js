@@ -1,52 +1,23 @@
 import React from 'react';
 import { Route, IndexRoute } from 'react-router';
-import ConnectPage from 'app/components/layout/ConnectPage';
 
-export const makeRoutes = () => (
+import Container from 'app/components/layout/Container';
+import ConnectPage from 'app/components/layout/ConnectPage';
+import DayPage from 'app/components/layout/DayPage';
+import NightPage from 'app/components/layout/NightPage';
+import TwilightPage from 'app/components/layout/TwilightPage';
+import AdvancedPage from 'app/components/layout/AdvancedPage';
+
+const routes = (
     <Route path="/">
         <IndexRoute component={ConnectPage} />
-        <Route
-            path="(:lampId)/" getComponent={(location, cb) => {
-                require.ensure([], (require) => {
-                    const mod = require('app/components/layout/Container');
-                    cb(null, mod.default);
-                });
-            }}
-        >
-            <Route
-                path="day/" getComponent={(location, cb) => {
-                    require.ensure([], (require) => {
-                        const mod = require('app/components/layout/DayPage');
-                        cb(null, mod.default);
-                    });
-                }}
-            />
-            <Route
-                path="night/" getComponent={(location, cb) => {
-                    require.ensure([], (require) => {
-                        const mod = require('app/components/layout/NightPage');
-                        cb(null, mod.default);
-                    });
-                }}
-            />
-            <Route
-                path="twilight/" getComponent={(location, cb) => {
-                    require.ensure([], (require) => {
-                        const mod = require('app/components/layout/TwilightPage');
-                        cb(null, mod.default);
-                    });
-                }}
-            />
-            <Route
-                path="advanced/" getComponent={(location, cb) => {
-                    require.ensure([], (require) => {
-                        const mod = require('app/components/layout/AdvancedPage');
-                        cb(null, mod.default);
-                    });
-                }}
-            />
+        <Route path="(:lampId)/" component={Container}>
+            <Route path="day/" component={DayPage} />
+            <Route path="night/" component={NightPage} />
+            <Route path="twilight/" component={TwilightPage} />
+            <Route path="advanced/" component={AdvancedPage} />
         </Route>
     </Route>
 );
 
-export default makeRoutes;
+export default routes;
