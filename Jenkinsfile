@@ -84,6 +84,7 @@ ansiColor('xterm') {
     if (BRANCH_NAME == 'staging') {
         stage('Source Maps Upload') {
             node('nodejs && sentry-cli') {
+                checkout scm
                 unstash 'js'
 
                 def commandName = 'sentry-cli'
@@ -157,6 +158,7 @@ ansiColor('xterm') {
     if (BRANCH_NAME == 'staging') {
         stage('Deploy') {
             node('linux') {
+                checkout scm
                 unstash 'android'
                 androidApkUpload apkFilesPattern: 'android/buck-out/gen/app-release-aligned.apk', googleCredentialsId: 'android-api', trackName: 'beta'
             }
@@ -166,6 +168,7 @@ ansiColor('xterm') {
     if (BRANCH_NAME == 'production') {
         stage('Deploy') {
             node('linux') {
+                checkout scm
                 unstash 'android'
                 androidApkUpload apkFilesPattern: 'android/buck-out/gen/app-release-aligned.apk', googleCredentialsId: 'android-api', trackName: 'production'
             }
