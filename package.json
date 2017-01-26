@@ -1,6 +1,6 @@
 {
   "name": "planet-manager",
-  "version": "17.1.2",
+  "version": "17.1.3",
   "description": "ELOS Planet Manager application for Android, iOS and Electron",
   "private": true,
   "scripts": {
