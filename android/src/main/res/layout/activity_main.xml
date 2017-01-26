@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/imageView"
         android:layout_gravity="center"
-        android:src="@drawable/elos_logo"
+        app:srcCompact="@drawable/elos_logo"
         android:layout_margin="30dp" />
 
 </FrameLayout>
