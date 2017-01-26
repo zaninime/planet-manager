@@ -85,6 +85,7 @@ ansiColor('xterm') {
         stage('Source Maps Upload') {
             node('nodejs && sentry-cli') {
                 checkout scm
+                sh 'rm -rf dist'
                 unstash 'js'
 
                 def commandName = 'sentry-cli'
@@ -98,6 +99,8 @@ ansiColor('xterm') {
                         )
                     }
                 }
+
+                sh 'rm -rf dist'
             }
         }
     }
@@ -107,6 +110,7 @@ ansiColor('xterm') {
             'Android': {
                 node('android-sdk && buck') {
                     checkout scm
+                    sh 'rm -rf dist'
                     unstash 'js'
 
                     sh 'rm -rf android/src/main/assets/web && \
@@ -130,6 +134,7 @@ ansiColor('xterm') {
                         sh 'mv buck-out/gen/app-release-aligned/*.apk buck-out/gen/'
                     }
 
+                    sh 'rm -rf dist'
                     stash name: 'android', includes: 'android/buck-out/gen/*.apk'
                 }
             }
@@ -138,6 +143,7 @@ ansiColor('xterm') {
 
     stage('Archive artifacts') {
         node('linux') {
+            sh 'rm -rf dist'
             unstash 'js'
             unstash 'android'
 
@@ -150,7 +156,7 @@ ansiColor('xterm') {
                 archiveArtifacts artifacts: '**'
             }
 
-            sh 'rm -rf archive'
+            sh 'rm -rf archive dist'
         }
     }
 
