@@ -6,13 +6,14 @@
             "plugins": [
                 "transform-react-jsx-source",
                 "transform-react-jsx-self",
-		"react-hot-loader/babel"
+                "react-hot-loader/babel"
             ]
         },
         "production": {
             "plugins": [
                 "closure-elimination",
-                "transform-react-inline-elements"
+                /* Plugin disabled for compatibility reasons */
+                /* "transform-react-inline-elements" */
             ]
         }
     }
