@@ -1,5 +1,7 @@
 ![ELOS Planet Manager](http://i.imgur.com/rE93ihu.png)
 ---
+
+[![Greenkeeper badge](https://badges.greenkeeper.io/zaninime/planet-manager.svg)](https://greenkeeper.io/)
 <p align="center">
 Customize your lamps with ease.
 </p>
