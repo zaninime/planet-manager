@@ -26,15 +26,17 @@ export class Container extends React.Component {
 
         return React.Children.map(children, c => React.cloneElement(c, childProps));
     }
+
     render() {
-        const { params, location } = this.props;
+        const { params } = this.props;
+
         return (
             <div style={styles.wrapper}>
                 <Style rules={{ body: styles.body }} />
                 <div style={styles.content}>
                     {this.renderChildren()}
                 </div>
-                <NavigationMenu lampId={params.lampId} location={location} />
+                <NavigationMenu lampId={params.lampId} />
             </div>
         );
     }
@@ -49,7 +51,6 @@ Container.propTypes = {
     params: T.shape({
         lampId: T.string.isRequired,
     }),
-    location: T.object.isRequired,
 };
 
 export default Radium(Container);

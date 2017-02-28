@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import shallowCompare from 'react-addons-shallow-compare';
 import Radium from 'radium';
 import { BottomNavigation, BottomNavigationItem } from 'material-ui/BottomNavigation';
 import Paper from 'material-ui/Paper';
@@ -10,13 +11,13 @@ import FloatingActionButton from 'material-ui/FloatingActionButton';
 import CheckIcon from 'material-ui/svg-icons/navigation/check';
 import ChevronCheckIcon from 'material-ui/svg-icons/navigation/chevron-left';
 import Snackbar from 'material-ui/Snackbar';
+import { grey400, orange500 } from 'material-ui/styles/colors';
 import Section from 'app/components/layout/Section';
 import DecisionDialog from 'app/components/layout/DecisionDialog';
 import WarningDialog from 'app/components/layout/WarningDialog';
 import LoadingDialog from 'app/components/connected/LoadingDialog';
 import SaveErrorDialog from 'app/components/connected/ErrorDialog';
-import { grey400, orange500 } from 'material-ui/styles/colors';
-import shallowCompare from 'react-addons-shallow-compare';
+import { BACK_BUTTON_CALLBACK_NAME } from 'app/init';
 
 const styles = {
     centered: {
@@ -54,17 +55,6 @@ class NavigationMenu extends Component {
         this.handleWifiChangedCloseRequest = this.handleWifiChangedCloseRequest.bind(this);
         this.handleSnackbarCloseRequest = this.handleSnackbarCloseRequest.bind(this);
 
-        const { lampId, replace } = this.props;
-        this.paths = ['day', 'twilight', 'night', 'advanced'].map(e => (`/${lampId}/${e}/`));
-        this.onTouchTaps = this.paths.map((e, i) => () => {
-            if (this.props.fieldError) {
-                this.setFieldErrorDialogOpen(true);
-            } else {
-                this.setState({ selectedIndex: i });
-                replace(e);
-            }
-        });
-
         this.state = {
             selectedIndex: 0,
             unsavedChangesDialogOpen: false,
@@ -72,16 +62,22 @@ class NavigationMenu extends Component {
             wifiChangedDialogOpen: false,
             snackbarOpen: false,
         };
+
+        const { lampId, replace } = this.props;
+        const paths = ['day', 'twilight', 'night', 'advanced'].map(e => (`/${lampId}/${e}/`));
+        this.onTouchTaps = paths.map((e, i) => () => {
+            if (this.props.fieldError) {
+                this.setFieldErrorDialogOpen(true);
+            } else {
+                this.setState({ selectedIndex: i });
+                replace(e);
+            }
+        });
     }
 
-    componentWillReceiveProps(nextProps) {
-        // the Android back button fires window.back(),
-        // so the last route stored in the history is popped and
-        // the user is redirected to the previous page,
-        // but since no TouchTap occured the navigation menu is not updated
-        const i = this.paths.indexOf(nextProps.location.pathname);
-        if (i > -1) {
-            this.setState({ selectedIndex: i });
+    componentDidMount() {
+        if (BACK_BUTTON_CALLBACK_NAME !== undefined) {
+            window[BACK_BUTTON_CALLBACK_NAME] = this.handleHomeClick;
         }
     }
 
@@ -109,22 +105,19 @@ class NavigationMenu extends Component {
         this.props.saveConfig();
     }
 
-    redirectToHome() {
-        this.props.goBack();
-    }
-
     handleHomeClick() {
         const { configSaved, fieldError, setFieldError } = this.props;
 
-        // inserting invalid fields doesn't change the store,
-        // therefore the saved status could remain the same
-        // so fieldError needs to be set to false
+        // when an invalid value is inserted the store is not updated,
+        // so going back to the Home page erases the error
         if (configSaved && !fieldError) {
             setFieldError(false);
-            this.redirectToHome();
+            this.props.goBack();
         } else {
             this.setUnsavedDialogOpen(true);
         }
+
+        return true;
     }
 
     handleSaveClick() {
@@ -154,10 +147,10 @@ class NavigationMenu extends Component {
 
     handleTouchTapYes() {
         this.setFieldErrorDialogOpen(false);
-        this.redirectToHome();
         // undo changes
         this.props.setFieldError(false);
         this.props.setConfigSaved();
+        this.props.goBack();
     }
 
     handleUnsavedChangesCloseRequest() {

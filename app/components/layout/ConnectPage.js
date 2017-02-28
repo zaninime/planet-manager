@@ -4,6 +4,7 @@ import Header from 'app/components/layout/Header';
 import ConnectCard from 'app/components/layout/ConnectCard';
 import ConnectErrorDialog from 'app/components/connected/ErrorDialog';
 import VersionNumber from 'app/components/layout/VersionNumber';
+import { BACK_BUTTON_CALLBACK_NAME } from 'app/init';
 
 const styles = {
     container: {
@@ -21,16 +22,22 @@ const styles = {
     },
 };
 
-const ConnectPage = () => (
-    <div style={styles.container}>
-        <Header />
-        <StyleRoot style={styles.cards}>
-            <ConnectCard />
-            {/* <NfcCard /> */}
-        </StyleRoot>
-        <ConnectErrorDialog />
-        <VersionNumber />
-    </div>
-);
+const ConnectPage = () => {
+    if (BACK_BUTTON_CALLBACK_NAME !== undefined) {
+        window[BACK_BUTTON_CALLBACK_NAME] = () => false;
+    }
+
+    return (
+        <div style={styles.container}>
+            <Header />
+            <StyleRoot style={styles.cards}>
+                <ConnectCard />
+                {/* <NfcCard /> */}
+            </StyleRoot>
+            <ConnectErrorDialog />
+            <VersionNumber />
+        </div>
+    );
+};
 
 export default Radium(ConnectPage);
