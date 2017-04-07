@@ -25,4 +25,5 @@ const init = (store) => {
   );
 };
 
+export const BACK_BUTTON_CALLBACK_NAME = 'cb_backbtn';
 export default init;

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import shallowCompare from 'react-addons-shallow-compare';
 import Radium from 'radium';
 import { BottomNavigation, BottomNavigationItem } from 'material-ui/BottomNavigation';
 import Paper from 'material-ui/Paper';
@@ -10,13 +11,13 @@ import FloatingActionButton from 'material-ui/FloatingActionButton';
 import CheckIcon from 'material-ui/svg-icons/navigation/check';
 import ChevronCheckIcon from 'material-ui/svg-icons/navigation/chevron-left';
 import Snackbar from 'material-ui/Snackbar';
+import { grey400, orange500 } from 'material-ui/styles/colors';
 import Section from 'app/components/layout/Section';
 import DecisionDialog from 'app/components/layout/DecisionDialog';
 import WarningDialog from 'app/components/layout/WarningDialog';
 import LoadingDialog from 'app/components/connected/LoadingDialog';
 import SaveErrorDialog from 'app/components/connected/ErrorDialog';
-import { grey400, orange500 } from 'material-ui/styles/colors';
-import shallowCompare from 'react-addons-shallow-compare';
+import { BACK_BUTTON_CALLBACK_NAME } from 'app/init';
 
 const styles = {
     centered: {
@@ -54,17 +55,6 @@ class NavigationMenu extends Component {
         this.handleWifiChangedCloseRequest = this.handleWifiChangedCloseRequest.bind(this);
         this.handleSnackbarCloseRequest = this.handleSnackbarCloseRequest.bind(this);
 
-        const { lampId, redirect } = this.props;
-        const paths = ['day', 'twilight', 'night', 'advanced'].map(e => (`/${lampId}/${e}/`));
-        this.onTouchTaps = paths.map((e, i) => () => {
-            if (this.props.fieldError) {
-                this.setFieldErrorDialogOpen(true);
-            } else {
-                this.setState({ selectedIndex: i });
-                redirect(e);
-            }
-        });
-
         this.state = {
             selectedIndex: 0,
             unsavedChangesDialogOpen: false,
@@ -72,6 +62,23 @@ class NavigationMenu extends Component {
             wifiChangedDialogOpen: false,
             snackbarOpen: false,
         };
+
+        const { lampId, replace } = this.props;
+        const paths = ['day', 'twilight', 'night', 'advanced'].map(e => (`/${lampId}/${e}/`));
+        this.onTouchTaps = paths.map((e, i) => () => {
+            if (this.props.fieldError) {
+                this.setFieldErrorDialogOpen(true);
+            } else {
+                this.setState({ selectedIndex: i });
+                replace(e);
+            }
+        });
+    }
+
+    componentDidMount() {
+        if (BACK_BUTTON_CALLBACK_NAME !== undefined) {
+            window[BACK_BUTTON_CALLBACK_NAME] = this.handleHomeClick;
+        }
     }
 
     shouldComponentUpdate(nextProps, nextState) {
@@ -98,22 +105,19 @@ class NavigationMenu extends Component {
         this.props.saveConfig();
     }
 
-    redirectToHome() {
-        this.props.redirect('/');
-    }
-
     handleHomeClick() {
         const { configSaved, fieldError, setFieldError } = this.props;
 
-        // inserting invalid fields doesn't change the store,
-        // therefore the saved status could remain the same
-        // so fieldError needs to be set to false
+        // when an invalid value is inserted the store is not updated,
+        // so going back to the Home page erases the error
         if (configSaved && !fieldError) {
             setFieldError(false);
-            this.redirectToHome();
+            this.props.goBack();
         } else {
             this.setUnsavedDialogOpen(true);
         }
+
+        return true;
     }
 
     handleSaveClick() {
@@ -143,10 +147,10 @@ class NavigationMenu extends Component {
 
     handleTouchTapYes() {
         this.setFieldErrorDialogOpen(false);
-        this.redirectToHome();
-    // undo changes
+        // undo changes
         this.props.setFieldError(false);
         this.props.setConfigSaved();
+        this.props.goBack();
     }
 
     handleUnsavedChangesCloseRequest() {
@@ -247,13 +251,14 @@ class NavigationMenu extends Component {
 
 NavigationMenu.propTypes = {
     configSaved: React.PropTypes.bool.isRequired,
-    wifiConfigSaved: React.PropTypes.bool.isRequired,
     fieldError: React.PropTypes.bool.isRequired,
+    goBack: React.PropTypes.func.isRequired,
     lampId: React.PropTypes.string.isRequired,
-    redirect: React.PropTypes.func.isRequired,
+    replace: React.PropTypes.func.isRequired,
     saveConfig: React.PropTypes.func.isRequired,
-    setFieldError: React.PropTypes.func.isRequired,
     setConfigSaved: React.PropTypes.func.isRequired,
+    setFieldError: React.PropTypes.func.isRequired,
+    wifiConfigSaved: React.PropTypes.bool.isRequired,
 };
 
 export default Radium(NavigationMenu);

@@ -11,6 +11,7 @@ const styles = {
     icon: {
         verticalAlign: 'text-top', // don't know why, but it centers the icon
         marginRight: '10px',
+        lineHeight: 'inherit',
     },
 };
 
